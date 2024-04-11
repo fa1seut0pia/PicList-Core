@@ -737,9 +737,9 @@ export async function imageProcess (img: Buffer, options: IBuildInCompressOption
 }
 
 export function getConvertedFormat (options: IBuildInCompressOptions | undefined, rawFormat: string): string {
-  if (rawFormat === 'gif') return 'gif'
   options = formatOptions(options || {})
   rawFormat = rawFormat.toLowerCase().replace('.', '')
+  if (rawFormat === 'gif') return 'gif'
   let newFormat = options?.convertFormat || 'jpg'
   if (options?.formatConvertObj && Object.keys(options.formatConvertObj).length > 0) {
     const formatConvertObj = options.formatConvertObj
