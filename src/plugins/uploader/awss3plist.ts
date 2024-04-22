@@ -19,10 +19,11 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         userConfig.disableBucketPrefixToURL = false
       }
     }
-    if (userConfig.urlPrefix) {
-      userConfig.urlPrefix = userConfig.urlPrefix.replace(/\/?$/, "")
+    let urlPrefix = userConfig.urlPrefix
+    if (urlPrefix) {
+      urlPrefix = urlPrefix.replace(/\/?$/, "")
       if (userConfig.pathStyleAccess && !userConfig.disableBucketPrefixToURL) {
-        userConfig.urlPrefix += "/" + userConfig.bucketName
+        urlPrefix += "/" + userConfig.bucketName
       }
     }
 
@@ -37,7 +38,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         path: formatPath(item, userConfig.uploadPath),
         item: item,
         acl: userConfig.acl || "public-read",
-        urlPrefix: userConfig.urlPrefix,
+        urlPrefix,
       })
     )
 
@@ -74,7 +75,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     bucketName: "",
     uploadPath: "{year}/{month}/{md5}.{extName}",
     pathStyleAccess: false,
-    rejectUnauthorized: true,
+    rejectUnauthorized: false,
     acl: "public-read",
   }
   let userConfig = ctx.getConfig<IAwsS3PListUserConfig>('picBed.aws-s3-plist') || {}
@@ -164,7 +165,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: "rejectUnauthorized",
       type: "confirm",
-      default: userConfig.rejectUnauthorized || true,
+      default: userConfig.rejectUnauthorized || false,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_REJECTUNAUTHORIZED') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_REJECTUNAUTHORIZED') },
