@@ -55,7 +55,7 @@ export function renameFileNameWithCustomString (oldName: string, customFormat: s
     '{str-20}': () => randomStringGenerator(20),
     '{filename}': () => affixFileName ? path.basename(affixFileName, path.extname(affixFileName)) : filebasename,
     '{uuid}': () => uuidv4().replace(/-/g, ''),
-    '{timestamp}': () => Math.floor(Date.now() / 1000).toString()
+    '{timestamp}': () => now.getTime().toString()
   }
   if (customFormat === undefined || (!Object.keys(conversionMap).some(item => customFormat.includes(item)) && !customFormat.includes('localFolder'))) {
     return oldName
