@@ -3,7 +3,8 @@ import { IBuildInEvent } from '../../utils/enum'
 import { type ILocalesKey } from '../../i18n/zh-CN'
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ''): IOldReqOptions => {
-  const domain = backupDomain || 'sm.ms'
+  let domain = backupDomain || 'sm.ms'
+  domain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '')
   return {
     method: 'POST',
     url: `https://${domain}/api/v2/upload`,
