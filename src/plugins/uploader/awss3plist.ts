@@ -4,25 +4,23 @@ import { formatPath } from "./s3/utils"
 import { IAwsS3PListUserConfig, IPicGo, IPluginConfig } from "../../types"
 import { ILocalesKey } from "../../i18n/zh-CN"
 
+function formatDisableBucketPrefixToURL (disableBucketPrefixToURL: string | boolean | undefined): boolean {
+  if (typeof disableBucketPrefixToURL === "string") {
+    return disableBucketPrefixToURL.toLowerCase() === "true"
+  }
+  return Boolean(disableBucketPrefixToURL)
+}
+
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const userConfig: IAwsS3PListUserConfig = ctx.getConfig("picBed.aws-s3-plist")
     if (!userConfig) {
       throw new Error("Can't find amazon s3 uploader config")
     }
-    if (userConfig.disableBucketPrefixToURL === undefined) {
-      userConfig.disableBucketPrefixToURL = false
-    }
-    if (typeof userConfig.disableBucketPrefixToURL === "string") {
-      if (userConfig.disableBucketPrefixToURL.toLowerCase() === "true") {
-        userConfig.disableBucketPrefixToURL = true
-      } else if (userConfig.disableBucketPrefixToURL.toLowerCase() === "false") {
-        userConfig.disableBucketPrefixToURL = false
-      }
-    }
+    const disableBucketPrefixToURL = formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL)
     let urlPrefix = userConfig.urlPrefix
     if (urlPrefix) {
       urlPrefix = urlPrefix.replace(/\/?$/, "")
-      if (userConfig.pathStyleAccess && !userConfig.disableBucketPrefixToURL) {
+      if (userConfig.pathStyleAccess && !disableBucketPrefixToURL) {
         urlPrefix += "/" + userConfig.bucketName
       }
     }
@@ -173,8 +171,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     },
     {
       name: "acl",
-      type: "input",
+      type: "list",
       default: userConfig.acl || "public-read",
+      choices: ["private", "public-read", "public-read-write", "authenticated-read", "aws-exec-read", "bucket-owner-read", "bucket-owner-full-control"],
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ACL') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ACL') },
@@ -182,8 +181,8 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     },
     {
       name: "disableBucketPrefixToURL",
-      type: "input",
-      default: userConfig.disableBucketPrefixToURL || false,
+      type: "confirm",
+      default: formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL) || false,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_DISABLEBUCKETPREFIXTOURL') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_DISABLEBUCKETPREFIXTOURL') },

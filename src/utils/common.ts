@@ -49,21 +49,25 @@ export function renameFileNameWithCustomString (oldName: string, customFormat: s
     '{h}': () => formatHelper(now.getHours()),
     '{i}': () => formatHelper(now.getMinutes()),
     '{s}': () => formatHelper(now.getSeconds()),
+    '{ms}': () => now.getMilliseconds().toString().padStart(3, '0'),
     '{md5}': () => getMd5(fileBuffer || filebasename),
     '{md5-16}': () => getMd5(fileBuffer || filebasename).slice(0, 16),
-    '{str-10}': () => randomStringGenerator(10),
-    '{str-20}': () => randomStringGenerator(20),
     '{filename}': () => affixFileName ? path.basename(affixFileName, path.extname(affixFileName)) : filebasename,
     '{uuid}': () => uuidv4().replace(/-/g, ''),
     '{timestamp}': () => now.getTime().toString()
   }
-  if (customFormat === undefined || (!Object.keys(conversionMap).some(item => customFormat.includes(item)) && !customFormat.includes('localFolder'))) {
+  if (customFormat === undefined || (!Object.keys(conversionMap).some(item => customFormat.includes(item)) && !customFormat.includes('localFolder:') && !customFormat.includes('str-'))) {
     return oldName
   }
   const ext = path.extname(oldName)
   let newName = Object.keys(conversionMap).reduce((acc, cur) => {
     return acc.replace(new RegExp(cur, 'g'), conversionMap[cur]())
   }, customFormat) + ext
+  const strRegex = /{str-(\d+)}/gi
+  newName = newName.replace(strRegex, (_, group1) => {
+    const length = parseInt(group1, 10)
+    return randomStringGenerator(length)
+  })
   newName = newName.replace(/{(localFolder:?(\d+)?)}/gi, (_result, key, count) => {
     count = Math.max(1, count || 0)
     const paths = path.dirname(oldName).split(path.sep)

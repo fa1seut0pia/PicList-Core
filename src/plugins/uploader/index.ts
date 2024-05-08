@@ -1,5 +1,5 @@
 import { type IPicGo, type IPicGoPlugin } from '../../types'
-import SMMSUploader from './smms'
+import smmsUploader from './smms'
 import tcYunUploader from './tcyun'
 import githubUploader from './github'
 import qiniuUploader from './qiniu'
@@ -18,19 +18,19 @@ const buildInUploaders: IPicGoPlugin = () => {
   return {
     register (ctx: IPicGo) {
       aliYunUploader(ctx)
-      tcYunUploader(ctx)
-      SMMSUploader(ctx)
+      awss3plistUploader(ctx)
       githubUploader(ctx)
-      qiniuUploader(ctx)
       imgurUploader(ctx)
+      localUploader(ctx)
+      lskyUploader(ctx)
+      piclistUploader(ctx)
+      qiniuUploader(ctx)
+      sftpUploader(ctx)
+      smmsUploader(ctx)
+      tcYunUploader(ctx)
+      telegraphUploader(ctx)
       upYunUploader(ctx)
       webdavplistUploader(ctx)
-      localUploader(ctx)
-      sftpUploader(ctx)
-      telegraphUploader(ctx)
-      piclistUploader(ctx)
-      lskyUploader(ctx)
-      awss3plistUploader(ctx)
     }
   }
 }
