@@ -63,7 +63,6 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
             for (const image of images) {
               if (image.url === body.images) {
                 img.hash = image.hash
-                console.log('hash', img.hash)
                 break
               }
             }
