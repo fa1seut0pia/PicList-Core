@@ -1,6 +1,7 @@
 import { type IPicGo, type IPluginConfig, type ISmmsConfig, type IOldReqOptions } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { type ILocalesKey } from '../../i18n/zh-CN'
+import axios from 'axios'
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ''): IOldReqOptions => {
   let domain = backupDomain || 'sm.ms'
@@ -50,6 +51,23 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.base64Image
           delete img.buffer
           img.imgUrl = body.images
+          const uploadHistory = await axios.get(
+            'https://sm.ms/api/v2/upload_history',
+            {
+              headers: {
+                Authorization: smmsConfig.token
+              }
+            })
+          if (uploadHistory.data.code === 'success') {
+            const images = uploadHistory.data.data
+            for (const image of images) {
+              if (image.url === body.images) {
+                img.hash = image.hash
+                console.log('hash', img.hash)
+                break
+              }
+            }
+          }
         } else {
           ctx.emit(IBuildInEvent.NOTIFICATION, {
             title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
