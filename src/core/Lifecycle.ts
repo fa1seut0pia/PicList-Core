@@ -10,6 +10,8 @@ import { getURLFile, handleUrlEncode, imageProcess, isUrl, needCompress, needAdd
 import { IBuildInEvent } from '../utils/enum'
 import { createContext } from '../utils/createContext'
 
+const watermarkMsg = 'Add watermark to image'
+const compressMsg = 'Compress or convert image'
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo
   private readonly ttfLink: string = 'https://release.piclist.cn/simhei.ttf'
@@ -20,29 +22,43 @@ export class Lifecycle extends EventEmitter {
     this.ctx = ctx
     const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
     const imgFilePath = path.join(ctx.baseDir, 'imgTemp')
+    this.ttfPath = path.join(ctx.baseDir, 'assets', 'simhei.ttf')
     fs.ensureDirSync(imgFilePath)
     fs.emptyDirSync(tempFilePath)
-    this.ttfPath = path.join(ctx.baseDir, 'assets', 'simhei.ttf')
   }
 
   async downloadTTF (): Promise<boolean> {
     const outputDir = path.dirname(this.ttfPath)
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true })
-    }
-    if (!fs.existsSync(this.ttfPath)) {
-      this.ctx.log.info('Download ttf file.')
-      try {
-        const res = await axios.get(this.ttfLink, { responseType: 'arraybuffer' })
-        fs.writeFileSync(this.ttfPath, res.data)
-        this.ctx.log.info('Download ttf file success.')
-        return true
-      } catch (e: any) {
-        this.ctx.log.error('Download ttf file failed.')
-        return false
-      }
-    } else {
+    fs.ensureDirSync(outputDir)
+    if (fs.existsSync(this.ttfPath)) return true
+    this.ctx.log.info('Download ttf file.')
+    try {
+      const res = await axios.get(this.ttfLink, { responseType: 'arraybuffer' })
+      fs.writeFileSync(this.ttfPath, res.data)
+      this.ctx.log.info('Download ttf file success.')
       return true
+    } catch (e: any) {
+      this.ctx.log.error('Download ttf file failed.')
+      return false
+    }
+  }
+
+  helpGetOption (ctx: IPicGo): {
+    compressOptions: Undefinable<IBuildInCompressOptions>
+    watermarkOptions: Undefinable<IBuildInWaterMarkOptions>
+  } {
+    const compressOptions = ctx.getConfig<Undefinable<IBuildInCompressOptions>>('buildIn.compress')
+    const watermarkOptions = ctx.getConfig<Undefinable<IBuildInWaterMarkOptions>>('buildIn.watermark')
+    const type = ctx.getConfig<Undefinable<string>>('picBed.uploader') || ctx.getConfig<Undefinable<string>>('picBed.current') || 'smms'
+    const uploader = ctx.helper.uploader.get(type)
+    if (!uploader && compressOptions) {
+      compressOptions.picBed = 'smms'
+    } else if (compressOptions) {
+      compressOptions.picBed = type
+    }
+    return {
+      compressOptions,
+      watermarkOptions
     }
   }
 
@@ -58,119 +74,68 @@ export class Lifecycle extends EventEmitter {
       ctx.rawInputPath = [] as string[]
       ctx.rawInput = cloneDeep(input)
       ctx.output = [] as IImgInfo[]
-      const compressOptions = ctx.getConfig<IBuildInCompressOptions>('buildIn.compress')
-      const type = ctx.getConfig<Undefinable<string>>('picBed.uploader') || ctx.getConfig<Undefinable<string>>('picBed.current') || 'smms'
-      const uploader = ctx.helper.uploader.get(type)
-      if (!uploader && compressOptions) {
-        compressOptions.picBed = 'smms'
-      } else if (compressOptions) {
-        compressOptions.picBed = type
-      }
-      const watermarkOptions = ctx.getConfig<IBuildInWaterMarkOptions>('buildIn.watermark')
+      const { compressOptions, watermarkOptions } = this.helpGetOption(ctx)
+
       if (compressOptions || watermarkOptions) {
         const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
-        if (!fs.existsSync(tempFilePath)) {
-          fs.mkdirSync(tempFilePath)
-        }
-        const watermarkMsg = 'Add watermark to image'
-        const compressMsg = 'Compress or convert image'
+
         await Promise.allSettled(ctx.input.map(async (item: string, index: number) => {
-          let info: IPathTransformedImgInfo
-          if (isUrl(item)) {
-            ctx.rawInputPath![index] = item
-            info = await getURLFile(item, ctx)
-            if (info.success && info.buffer) {
-              let transformedBuffer
-              let isSkip = false
-              if (needAddWatermark(watermarkOptions, info.extname ?? '')) {
-                if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
-                  const downloadTTFRet = await this.downloadTTF()
-                  if (!downloadTTFRet) {
-                    this.ctx.log.warn('Download ttf file failed, skip add watermark.')
-                    isSkip = true
-                  }
-                }
-                if (!isSkip) {
-                  ctx.log.info(watermarkMsg)
-                  transformedBuffer = await imageAddWaterMark(info.buffer, watermarkOptions, this.ttfPath, ctx.log)
-                }
+          const itemIsUrl = isUrl(item)
+          const info: IPathTransformedImgInfo = itemIsUrl ? await getURLFile(item, ctx) : { success: false }
+          if (itemIsUrl && (!info.success || !info.buffer)) return
+
+          let transformedBuffer: Undefinable<Buffer>
+          let isSkip = false
+          ctx.rawInputPath![index] = item
+          const extention = itemIsUrl ? info.extname || '' : path.extname(item)
+          const fileBuffer: Buffer = itemIsUrl ? info.buffer! : fs.readFileSync(item)
+          if (needAddWatermark(watermarkOptions, extention)) {
+            if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
+              const downloadTTFRet = await this.downloadTTF()
+              if (!downloadTTFRet) {
+                this.ctx.log.warn('Download ttf file failed, skip add watermark.')
+                isSkip = true
               }
-              if (needCompress(compressOptions, info.extname ?? '')) {
-                ctx.log.info(compressMsg)
-                transformedBuffer = await imageProcess(transformedBuffer ?? info.buffer, compressOptions, info.extname ?? '', ctx.log)
-              }
-              if (!transformedBuffer && compressOptions?.isRemoveExif) {
-                ctx.log.info('Remove exif info.')
-                transformedBuffer = await removeExif(info.buffer, info.extname ?? '')
-              }
-              if (transformedBuffer) {
-                let newExt
-                if (compressOptions?.isConvert) {
-                  newExt = getConvertedFormat(compressOptions, info.extname ?? '')
-                } else {
-                  newExt = info.extname ?? ''
-                }
-                newExt = newExt.startsWith('.') ? newExt : `.${newExt}`
-                const tempFile = path.join(tempFilePath, `${info.fileName
-                  ? `${path.basename(info.fileName, path.extname(info.fileName))}${newExt}`
-                  : new Date().getTime()}${newExt}`)
-                ctx.rawInputPath![index] = path.join(path.dirname(item), path.basename(tempFile))
-                fs.writeFileSync(tempFile, transformedBuffer)
-                ctx.input[index] = tempFile
-              }
+            }
+            if (!isSkip) {
+              ctx.log.info(watermarkMsg)
+              transformedBuffer = await imageAddWaterMark(fileBuffer, watermarkOptions!, this.ttfPath, ctx.log)
+            }
+          }
+          if (needCompress(compressOptions, extention)) {
+            ctx.log.info(compressMsg)
+            if (!itemIsUrl && (extention === '.heic' || extention === '.heif')) {
+              const heicResult = await heicConvert({
+                buffer: fileBuffer,
+                format: 'JPEG',
+                quality: 1
+              })
+              const tempHeicConvertFile = path.join(tempFilePath, `${path.basename(item, extention)}.jpg`)
+              fs.writeFileSync(tempHeicConvertFile, Buffer.from(heicResult))
+              transformedBuffer = await imageProcess(fs.readFileSync(tempHeicConvertFile), compressOptions!, '.jpg', ctx.log)
             } else {
-              throw new Error(info.reason)
+              transformedBuffer = await imageProcess(transformedBuffer ?? fileBuffer, compressOptions!, extention, ctx.log)
             }
-          } else {
-            let transformedBuffer
-            ctx.rawInputPath![index] = item
-            let isSkip = false
-            if (needAddWatermark(watermarkOptions, path.extname(item))) {
-              if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
-                const downloadTTFRet = await this.downloadTTF()
-                if (!downloadTTFRet) {
-                  this.ctx.log.warn('Download ttf file failed, skip add watermark.')
-                  isSkip = true
-                }
-              }
-              if (!isSkip) {
-                ctx.log.info(watermarkMsg)
-                transformedBuffer = await imageAddWaterMark(fs.readFileSync(item), watermarkOptions, this.ttfPath, ctx.log)
-              }
-            }
-            if (needCompress(compressOptions, path.extname(item))) {
-              ctx.log.info(compressMsg)
-              if (path.extname(item) === '.heic' || path.extname(item) === '.heif') {
-                const heicBuffer = fs.readFileSync(item)
-                const heicResult = await heicConvert({
-                  buffer: heicBuffer,
-                  format: 'JPEG',
-                  quality: 1
-                })
-                const tempHeicConvertFile = path.join(tempFilePath, `${path.basename(item, path.extname(item))}.jpg`)
-                fs.writeFileSync(tempHeicConvertFile, Buffer.from(heicResult))
-                transformedBuffer = await imageProcess(fs.readFileSync(tempHeicConvertFile), compressOptions, '.jpg', ctx.log)
-              } else {
-                transformedBuffer = await imageProcess(transformedBuffer ?? fs.readFileSync(item), compressOptions, path.extname(item), ctx.log)
-              }
-            }
-            if (!transformedBuffer && compressOptions?.isRemoveExif) {
-              ctx.log.info('Remove exif info.')
-              transformedBuffer = await removeExif(fs.readFileSync(item), path.extname(item))
-            }
-            if (transformedBuffer) {
-              let newExt
-              if (compressOptions?.isConvert) {
-                newExt = getConvertedFormat(compressOptions, path.extname(item))
-              } else {
-                newExt = path.extname(item)
-              }
-              newExt = newExt.startsWith('.') ? newExt : `.${newExt}`
-              const tempFile = path.join(tempFilePath, `${path.basename(item, path.extname(item))}${newExt}`)
-              ctx.rawInputPath![index] = path.join(path.dirname(item), `${path.basename(item, path.extname(item))}${newExt}`)
-              fs.writeFileSync(tempFile, transformedBuffer)
-              ctx.input[index] = tempFile
-            }
+          }
+          if (!transformedBuffer && compressOptions?.isRemoveExif) {
+            ctx.log.info('Remove exif info.')
+            transformedBuffer = await removeExif(fileBuffer, extention)
+          }
+          if (transformedBuffer) {
+            let newExt = compressOptions?.isConvert ? getConvertedFormat(compressOptions, extention) : extention
+            newExt = newExt.startsWith('.') ? newExt : `.${newExt}`
+            const tempFile = itemIsUrl
+              ? path.join(tempFilePath, `${info.fileName
+                ? `${path.basename(info.fileName, path.extname(info.fileName))}`
+                : new Date().getTime()}${newExt}`)
+              : path.join(tempFilePath, `${path.basename(item, extention)}${newExt}`)
+            ctx.rawInputPath![index] = path.join(
+              path.dirname(item),
+              itemIsUrl
+                ? path.basename(tempFile)
+                : `${path.basename(item, extention)}${newExt}`)
+            fs.writeFileSync(tempFile, transformedBuffer)
+            ctx.input[index] = tempFile
           }
         }))
       } else {

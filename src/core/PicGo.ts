@@ -58,9 +58,9 @@ export class PicGo extends EventEmitter implements IPicGo {
   constructor (configPath: string = '') {
     super()
     this.configPath = configPath
-    this.output = []
     this.input = []
     this.rawInput = []
+    this.output = []
     this.helper = {
       transformer: new LifecyclePlugins('transformer'),
       uploader: new LifecyclePlugins('uploader'),
@@ -205,20 +205,16 @@ export class PicGo extends EventEmitter implements IPicGo {
     if (input === undefined || input.length === 0) {
       try {
         const { imgPath, shouldKeepAfterUploading } = await getClipboardImage(this)
+        const cleanup = (): void => {
+          if (!shouldKeepAfterUploading) {
+            fs.remove(imgPath).catch((e) => { this.log.error(e) })
+          }
+        }
         if (imgPath === 'no image') {
           throw new Error('image not found in clipboard')
         } else {
-          this.once(IBuildInEvent.FAILED, () => {
-            if (!shouldKeepAfterUploading) {
-              // 删除 picgo 生成的图片文件，例如 `~/.picgo/20200621205720.png`
-              fs.remove(imgPath).catch((e) => { this.log.error(e) })
-            }
-          })
-          this.once('finished', () => {
-            if (!shouldKeepAfterUploading) {
-              fs.remove(imgPath).catch((e) => { this.log.error(e) })
-            }
-          })
+          this.once(IBuildInEvent.FAILED, cleanup)
+          this.once(IBuildInEvent.FINISHED, cleanup)
           const { output } = await this.lifecycle.start([imgPath])
           return output
         }

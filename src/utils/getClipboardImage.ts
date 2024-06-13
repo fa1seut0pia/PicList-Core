@@ -59,9 +59,7 @@ const platform2ScriptFilename: {
 
 function createImageFolder (ctx: IPicGo): void {
   const imagePath = path.join(ctx.baseDir, CLIPBOARD_IMAGE_FOLDER)
-  if (!fs.existsSync(imagePath)) {
-    fs.mkdirSync(imagePath)
-  }
+  fs.ensureDirSync(imagePath)
 }
 
 // Thanks to vs-picgo: https://github.com/Spades-S/vs-picgo/blob/master/src/extension.ts
