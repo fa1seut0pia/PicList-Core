@@ -3,14 +3,15 @@ import dayjs from 'dayjs'
 import fs from 'fs-extra'
 import path from 'path'
 import util from 'util'
+
 import { ILogType } from '../utils/enum'
-import {
-  type ILogArgvType,
-  type ILogArgvTypeWithError,
-  type Undefinable,
-  type ILogColor,
-  type ILogger,
-  type IPicGo
+import type {
+  ILogArgvType,
+  ILogArgvTypeWithError,
+  Undefinable,
+  ILogColor,
+  ILogger,
+  IPicGo
 } from '../types'
 import { forceNumber, isDev } from '../utils/common'
 

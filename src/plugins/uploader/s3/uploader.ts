@@ -1,19 +1,19 @@
 import {
   S3Client,
-  S3ClientConfig,
   PutObjectCommand,
-  GetObjectCommand,
-  PutObjectCommandOutput,
-} from "@aws-sdk/client-s3"
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+  GetObjectCommand
+} from '@aws-sdk/client-s3'
+import type { S3ClientConfig, PutObjectCommandOutput } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import {
-  NodeHttpHandler,
-  NodeHttpHandlerOptions,
-} from "@smithy/node-http-handler"
-import url from "url"
-import { HttpProxyAgent, HttpsProxyAgent } from "hpagent"
-import { IAwsS3PListUserConfig, IImgInfo } from "../../../types"
-import { extractInfo, getProxyAgent } from "./utils"
+  NodeHttpHandler
+} from '@smithy/node-http-handler'
+import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler'
+
+import url from 'url'
+import type { HttpProxyAgent, HttpsProxyAgent } from 'hpagent'
+import type { IAwsS3PListUserConfig, IImgInfo } from '../../../types'
+import { extractInfo, getProxyAgent } from './utils'
 
 export interface IUploadResult {
   index: number
@@ -24,44 +24,40 @@ export interface IUploadResult {
   eTag?: string
 }
 
-function createS3Client(opts: IAwsS3PListUserConfig): S3Client {
+function createS3Client (opts: IAwsS3PListUserConfig): any {
   let sslEnabled = true
   try {
     const u = new url.URL(opts.endpoint!)
-    sslEnabled = u.protocol === "https:"
+    sslEnabled = u.protocol === 'https:'
   } catch {
     // eslint-disable-next-line no-empty
   }
 
   const httpHandlerOpts: NodeHttpHandlerOptions = {}
   if (sslEnabled) {
-    httpHandlerOpts.httpsAgent = <HttpsProxyAgent>(
-      getProxyAgent(opts.proxy, true, opts.rejectUnauthorized ?? false)
-    )
+    httpHandlerOpts.httpsAgent = getProxyAgent(opts.proxy, true, opts.rejectUnauthorized ?? false) as HttpsProxyAgent
   } else {
-    httpHandlerOpts.httpAgent = <HttpProxyAgent>(
-      getProxyAgent(opts.proxy, false, opts.rejectUnauthorized ?? false)
-    )
+    httpHandlerOpts.httpAgent = getProxyAgent(opts.proxy, false, opts.rejectUnauthorized ?? false) as HttpProxyAgent
   }
 
   const clientOptions: S3ClientConfig = {
-    region: opts.region || "auto",
+    region: opts.region || 'auto',
     endpoint: opts.endpoint || undefined,
     credentials: {
       accessKeyId: opts.accessKeyID,
-      secretAccessKey: opts.secretAccessKey,
+      secretAccessKey: opts.secretAccessKey
     },
     tls: sslEnabled,
     forcePathStyle: opts.pathStyleAccess,
-    requestHandler: new NodeHttpHandler(httpHandlerOpts),
+    requestHandler: new NodeHttpHandler(httpHandlerOpts)
   }
 
   const client = new S3Client(clientOptions)
   return client
 }
 
-interface createUploadTaskOpts {
-  client: S3Client
+interface ICreateUploadTaskOpts {
+  client: any
   bucketName: string
   path: string
   item: IImgInfo
@@ -70,11 +66,11 @@ interface createUploadTaskOpts {
   urlPrefix?: string
 }
 
-async function createUploadTask(
-  opts: createUploadTaskOpts
+async function createUploadTask (
+  opts: ICreateUploadTaskOpts
 ): Promise<IUploadResult> {
   if (!opts.item.buffer && !opts.item.base64Image) {
-    return Promise.reject(new Error("undefined image"))
+    return Promise.reject(new Error('undefined image'))
   }
 
   let body: Buffer | undefined
@@ -93,7 +89,7 @@ async function createUploadTask(
     ACL: opts.acl,
     Body: body,
     ContentType: contentType,
-    ContentEncoding: contentEncoding,
+    ContentEncoding: contentEncoding
   })
 
   let output: PutObjectCommandOutput
@@ -117,15 +113,15 @@ async function createUploadTask(
   return {
     index: opts.index,
     key: opts.path,
-    url: url,
+    url,
     imgURL: url,
     versionId: output.VersionId,
-    eTag: output.ETag,
+    eTag: output.ETag
   }
 }
 
-async function getFileURL(
-  opts: createUploadTaskOpts,
+async function getFileURL (
+  opts: ICreateUploadTaskOpts,
   eTag: string,
   versionId: string
 ): Promise<string> {
@@ -136,12 +132,12 @@ async function getFileURL(
         Bucket: opts.bucketName,
         Key: opts.path,
         IfMatch: eTag,
-        VersionId: versionId,
+        VersionId: versionId
       }),
       { expiresIn: 3600 }
     )
     const urlObject = new url.URL(signedUrl)
-    urlObject.search = ""
+    urlObject.search = ''
     return urlObject.href
   } catch (err) {
     return Promise.reject(err)
@@ -151,5 +147,5 @@ async function getFileURL(
 export default {
   createS3Client,
   createUploadTask,
-  getFileURL,
+  getFileURL
 }

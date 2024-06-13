@@ -1,10 +1,11 @@
-import { type IPicGo, type IPluginConfig, type IWebdavPlistConfig } from '../../types'
-import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
 import fs from 'fs-extra'
 import path from 'path'
 import type { WebDAVClient, WebDAVClientOptions } from 'webdav'
 import { AuthType, createClient } from 'webdav'
+
+import type { IPicGo, IPluginConfig, IWebdavPlistConfig } from '../../types'
+import { IBuildInEvent } from '../../utils/enum'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 import { encodePath, formatPathHelper } from './utils'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {

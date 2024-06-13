@@ -1,4 +1,4 @@
-import { type IPicGo, type IPicGoPlugin } from '../../types'
+import type { IPicGo, IPicGoPlugin } from '../../types'
 import smmsUploader from './smms'
 import tcYunUploader from './tcyun'
 import githubUploader from './github'

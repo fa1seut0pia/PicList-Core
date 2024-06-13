@@ -1,24 +1,31 @@
-import fs from 'fs-extra'
-import path from 'path'
 import { EventEmitter } from 'events'
+import fs from 'fs-extra'
+import { get, set, unset } from 'lodash'
 import { homedir } from 'os'
+import path from 'path'
+
 import Commander from '../lib/Commander'
-import { Logger } from '../lib/Logger'
-import Lifecycle from './Lifecycle'
 import LifecyclePlugins, { setCurrentPluginName } from '../lib/LifecyclePlugins'
+import { Logger } from '../lib/Logger'
+import PluginHandler from '../lib/PluginHandler'
+import PluginLoader from '../lib/PluginLoader'
+import Request from '../lib/Request'
+
+import Lifecycle from './Lifecycle'
+
 import uploaders from '../plugins/uploader'
 import transformers from '../plugins/transformer'
-import PluginLoader from '../lib/PluginLoader'
-import { get, set, unset } from 'lodash'
-import { type IHelper, type IImgInfo, type IConfig, type IPicGo, type IStringKeyMap, type IPluginLoader, type II18nManager, type IPicGoPlugin, type IPicGoPluginInterface, type IRequest } from '../types'
+
 import getClipboardImage from '../utils/getClipboardImage'
-import Request from '../lib/Request'
+
+import { isConfigKeyInBlackList, isInputConfigValid } from '../utils/common'
 import DB from '../utils/db'
-import PluginHandler from '../lib/PluginHandler'
 import { IBuildInEvent, IBusEvent } from '../utils/enum'
 import { eventBus } from '../utils/eventBus'
-import { isConfigKeyInBlackList, isInputConfigValid } from '../utils/common'
+
 import { I18nManager } from '../i18n'
+
+import type { IHelper, IImgInfo, IConfig, IPicGo, IStringKeyMap, IPluginLoader, II18nManager, IPicGoPlugin, IPicGoPluginInterface, IRequest } from '../types'
 
 export class PicGo extends EventEmitter implements IPicGo {
   private _config!: IConfig
@@ -131,6 +138,7 @@ export class PicGo extends EventEmitter implements IPicGo {
 
   getConfig<T> (name?: string): T {
     if (!name) {
+      this._config = this.db.read(true) as IConfig
       return this._config as unknown as T
     } else {
       return get(this._config, name)

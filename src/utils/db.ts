@@ -1,6 +1,6 @@
-import { type IConfig, type IPicGo } from '../types'
+import type { IConfig, IPicGo } from '../types'
 import { JSONStore } from '@picgo/store'
-import { type IJSON } from '@picgo/store/dist/types'
+import type { IJSON } from '@picgo/store/dist/types'
 
 class DB {
   private readonly ctx: IPicGo
@@ -13,7 +13,10 @@ class DB {
       try {
         this.db.set('picBed', {
           uploader: 'smms',
-          current: 'smms'
+          current: 'smms',
+          smms: {
+            token: ''
+          }
         })
       } catch (e: any) {
         this.ctx.log.error(e)

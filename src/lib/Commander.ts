@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Command } from 'commander'
 import inquirer, { type Inquirer } from 'inquirer'
-import { type IPlugin, type ICommander, type IPicGo } from '../types'
+
 import commanders from '../plugins/commander'
 import { getCurrentPluginName } from './LifecyclePlugins'
+
+import type { IPlugin, ICommander, IPicGo } from '../types'
 
 export class Commander implements ICommander {
   private readonly name = 'commander'

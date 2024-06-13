@@ -1,7 +1,7 @@
 import mime from 'mime-types'
 import type { IPicListConfig, IPicGo, IPluginConfig, IOldReqOptionsWithFullResponse } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 
 const postOptions = (options: IPicListConfig, fileName: string, image: Buffer): IOldReqOptionsWithFullResponse => {
   const host = options.host || '127.0.0.1'

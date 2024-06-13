@@ -1,6 +1,7 @@
 module.exports = {
   extends: 'standard-with-typescript',
   parserOptions: {
+    parser: '@typescript-eslint/parser',
     project: './tsconfig.json'
   },
   rules: {

@@ -1,193 +1,193 @@
-
-import uploader, { IUploadResult } from "./s3/uploader"
-import { formatPath } from "./s3/utils"
-import { IAwsS3PListUserConfig, IPicGo, IPluginConfig } from "../../types"
-import { ILocalesKey } from "../../i18n/zh-CN"
+import type { IUploadResult } from './s3/uploader'
+import uploader from './s3/uploader'
+import { formatPath } from './s3/utils'
+import type { IAwsS3PListUserConfig, IPicGo, IPluginConfig } from '../../types'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 
 function formatDisableBucketPrefixToURL (disableBucketPrefixToURL: string | boolean | undefined): boolean {
-  if (typeof disableBucketPrefixToURL === "string") {
-    return disableBucketPrefixToURL.toLowerCase() === "true"
+  if (typeof disableBucketPrefixToURL === 'string') {
+    return disableBucketPrefixToURL.toLowerCase() === 'true'
   }
   return Boolean(disableBucketPrefixToURL)
 }
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
-  const userConfig: IAwsS3PListUserConfig = ctx.getConfig("picBed.aws-s3-plist")
-    if (!userConfig) {
-      throw new Error("Can't find amazon s3 uploader config")
+  const userConfig: IAwsS3PListUserConfig = ctx.getConfig('picBed.aws-s3-plist')
+  if (!userConfig) {
+    throw new Error("Can't find amazon s3 uploader config")
+  }
+  const disableBucketPrefixToURL = formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL)
+  let urlPrefix = userConfig.urlPrefix
+  if (urlPrefix) {
+    urlPrefix = urlPrefix.replace(/\/?$/, '')
+    if (userConfig.pathStyleAccess && !disableBucketPrefixToURL) {
+      urlPrefix += '/' + userConfig.bucketName
     }
-    const disableBucketPrefixToURL = formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL)
-    let urlPrefix = userConfig.urlPrefix
-    if (urlPrefix) {
-      urlPrefix = urlPrefix.replace(/\/?$/, "")
-      if (userConfig.pathStyleAccess && !disableBucketPrefixToURL) {
-        urlPrefix += "/" + userConfig.bucketName
-      }
-    }
+  }
 
-    const client = uploader.createS3Client(userConfig)
-    const output = ctx.output
+  const client = uploader.createS3Client(userConfig)
+  const output = ctx.output
 
-    const tasks = output.map((item, idx) =>
-      uploader.createUploadTask({
-        client,
-        index: idx,
-        bucketName: userConfig.bucketName,
-        path: formatPath(item, userConfig.uploadPath),
-        item: item,
-        acl: userConfig.acl || "public-read",
-        urlPrefix,
-      })
-    )
+  const tasks = output.map(async (item, idx) =>
+    uploader.createUploadTask({
+      client,
+      index: idx,
+      bucketName: userConfig.bucketName,
+      path: formatPath(item, userConfig.uploadPath),
+      item,
+      acl: userConfig.acl || 'public-read',
+      urlPrefix
+    })
+  )
 
-    let results: IUploadResult[]
+  let results: IUploadResult[]
 
-    try {
-      results = await Promise.all(tasks)
-    } catch (err: any) {
-      ctx.log.error("上传到 S3 存储发生错误，请检查网络连接和配置是否正确")
-      ctx.log.error(err)
-      ctx.emit("notification", {
-        title: "S3 存储上传错误",
-        body: "请检查配置是否正确",
-        text: "",
-      })
-      throw err
-    }
+  try {
+    results = await Promise.all(tasks)
+  } catch (err: any) {
+    ctx.log.error('上传到 S3 存储发生错误，请检查网络连接和配置是否正确')
+    ctx.log.error(err)
+    ctx.emit('notification', {
+      title: 'S3 存储上传错误',
+      body: '请检查配置是否正确',
+      text: ''
+    })
+    throw err
+  }
 
-    for (const result of results) {
-      const { index, url, imgURL } = result
-      delete output[index].buffer
-      delete output[index].base64Image
-      output[index].imgUrl = imgURL
-      output[index].url = url
-    }
+  for (const result of results) {
+    const { index, url, imgURL } = result
+    delete output[index].buffer
+    delete output[index].base64Image
+    output[index].imgUrl = imgURL
+    output[index].url = url
+  }
 
-    return ctx
+  return ctx
 }
 
 const config = (ctx: IPicGo): IPluginConfig[] => {
   const defaultConfig: IAwsS3PListUserConfig = {
-    accessKeyID: "",
-    secretAccessKey: "",
-    bucketName: "",
-    uploadPath: "{year}/{month}/{md5}.{extName}",
+    accessKeyID: '',
+    secretAccessKey: '',
+    bucketName: '',
+    uploadPath: '{year}/{month}/{md5}.{extName}',
     pathStyleAccess: false,
     rejectUnauthorized: false,
-    acl: "public-read",
+    acl: 'public-read'
   }
   let userConfig = ctx.getConfig<IAwsS3PListUserConfig>('picBed.aws-s3-plist') || {}
   userConfig = { ...defaultConfig, ...userConfig }
   const config: IPluginConfig[] = [
     {
-      name: "accessKeyID",
-      type: "input",
+      name: 'accessKeyID',
+      type: 'input',
       default: userConfig.accessKeyID,
       required: true,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ACCESSKEYID') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ACCESSKEYID') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_ACCESSKEYID') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_ACCESSKEYID') }
     },
     {
-      name: "secretAccessKey",
-      type: "input",
+      name: 'secretAccessKey',
+      type: 'input',
       default: userConfig.secretAccessKey,
       required: true,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_SECRET_ACCESSKEY') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_SECRET_ACCESSKEY') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_SECRET_ACCESSKEY') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_SECRET_ACCESSKEY') }
     },
     {
-      name: "bucketName",
-      type: "input",
+      name: 'bucketName',
+      type: 'input',
       default: userConfig.bucketName,
       required: true,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_BUCKET') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_BUCKET') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_BUCKET') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_BUCKET') }
     },
     {
-      name: "uploadPath",
-      type: "input",
+      name: 'uploadPath',
+      type: 'input',
       default: userConfig.uploadPath,
       required: true,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_UPLOADPATH') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_UPLOADPATH') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_UPLOADPATH') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_UPLOADPATH') }
     },
     {
-      name: "region",
-      type: "input",
+      name: 'region',
+      type: 'input',
       default: userConfig.region,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_REGION') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_REGION') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_REGION') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_REGION') }
     },
     {
-      name: "endpoint",
-      type: "input",
+      name: 'endpoint',
+      type: 'input',
       default: userConfig.endpoint,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ENDPOINT') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ENDPOINT') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_ENDPOINT') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_ENDPOINT') }
     },
     {
-      name: "proxy",
-      type: "input",
+      name: 'proxy',
+      type: 'input',
       default: userConfig.proxy,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_PROXY') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_PROXY') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_PROXY') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_PROXY') }
     },
     {
-      name: "urlPrefix",
-      type: "input",
+      name: 'urlPrefix',
+      type: 'input',
       default: userConfig.urlPrefix,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_URLPREFIX') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_URLPREFIX') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_URLPREFIX') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_URLPREFIX') }
     },
     {
-      name: "pathStyleAccess",
-      type: "confirm",
+      name: 'pathStyleAccess',
+      type: 'confirm',
       default: userConfig.pathStyleAccess || false,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_PATHSTYLEACCESS') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_PATHSTYLEACCESS') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_PATHSTYLEACCESS') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_PATHSTYLEACCESS') }
     },
     {
-      name: "rejectUnauthorized",
-      type: "confirm",
+      name: 'rejectUnauthorized',
+      type: 'confirm',
       default: userConfig.rejectUnauthorized || false,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_REJECTUNAUTHORIZED') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_REJECTUNAUTHORIZED') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_REJECTUNAUTHORIZED') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_REJECTUNAUTHORIZED') }
     },
     {
-      name: "acl",
-      type: "list",
-      default: userConfig.acl || "public-read",
-      choices: ["private", "public-read", "public-read-write", "authenticated-read", "aws-exec-read", "bucket-owner-read", "bucket-owner-full-control"],
+      name: 'acl',
+      type: 'list',
+      default: userConfig.acl || 'public-read',
+      choices: ['private', 'public-read', 'public-read-write', 'authenticated-read', 'aws-exec-read', 'bucket-owner-read', 'bucket-owner-full-control'],
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ACL') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_ACL') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_ACL') },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_ACL') }
     },
     {
-      name: "disableBucketPrefixToURL",
-      type: "confirm",
+      name: 'disableBucketPrefixToURL',
+      type: 'confirm',
       default: formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL) || false,
       required: false,
       get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_DISABLEBUCKETPREFIXTOURL') },
       get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_DISABLEBUCKETPREFIXTOURL') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_DISABLEBUCKETPREFIXTOURL') },
-    },
+      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST_MESSAGE_DISABLEBUCKETPREFIXTOURL') }
+    }
   ]
   return config
 }

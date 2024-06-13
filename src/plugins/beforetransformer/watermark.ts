@@ -1,5 +1,5 @@
-import { type IPicGo, type IPluginConfig, type IBuildInWaterMarkOptions } from '../../types'
-import { type ILocalesKey } from '../../i18n/zh-CN'
+import type { IPicGo, IPluginConfig, IBuildInWaterMarkOptions } from '../../types'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 
 const config = (ctx: IPicGo): IPluginConfig[] => {
   const userConfig = ctx.getConfig<IBuildInWaterMarkOptions>('buildIn.watermark') || {}

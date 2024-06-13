@@ -1,11 +1,12 @@
+import dayjs from 'dayjs'
+
 import {
   isUrl,
   getImageSize,
   getFSFile,
   getURLFile
 } from '../../utils/common'
-import { type IPicGo, type IPathTransformedImgInfo, type IImgInfo, type IImgSize } from '../../types'
-import dayjs from 'dayjs'
+import type { IPicGo, IPathTransformedImgInfo, IImgInfo, IImgSize } from '../../types'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const results: IImgInfo[] = ctx.output

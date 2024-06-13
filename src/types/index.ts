@@ -1,7 +1,7 @@
-import { type Command } from 'commander'
-import { type Inquirer } from 'inquirer'
-import { type FormatEnum, type GravityEnum } from 'sharp'
-import { type IRequestPromiseOptions } from './oldRequest'
+import type { Command } from 'commander'
+import type { Inquirer } from 'inquirer'
+import type { FormatEnum, GravityEnum } from 'sharp'
+import type { IRequestPromiseOptions } from './oldRequest'
 
 export interface IPicGo extends NodeJS.EventEmitter {
   /**

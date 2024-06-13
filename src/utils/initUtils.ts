@@ -1,9 +1,11 @@
 import match from 'minimatch'
-import { type IPicGo, type IOptions, type IFileTree } from '../types'
+
 import fs from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
 import ejs from 'ejs'
+
+import type { IPicGo, IOptions, IFileTree } from '../types'
 
 /**
  * Generate template files to destination files.

@@ -1,8 +1,8 @@
-import qiniu from 'qiniu'
-import { type IPluginConfig, type IQiniuConfig, type IPicGo, type IOldReqOptions } from '../../types'
-import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
 import mime from 'mime-types'
+import qiniu from 'qiniu'
+import type { IPluginConfig, IQiniuConfig, IPicGo, IOldReqOptions } from '../../types'
+import { IBuildInEvent } from '../../utils/enum'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 
 function postOptions (options: IQiniuConfig, fileName: string, token: string, imgBase64: string): IOldReqOptions {
   const area = selectArea(options.area || 'z0')

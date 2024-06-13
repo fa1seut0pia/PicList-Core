@@ -1,17 +1,17 @@
 import spawn from 'cross-spawn'
-import {
-  type IResult,
-  type IProcessEnv,
-  type IPluginProcessResult,
-  type IPluginHandler,
-  type IPluginHandlerOptions,
-  type Undefinable,
-  type IPicGo,
-  type IPluginHandlerResult
+import type {
+  IResult,
+  IProcessEnv,
+  IPluginProcessResult,
+  IPluginHandler,
+  IPluginHandlerOptions,
+  Undefinable,
+  IPicGo,
+  IPluginHandlerResult
 } from '../types'
 import { IBuildInEvent } from '../utils/enum'
 import { getProcessPluginName, getNormalPluginName } from '../utils/common'
-import { type ILocalesKey } from '../i18n/zh-CN'
+import type { ILocalesKey } from '../i18n/zh-CN'
 
 export class PluginHandler implements IPluginHandler {
   // Thanks to feflow -> https://github.com/feflow/feflow/blob/master/lib/internal/install/plugin.js

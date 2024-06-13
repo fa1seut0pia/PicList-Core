@@ -1,4 +1,4 @@
-import { type IPicGo, type IPluginConfig, type IStringKeyMap } from '../../types'
+import type { IPicGo, IPluginConfig, IStringKeyMap } from '../../types'
 import compress from '../beforetransformer/compress'
 import watermark from '../beforetransformer/watermark'
 import rename from '../beforeupload/buildInRename'

@@ -1,9 +1,9 @@
-import { type IPicGo, type IPluginConfig, type IAliyunConfig, type IOldReqOptionsWithFullResponse } from '../../types'
 import crypto from 'crypto'
 import mime from 'mime-types'
 import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 import { encodePath, formatPathHelper } from './utils'
+import type { IPicGo, IPluginConfig, IAliyunConfig, IOldReqOptionsWithFullResponse } from '../../types'
 
 const getCurrentUTCDate = (): string => new Date().toUTCString()
 

@@ -1,13 +1,14 @@
+import axios from 'axios'
 import { EventEmitter } from 'events'
-import { type IBuildInWaterMarkOptions, type IBuildInCompressOptions, type ILifecyclePlugins, type IPathTransformedImgInfo, type IPicGo, type IPlugin, type Undefinable, type IImgInfo } from '../types'
+import fs from 'fs-extra'
+import heicConvert from 'heic-convert'
+import { cloneDeep } from 'lodash'
+import path from 'path'
+
+import type { IBuildInWaterMarkOptions, IBuildInCompressOptions, ILifecyclePlugins, IPathTransformedImgInfo, IPicGo, IPlugin, Undefinable, IImgInfo } from '../types'
 import { getURLFile, handleUrlEncode, imageProcess, isUrl, needCompress, needAddWatermark, imageAddWaterMark, removeExif, renameFileNameWithCustomString, getConvertedFormat } from '../utils/common'
 import { IBuildInEvent } from '../utils/enum'
 import { createContext } from '../utils/createContext'
-import path from 'path'
-import fs from 'fs-extra'
-import axios from 'axios'
-import { cloneDeep } from 'lodash'
-import heicConvert from 'heic-convert'
 
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo

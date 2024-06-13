@@ -1,6 +1,6 @@
-import { type IPicGo, type IPluginConfig, type IImgurConfig, type IOldReqOptions, type IFullResponse } from '../../types'
+import type { IPicGo, IPluginConfig, IImgurConfig, IOldReqOptions, IFullResponse } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 
 const formatAccessToken = (accessToken: string): string => accessToken ? accessToken.startsWith('Bearer') ? accessToken : `Bearer ${accessToken}` : ''
 

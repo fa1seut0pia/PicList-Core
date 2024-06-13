@@ -1,10 +1,12 @@
-import { type IPicGo, type IPluginConfig, type IUpyunConfig, type IOldReqOptionsWithFullResponse } from '../../types'
 import crypto from 'crypto'
-import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
-import { safeParse } from '../../utils/common'
 import mime from 'mime-types'
+
+import { IBuildInEvent } from '../../utils/enum'
+import type { ILocalesKey } from '../../i18n/zh-CN'
+import { safeParse } from '../../utils/common'
+
 import { encodePath, formatPathHelper } from './utils'
+import type { IPicGo, IPluginConfig, IUpyunConfig, IOldReqOptionsWithFullResponse } from '../../types'
 
 // generate COS signature string
 const generateSignature = (options: IUpyunConfig, fileName: string): string => {

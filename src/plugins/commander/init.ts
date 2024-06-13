@@ -1,11 +1,12 @@
 import chalk from 'chalk'
-import path from 'path'
-import fs from 'fs-extra'
-import { generate } from '../../utils/initUtils'
-import { homedir } from 'os'
 import download from 'download-git-repo'
-import { type IOptions, type IPlugin, type IPicGo } from '../../types'
+import fs from 'fs-extra'
+import { homedir } from 'os'
+import path from 'path'
 import rm from 'rimraf'
+
+import { generate } from '../../utils/initUtils'
+import type { IOptions, IPlugin, IPicGo } from '../../types'
 
 const run = (ctx: IPicGo, options: IOptions): void => {
   // const name = options.inPlace ? path.relative('../', process.cwd()) : options.project

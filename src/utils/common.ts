@@ -1,20 +1,21 @@
 import fs from 'fs-extra'
 import path from 'path'
 import { imageSize } from 'image-size'
-import {
-  type IImgSize,
-  type IPathTransformedImgInfo,
-  type IPluginNameType,
-  type ILogger,
-  type IPicGo,
-  type IBuildInCompressOptions,
-  type IBuildInWaterMarkOptions
-} from '../types'
 import { URL } from 'url'
 import TextToSVG from 'text-to-svg'
 import sharp from 'sharp'
 import crypto from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
+
+import type {
+  IImgSize,
+  IPathTransformedImgInfo,
+  IPluginNameType,
+  ILogger,
+  IPicGo,
+  IBuildInCompressOptions,
+  IBuildInWaterMarkOptions
+} from '../types'
 
 export function randomStringGenerator (length: number): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'

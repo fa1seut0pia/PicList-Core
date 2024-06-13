@@ -1,9 +1,10 @@
-import { type IPicGo, type IPluginConfig, type ITelegraphConfig, type IOldReqOptions } from '../../types'
-import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
 import path from 'path'
 import fs from 'fs-extra'
 import type { ReadStream } from 'fs'
+
+import type { IPicGo, IPluginConfig, ITelegraphConfig, IOldReqOptions } from '../../types'
+import { IBuildInEvent } from '../../utils/enum'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 
 const postOptions = async (options: ITelegraphConfig, image: ReadStream): Promise<IOldReqOptions> => {
   const requestOptions: IOldReqOptions = {

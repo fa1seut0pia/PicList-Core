@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import resolve from 'resolve'
 import { IBuildInEvent } from '../utils/enum'
-import { type IPicGo, type IPicGoPlugin, type IPluginLoader, type IPicGoPluginInterface } from '../types/index'
+import type { IPicGo, IPicGoPlugin, IPluginLoader, IPicGoPluginInterface } from '../types/index'
 import { setCurrentPluginName } from './LifecyclePlugins'
 
 /**

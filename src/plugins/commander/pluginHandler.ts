@@ -1,4 +1,4 @@
-import { type IPicGo, type IPlugin } from '../../types'
+import type { IPicGo, IPlugin } from '../../types'
 
 type actionFunc = (plugins: string[], program: any) => void
 

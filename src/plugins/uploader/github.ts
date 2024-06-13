@@ -1,7 +1,8 @@
-import { type IPicGo, type IPluginConfig, type IGithubConfig, type IOldReqOptionsWithJSON } from '../../types'
-import { IBuildInEvent } from '../../utils/enum'
-import { type ILocalesKey } from '../../i18n/zh-CN'
 import mime from 'mime-types'
+
+import type { IPicGo, IPluginConfig, IGithubConfig, IOldReqOptionsWithJSON } from '../../types'
+import { IBuildInEvent } from '../../utils/enum'
+import type { ILocalesKey } from '../../i18n/zh-CN'
 import { encodePath, formatPathHelper } from './utils'
 
 function buildGithubApiUrl (repo: string, path: string, fileName: string, extra: string = ''): string {

@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/promise-function-async */
-import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
-import { type IPicGo, type Undefinable, type IConfigChangePayload, type IConfig, type IRequestConfig, type IOldReqOptions, type IResponse, type IFullResponse, type IRequest } from '../types'
-import { IBusEvent } from '../utils/enum'
-import { eventBus } from '../utils/eventBus'
-import { URL } from 'url'
+import axios from 'axios'
+import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import FormData from 'form-data'
 import https from 'https'
 import tunnel from 'tunnel'
+import { URL } from 'url'
+
+import type { IPicGo, Undefinable, IConfigChangePayload, IConfig, IRequestConfig, IOldReqOptions, IResponse, IFullResponse, IRequest } from '../types'
+import { IBusEvent } from '../utils/enum'
+import { eventBus } from '../utils/eventBus'
+
 const httpsAgent = new https.Agent({
   maxVersion: 'TLSv1.2',
   minVersion: 'TLSv1.2',

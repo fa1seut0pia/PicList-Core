@@ -1,4 +1,4 @@
-import { type IPlugin, type IPicGo, type IStringKeyMap } from '../../types'
+import type { IPlugin, IPicGo, IStringKeyMap } from '../../types'
 
 const i18n: IPlugin = {
   handle: (ctx: IPicGo) => {
