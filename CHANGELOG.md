@@ -1,3 +1,18 @@
+## :tada: 1.8.9 (2024-06-13)
+
+
+### :sparkles: Features
+
+* **custom:** refresh before getconfig ([387abe7](https://github.com/Kuingsmile/PicList-Core/commit/387abe7))
+* **custom:** support delete for repeat image when using sm.ms ([6b512ad](https://github.com/Kuingsmile/PicList-Core/commit/6b512ad))
+
+
+### :bug: Bug Fixes
+
+* **custom:** fix url upload bug ([fb510de](https://github.com/Kuingsmile/PicList-Core/commit/fb510de))
+
+
+
 ## :tada: 0.5.3 (2023-04-29)
 
 
