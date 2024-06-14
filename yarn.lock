@@ -3199,10 +3199,10 @@ dateformat@^3.0.0:
   resolved "https://registry.npmjs.org/dateformat/-/dateformat-3.0.3.tgz"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dayjs@^1.11.10:
-  version "1.11.10"
-  resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
-  integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
+dayjs@^1.11.11:
+  version "1.11.11"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.11.tgz#dfe0e9d54c5f8b68ccf8ca5f72ac603e7e5ed59e"
+  integrity sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg==
 
 debug@^2.6.9:
   version "2.6.9"
@@ -5973,10 +5973,10 @@ node-bump-version@^1.0.2:
     ora "^5.4.1"
     q "^1.5.1"
 
-node-ssh-no-cpu-features@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/node-ssh-no-cpu-features/-/node-ssh-no-cpu-features-1.0.1.tgz#e0a54fa16d34f44dfa307b1c52d592d4b891e65c"
-  integrity sha512-dfxNdHpeB2Yapskc5PBZCnhRmL1bdOYZX/N9PECR0d1I8U2PlPB4VfshmNJIw/l3BuGNhFquu5Tu6z/1lnWmIA==
+node-ssh-no-cpu-features@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/node-ssh-no-cpu-features/-/node-ssh-no-cpu-features-2.0.0.tgz#79299f47d29debf2c7b9742029bf15e8ac0641fa"
+  integrity sha512-/X0Oq5YSB953MTamAwDOIhh+QdkLK1cTKl23VmkJg5XBDY8kx2yn72OvBsrjqR+2Aw7MN+GydAhHdXW2PMMvgQ==
   dependencies:
     "@types/ssh2" "^1.11.10"
     is-stream "^2.0.0"
@@ -5984,7 +5984,7 @@ node-ssh-no-cpu-features@^1.0.1:
     sb-promise-queue "^2.1.0"
     sb-scandir "^3.1.0"
     shell-escape "^0.2.0"
-    ssh2-no-cpu-features "^1.0.0"
+    ssh2-no-cpu-features "^2.0.0"
 
 normalize-package-data@^2.3.2, normalize-package-data@^2.5.0:
   version "2.5.0"
@@ -7255,10 +7255,10 @@ sprintf-js@~1.0.2:
   resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
 
-ssh2-no-cpu-features@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/ssh2-no-cpu-features/-/ssh2-no-cpu-features-1.0.0.tgz#641a8ea5331638ea9bfdee9e53f38ebfc46bf8cf"
-  integrity sha512-94HbS6PbjOvGYnWQ0OFlGLWp3yw6BfSAmpVlCRvsqqyfWa86gCorpnXFJLLJklnfCbp6UiZhEKzm3W+8vKCHqw==
+ssh2-no-cpu-features@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ssh2-no-cpu-features/-/ssh2-no-cpu-features-2.0.0.tgz#5ae1358979e57e7c72c4c1c71b826908496d4a60"
+  integrity sha512-8Y2srJtr9sNwcUpTglgwAtjMWa+zr8RxtfIo4TK4O99ZxbxXqkBfecOsfw3TJTqrakETWNFLrwQibDJoumt82w==
   dependencies:
     asn1 "^0.2.6"
     bcrypt-pbkdf "^1.0.2"
