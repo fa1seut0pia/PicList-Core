@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { EventEmitter } from 'events'
-import fs from 'fs-extra'
+import fs, { emptyDirSync, ensureDirSync } from 'fs-extra'
 import heicConvert from 'heic-convert'
 import { cloneDeep } from 'lodash'
 import path from 'path'
 
-import type { IBuildInWaterMarkOptions, IBuildInCompressOptions, ILifecyclePlugins, IPathTransformedImgInfo, IPicGo, IPlugin, Undefinable, IImgInfo } from '../types'
+import { IBuildInWaterMarkOptions, IBuildInCompressOptions, ILifecyclePlugins, IPathTransformedImgInfo, IPicGo, IPlugin, Undefinable, IImgInfo } from '../types'
 import { getURLFile, handleUrlEncode, imageProcess, isUrl, needCompress, needAddWatermark, imageAddWaterMark, removeExif, renameFileNameWithCustomString, getConvertedFormat } from '../utils/common'
 import { IBuildInEvent } from '../utils/enum'
 import { createContext } from '../utils/createContext'
@@ -17,19 +17,19 @@ export class Lifecycle extends EventEmitter {
   private readonly ttfLink: string = 'https://release.piclist.cn/simhei.ttf'
   ttfPath: string
 
-  constructor (ctx: IPicGo) {
+  constructor(ctx: IPicGo) {
     super()
     this.ctx = ctx
     const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
     const imgFilePath = path.join(ctx.baseDir, 'imgTemp')
     this.ttfPath = path.join(ctx.baseDir, 'assets', 'simhei.ttf')
-    fs.ensureDirSync(imgFilePath)
-    fs.emptyDirSync(tempFilePath)
+    ensureDirSync(imgFilePath)
+    emptyDirSync(tempFilePath)
   }
 
-  async downloadTTF (): Promise<boolean> {
+  async downloadTTF(): Promise<boolean> {
     const outputDir = path.dirname(this.ttfPath)
-    fs.ensureDirSync(outputDir)
+    ensureDirSync(outputDir)
     if (fs.existsSync(this.ttfPath)) return true
     this.ctx.log.info('Download ttf file.')
     try {
@@ -43,7 +43,7 @@ export class Lifecycle extends EventEmitter {
     }
   }
 
-  helpGetOption (ctx: IPicGo): {
+  helpGetOption(ctx: IPicGo): {
     compressOptions: Undefinable<IBuildInCompressOptions>
     watermarkOptions: Undefinable<IBuildInWaterMarkOptions>
   } {
@@ -62,7 +62,7 @@ export class Lifecycle extends EventEmitter {
     }
   }
 
-  async start (input: any[]): Promise<IPicGo> {
+  async start(input: any[]): Promise<IPicGo> {
     // ensure every upload process has an unique context
     const ctx = createContext(this.ctx)
     try {
@@ -179,7 +179,7 @@ export class Lifecycle extends EventEmitter {
     }
   }
 
-  private async beforeTransform (ctx: IPicGo): Promise<IPicGo> {
+  private async beforeTransform(ctx: IPicGo): Promise<IPicGo> {
     ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 0)
     ctx.emit(IBuildInEvent.BEFORE_TRANSFORM, ctx)
     ctx.log.info('Before transform')
@@ -187,7 +187,7 @@ export class Lifecycle extends EventEmitter {
     return ctx
   }
 
-  private async doTransform (ctx: IPicGo): Promise<IPicGo> {
+  private async doTransform(ctx: IPicGo): Promise<IPicGo> {
     ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 30)
     const type = ctx.getConfig<Undefinable<string>>('picBed.transformer') || 'path'
     let currentTransformer = type
@@ -202,7 +202,7 @@ export class Lifecycle extends EventEmitter {
     return ctx
   }
 
-  private async beforeUpload (ctx: IPicGo): Promise<IPicGo> {
+  private async beforeUpload(ctx: IPicGo): Promise<IPicGo> {
     ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 60)
     ctx.log.info('Before upload')
     ctx.emit(IBuildInEvent.BEFORE_UPLOAD, ctx)
@@ -210,7 +210,7 @@ export class Lifecycle extends EventEmitter {
     return ctx
   }
 
-  private async doUpload (ctx: IPicGo): Promise<IPicGo> {
+  private async doUpload(ctx: IPicGo): Promise<IPicGo> {
     let type = ctx.getConfig<Undefinable<string>>('picBed.uploader') || ctx.getConfig<Undefinable<string>>('picBed.current') || 'smms'
     let uploader = ctx.helper.uploader.get(type)
     let currentTransformer = type
@@ -228,7 +228,7 @@ export class Lifecycle extends EventEmitter {
     return ctx
   }
 
-  private async afterUpload (ctx: IPicGo): Promise<IPicGo> {
+  private async afterUpload(ctx: IPicGo): Promise<IPicGo> {
     ctx.emit(IBuildInEvent.AFTER_UPLOAD, ctx)
     ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 100)
     await this.handlePlugins(ctx.helper.afterUploadPlugins, ctx)
@@ -250,7 +250,7 @@ export class Lifecycle extends EventEmitter {
     return ctx
   }
 
-  private async handlePlugins (lifeCyclePlugins: ILifecyclePlugins, ctx: IPicGo): Promise<IPicGo> {
+  private async handlePlugins(lifeCyclePlugins: ILifecyclePlugins, ctx: IPicGo): Promise<IPicGo> {
     const plugins = lifeCyclePlugins.getList()
     const pluginNames = lifeCyclePlugins.getIdList()
     const lifeCycleName = lifeCyclePlugins.getName()

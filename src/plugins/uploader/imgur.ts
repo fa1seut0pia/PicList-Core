@@ -1,6 +1,6 @@
-import type { IPicGo, IPluginConfig, IImgurConfig, IOldReqOptions, IFullResponse } from '../../types'
+import { IPicGo, IPluginConfig, IImgurConfig, IOldReqOptions, IFullResponse } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
-import type { ILocalesKey } from '../../i18n/zh-CN'
+import { ILocalesKey } from '../../i18n/zh-CN'
 
 const formatAccessToken = (accessToken: string): string => accessToken ? accessToken.startsWith('Bearer') ? accessToken : `Bearer ${accessToken}` : ''
 
@@ -115,45 +115,45 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'clientId',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_CLIENTID') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_CLIENTID') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_CLIENTID') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_CLIENTID') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_CLIENTID') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_CLIENTID') },
       default: userConfig.clientId || '',
       required: false
     },
     {
       name: 'username',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_USERNAME') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_USERNAME') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_USERNAME') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_USERNAME') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_USERNAME') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_USERNAME') },
       default: userConfig.username || '',
       required: false
     },
     {
       name: 'accessToken',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ACCESS_TOKEN') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ACCESS_TOKEN') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_ACCESS_TOKEN') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ACCESS_TOKEN') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ACCESS_TOKEN') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_ACCESS_TOKEN') },
       default: userConfig.accessToken || '',
       required: false
     },
     {
       name: 'album',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ALBUM') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ALBUM') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_ALBUM') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ALBUM') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_ALBUM') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_ALBUM') },
       default: userConfig.album || '',
       required: false
     },
     {
       name: 'proxy',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_PROXY') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_PROXY') },
       default: userConfig.proxy || '',
       required: false
     }
@@ -161,9 +161,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
   return config
 }
 
-export default function register (ctx: IPicGo): void {
+export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('imgur', {
-    get name () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR') },
+    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR') },
     handle,
     config
   })

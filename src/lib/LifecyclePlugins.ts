@@ -1,4 +1,4 @@
-import type { IPlugin, ILifecyclePlugins } from '../types'
+import { IPlugin, ILifecyclePlugins } from '../types'
 
 export class LifecyclePlugins implements ILifecyclePlugins {
   static currentPlugin: string | null
@@ -6,13 +6,13 @@ export class LifecyclePlugins implements ILifecyclePlugins {
   private readonly pluginIdMap: Map<string, string[]>
   private readonly name: string
 
-  constructor (name: string) {
+  constructor(name: string) {
     this.name = name
     this.list = new Map()
     this.pluginIdMap = new Map()
   }
 
-  register (id: string, plugin: IPlugin): void {
+  register(id: string, plugin: IPlugin): void {
     if (!id) throw new TypeError('id is required!')
     if (typeof plugin.handle !== 'function') throw new TypeError('plugin.handle must be a function!')
     if (this.list.has(id)) throw new TypeError(`${this.name} duplicate id: ${id}!`)
@@ -26,7 +26,7 @@ export class LifecyclePlugins implements ILifecyclePlugins {
     }
   }
 
-  unregister (pluginName: string): void {
+  unregister(pluginName: string): void {
     if (this.pluginIdMap.has(pluginName)) {
       const pluginList = this.pluginIdMap.get(pluginName)
       pluginList?.forEach((plugin: string) => {
@@ -35,19 +35,19 @@ export class LifecyclePlugins implements ILifecyclePlugins {
     }
   }
 
-  getName (): string {
+  getName(): string {
     return this.name
   }
 
-  get (id: string): IPlugin | undefined {
+  get(id: string): IPlugin | undefined {
     return this.list.get(id)
   }
 
-  getList (): IPlugin[] {
+  getList(): IPlugin[] {
     return [...this.list.values()]
   }
 
-  getIdList (): string[] {
+  getIdList(): string[] {
     return [...this.list.keys()]
   }
 }

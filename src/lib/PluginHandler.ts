@@ -1,5 +1,5 @@
-import spawn from 'cross-spawn'
-import type {
+import { spawn } from 'cross-spawn'
+import {
   IResult,
   IProcessEnv,
   IPluginProcessResult,
@@ -11,16 +11,16 @@ import type {
 } from '../types'
 import { IBuildInEvent } from '../utils/enum'
 import { getProcessPluginName, getNormalPluginName } from '../utils/common'
-import type { ILocalesKey } from '../i18n/zh-CN'
+import { ILocalesKey } from '../i18n/zh-CN'
 
 export class PluginHandler implements IPluginHandler {
   // Thanks to feflow -> https://github.com/feflow/feflow/blob/master/lib/internal/install/plugin.js
   private readonly ctx: IPicGo
-  constructor (ctx: IPicGo) {
+  constructor(ctx: IPicGo) {
     this.ctx = ctx
   }
 
-  async install (plugins: string[], options: IPluginHandlerOptions = {}, env?: IProcessEnv): Promise<IPluginHandlerResult<boolean>> {
+  async install(plugins: string[], options: IPluginHandlerOptions = {}, env?: IProcessEnv): Promise<IPluginHandlerResult<boolean>> {
     const installedPlugins: string[] = []
     const processPlugins = plugins
       .map((item: string) => handlePluginNameProcess(this.ctx, item))
@@ -101,7 +101,7 @@ export class PluginHandler implements IPluginHandler {
     }
   }
 
-  async uninstall (plugins: string[]): Promise<IPluginHandlerResult<boolean>> {
+  async uninstall(plugins: string[]): Promise<IPluginHandlerResult<boolean>> {
     const processPlugins = plugins.map((item: string) => handlePluginNameProcess(this.ctx, item)).filter(item => item.success)
     const pkgNameList = processPlugins.map(item => item.pkgName)
     if (pkgNameList.length > 0) {
@@ -153,7 +153,7 @@ export class PluginHandler implements IPluginHandler {
     }
   }
 
-  async update (plugins: string[], options: IPluginHandlerOptions = {}, env?: IProcessEnv): Promise<IPluginHandlerResult<boolean>> {
+  async update(plugins: string[], options: IPluginHandlerOptions = {}, env?: IProcessEnv): Promise<IPluginHandlerResult<boolean>> {
     const processPlugins = plugins.map((item: string) => handlePluginNameProcess(this.ctx, item)).filter(item => item.success)
     const pkgNameList = processPlugins.map(item => item.pkgName)
     if (pkgNameList.length > 0) {
@@ -202,7 +202,7 @@ export class PluginHandler implements IPluginHandler {
     }
   }
 
-  private async execCommand (cmd: string, modules: string[], where: string, options: IPluginHandlerOptions = {}, env: IProcessEnv = {}): Promise<IResult> {
+  private async execCommand(cmd: string, modules: string[], where: string, options: IPluginHandlerOptions = {}, env: IProcessEnv = {}): Promise<IResult> {
     // options first
     const registry = options.registry || this.ctx.getConfig<Undefinable<string>>('settings.registry')
     const proxy = options.proxy || this.ctx.getConfig<Undefinable<string>>('settings.proxy')

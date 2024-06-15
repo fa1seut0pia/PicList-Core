@@ -1,11 +1,11 @@
 import match from 'minimatch'
 
-import fs from 'fs-extra'
+import fs, { ensureDirSync } from 'fs-extra'
 import path from 'path'
 import globby from 'globby'
-import ejs from 'ejs'
+import { render as ejsRender } from 'ejs'
 
-import type { IPicGo, IOptions, IFileTree } from '../types'
+import { IPicGo, IOptions, IFileTree } from '../types'
 
 /**
  * Generate template files to destination files.
@@ -91,7 +91,7 @@ const render = (files: string[], source: string, options: any): any => {
   const fileTree: IFileTree = {}
   files.forEach((filePath: string): void => {
     const file = fs.readFileSync(path.join(source, filePath), 'utf8')
-    const content = ejs.render(file, options)
+    const content = ejsRender(file, options)
     if (Buffer.isBuffer(content) || /[^\s]/.test(content)) {
       fileTree[filePath] = content
     }
@@ -107,7 +107,7 @@ const render = (files: string[], source: string, options: any): any => {
 const writeFileTree = (dir: string, files: any): void => {
   Object.keys(files).forEach((name: string) => {
     const filePath = path.join(dir, name)
-    fs.ensureDirSync(path.dirname(filePath))
+    ensureDirSync(path.dirname(filePath))
     fs.writeFileSync(filePath, files[name])
   })
 }

@@ -1,11 +1,11 @@
 import chalk from 'chalk'
 import dayjs from 'dayjs'
-import fs from 'fs-extra'
+import fs, { createFileSync } from 'fs-extra'
 import path from 'path'
 import util from 'util'
 
 import { ILogType } from '../utils/enum'
-import type {
+import {
   ILogArgvType,
   ILogArgvTypeWithError,
   Undefinable,
@@ -26,11 +26,11 @@ export class Logger implements ILogger {
   private readonly ctx: IPicGo
   private logLevel!: string | string[]
   private logPath!: string
-  constructor (ctx: IPicGo) {
+  constructor(ctx: IPicGo) {
     this.ctx = ctx
   }
 
-  private handleLog (type: ILogType, ...msg: ILogArgvTypeWithError[]): void {
+  private handleLog(type: ILogType, ...msg: ILogArgvTypeWithError[]): void {
     // check config.silent
     this.logLevel = this.ctx.getConfig('settings.logLevel')
     if (!this.ctx.getConfig<Undefinable<string>>('silent') && this.checkLogLevel(type, this.logLevel)) {
@@ -56,7 +56,7 @@ export class Logger implements ILogger {
     }
   }
 
-  private checkLogFileIsLarge (logPath: string): {
+  private checkLogFileIsLarge(logPath: string): {
     isLarge: boolean
     logFileSize?: number
     logFileSizeLimit?: number
@@ -75,14 +75,14 @@ export class Logger implements ILogger {
     }
   }
 
-  private recreateLogFile (logPath: string): void {
+  private recreateLogFile(logPath: string): void {
     if (fs.existsSync(logPath)) {
       fs.unlinkSync(logPath)
-      fs.createFileSync(logPath)
+      createFileSync(logPath)
     }
   }
 
-  private handleWriteLog (logPath: string, type: string, ...msg: ILogArgvTypeWithError[]): void {
+  private handleWriteLog(logPath: string, type: string, ...msg: ILogArgvTypeWithError[]): void {
     try {
       let log = `${dayjs().format('YYYY-MM-DD HH:mm:ss')} [PicList ${type.toUpperCase()}] `
       msg.forEach((item: ILogArgvTypeWithError) => {
@@ -103,7 +103,7 @@ export class Logger implements ILogger {
     }
   }
 
-  private checkLogLevel (type: string, level: undefined | string | string[]): boolean {
+  private checkLogLevel(type: string, level: undefined | string | string[]): boolean {
     if (level === undefined || level === 'all') {
       return true
     }
@@ -114,23 +114,23 @@ export class Logger implements ILogger {
     }
   }
 
-  success (...msg: ILogArgvType[]): void {
+  success(...msg: ILogArgvType[]): void {
     this.handleLog(ILogType.success, ...msg)
   }
 
-  info (...msg: ILogArgvType[]): void {
+  info(...msg: ILogArgvType[]): void {
     this.handleLog(ILogType.info, ...msg)
   }
 
-  error (...msg: ILogArgvTypeWithError[]): void {
+  error(...msg: ILogArgvTypeWithError[]): void {
     this.handleLog(ILogType.error, ...msg)
   }
 
-  warn (...msg: ILogArgvType[]): void {
+  warn(...msg: ILogArgvType[]): void {
     this.handleLog(ILogType.warn, ...msg)
   }
 
-  debug (...msg: ILogArgvType[]): void {
+  debug(...msg: ILogArgvType[]): void {
     if (isDev()) {
       this.handleLog(ILogType.info, ...msg)
     }

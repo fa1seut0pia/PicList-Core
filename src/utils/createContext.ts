@@ -1,4 +1,4 @@
-import type { IPicGo } from '../types'
+import { IPicGo } from '../types'
 
 /**
  * create an unique context for each upload process

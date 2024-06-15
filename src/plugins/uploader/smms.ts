@@ -1,7 +1,7 @@
 import axios from 'axios'
-import type { IPicGo, IPluginConfig, ISmmsConfig, IOldReqOptions } from '../../types'
+import { IPicGo, IPluginConfig, ISmmsConfig, IOldReqOptions } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
-import type { ILocalesKey } from '../../i18n/zh-CN'
+import { ILocalesKey } from '../../i18n/zh-CN'
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ''): IOldReqOptions => {
   let domain = backupDomain || 'sm.ms'
@@ -90,19 +90,19 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
       name: 'token',
       message: 'api token',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN') },
       default: userConfig.token || '',
       required: true
     },
     {
       name: 'backupDomain',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN') },
-      get message () {
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN') },
+      get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_MESSAGE_BACKUP_DOMAIN')
       },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN') },
       default: userConfig.backupDomain || '',
       required: false
     }
@@ -110,9 +110,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
   return config
 }
 
-export default function register (ctx: IPicGo): void {
+export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('smms', {
-    get name () { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS') },
+    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS') },
     handle,
     config
   })

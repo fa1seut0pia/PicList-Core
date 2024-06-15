@@ -1,8 +1,8 @@
-import fs from 'fs-extra'
+import fs, { readJSONSync } from 'fs-extra'
 import path from 'path'
-import resolve from 'resolve'
+import { sync } from 'resolve'
 import { IBuildInEvent } from '../utils/enum'
-import type { IPicGo, IPicGoPlugin, IPluginLoader, IPicGoPluginInterface } from '../types/index'
+import { IPicGo, IPicGoPlugin, IPluginLoader, IPicGoPluginInterface } from '../types/index'
 import { setCurrentPluginName } from './LifecyclePlugins'
 
 /**
@@ -13,12 +13,12 @@ export class PluginLoader implements IPluginLoader {
   private list: string[] = []
   private readonly fullList = new Set<string>()
   private readonly pluginMap = new Map<string, IPicGoPluginInterface>()
-  constructor (ctx: IPicGo) {
+  constructor(ctx: IPicGo) {
     this.ctx = ctx
     this.init()
   }
 
-  private init (): void {
+  private init(): void {
     const packagePath = path.join(this.ctx.baseDir, 'package.json')
     if (!fs.existsSync(packagePath)) {
       const pkg = {
@@ -32,23 +32,23 @@ export class PluginLoader implements IPluginLoader {
   }
 
   // get plugin entry
-  private resolvePlugin (ctx: IPicGo, name: string): string {
+  private resolvePlugin(ctx: IPicGo, name: string): string {
     try {
-      return resolve.sync(name, { basedir: ctx.baseDir })
+      return sync(name, { basedir: ctx.baseDir })
     } catch (err) {
       return path.join(ctx.baseDir, 'node_modules', name)
     }
   }
 
   // load all third party plugin
-  load (): boolean {
+  load(): boolean {
     const packagePath = path.join(this.ctx.baseDir, 'package.json')
     const pluginDir = path.join(this.ctx.baseDir, 'node_modules/')
     // Thanks to hexo -> https://github.com/hexojs/hexo/blob/master/lib/hexo/load_plugins.js
     if (!fs.existsSync(pluginDir)) {
       return false
     }
-    const json = fs.readJSONSync(packagePath)
+    const json = readJSONSync(packagePath)
     const deps = Object.keys(json.dependencies || {})
     const devDeps = Object.keys(json.devDependencies || {})
     const modules = deps.concat(devDeps).filter((name: string) => {
@@ -62,7 +62,7 @@ export class PluginLoader implements IPluginLoader {
     return true
   }
 
-  registerPlugin (name: string, plugin?: IPicGoPlugin): void {
+  registerPlugin(name: string, plugin?: IPicGoPlugin): void {
     if (!name || typeof name !== 'string') {
       this.ctx.log.warn('Please provide valid plugin')
       return
@@ -104,7 +104,7 @@ export class PluginLoader implements IPluginLoader {
     }
   }
 
-  unregisterPlugin (name: string): void {
+  unregisterPlugin(name: string): void {
     this.list = this.list.filter((item: string) => item !== name)
     this.fullList.delete(name)
     this.pluginMap.delete(name)
@@ -119,7 +119,7 @@ export class PluginLoader implements IPluginLoader {
   }
 
   // get plugin by name
-  getPlugin (name: string): IPicGoPluginInterface | undefined {
+  getPlugin(name: string): IPicGoPluginInterface | undefined {
     if (this.pluginMap.has(name)) {
       return this.pluginMap.get(name)
     }
@@ -133,18 +133,18 @@ export class PluginLoader implements IPluginLoader {
   /**
    * Get the list of enabled plugins
    */
-  getList (): string[] {
+  getList(): string[] {
     return this.list
   }
 
-  hasPlugin (name: string): boolean {
+  hasPlugin(name: string): boolean {
     return this.fullList.has(name)
   }
 
   /**
    * Get the full list of plugins, whether it is enabled or not
    */
-  getFullList (): string[] {
+  getFullList(): string[] {
     return [...this.fullList]
   }
 }

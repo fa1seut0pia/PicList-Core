@@ -2,9 +2,9 @@ import path from 'path'
 import { spawn } from 'child_process'
 import dayjs from 'dayjs'
 import os from 'os'
-import fs from 'fs-extra'
+import fs, { ensureDirSync } from 'fs-extra'
 import isWsl from 'is-wsl'
-import type { IPicGo, IClipboardImage } from '../types'
+import { IPicGo, IClipboardImage } from '../types'
 import { IBuildInEvent } from './enum'
 import macClipboardScript from './clipboard/mac.applescript'
 import windowsClipboardScript from './clipboard/windows.ps1'
@@ -57,9 +57,9 @@ const platform2ScriptFilename: {
   wsl: 'wsl.sh'
 }
 
-function createImageFolder (ctx: IPicGo): void {
+function createImageFolder(ctx: IPicGo): void {
   const imagePath = path.join(ctx.baseDir, CLIPBOARD_IMAGE_FOLDER)
-  fs.ensureDirSync(imagePath)
+  ensureDirSync(imagePath)
 }
 
 // Thanks to vs-picgo: https://github.com/Spades-S/vs-picgo/blob/master/src/extension.ts

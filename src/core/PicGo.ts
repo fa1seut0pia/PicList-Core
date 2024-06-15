@@ -1,17 +1,17 @@
 import { EventEmitter } from 'events'
-import fs from 'fs-extra'
+import { remove, ensureFileSync, pathExistsSync } from 'fs-extra'
 import { get, set, unset } from 'lodash'
 import { homedir } from 'os'
 import path from 'path'
 
-import Commander from '../lib/Commander'
-import LifecyclePlugins, { setCurrentPluginName } from '../lib/LifecyclePlugins'
+import { Commander } from '../lib/Commander'
+import { LifecyclePlugins, setCurrentPluginName } from '../lib/LifecyclePlugins'
 import { Logger } from '../lib/Logger'
-import PluginHandler from '../lib/PluginHandler'
-import PluginLoader from '../lib/PluginLoader'
-import Request from '../lib/Request'
+import { PluginHandler } from '../lib/PluginHandler'
+import { PluginLoader } from '../lib/PluginLoader'
+import { Request } from '../lib/Request'
 
-import Lifecycle from './Lifecycle'
+import { Lifecycle } from './Lifecycle'
 
 import uploaders from '../plugins/uploader'
 import transformers from '../plugins/transformer'
@@ -25,7 +25,7 @@ import { eventBus } from '../utils/eventBus'
 
 import { I18nManager } from '../i18n'
 
-import type { IHelper, IImgInfo, IConfig, IPicGo, IStringKeyMap, IPluginLoader, II18nManager, IPicGoPlugin, IPicGoPluginInterface, IRequest } from '../types'
+import { IHelper, IImgInfo, IConfig, IPicGo, IStringKeyMap, IPluginLoader, II18nManager, IPicGoPlugin, IPicGoPluginInterface, IRequest } from '../types'
 
 export class PicGo extends EventEmitter implements IPicGo {
   private _config!: IConfig
@@ -51,11 +51,11 @@ export class PicGo extends EventEmitter implements IPicGo {
   VERSION: string = process.env.PICGO_VERSION
   GUI_VERSION?: string
 
-  get pluginLoader (): IPluginLoader {
+  get pluginLoader(): IPluginLoader {
     return this._pluginLoader
   }
 
-  constructor (configPath: string = '') {
+  constructor(configPath: string = '') {
     super()
     this.configPath = configPath
     this.input = []
@@ -76,24 +76,24 @@ export class PicGo extends EventEmitter implements IPicGo {
     this.init()
   }
 
-  private initConfigPath (): void {
+  private initConfigPath(): void {
     this.configPath = this.configPath || path.join(homedir(), '.piclist/config.json')
     if (path.extname(this.configPath).toUpperCase() !== '.JSON') {
       this.configPath = ''
       throw Error('The configuration file only supports JSON format.')
     }
     this.baseDir = path.dirname(this.configPath)
-    if (!fs.pathExistsSync(this.configPath)) {
-      fs.ensureFileSync(`${this.configPath}`)
+    if (!pathExistsSync(this.configPath)) {
+      ensureFileSync(`${this.configPath}`)
     }
   }
 
-  private initConfig (): void {
+  private initConfig(): void {
     this.db = new DB(this)
     this._config = this.db.read(true) as IConfig
   }
 
-  private init (): void {
+  private init(): void {
     try {
       // init 18n at first
       this.i18n = new I18nManager(this)
@@ -119,7 +119,7 @@ export class PicGo extends EventEmitter implements IPicGo {
    * if provide plugin name, will register plugin by name
    * or just instantiate a plugin
    */
-  use (plugin: IPicGoPlugin, name?: string): IPicGoPluginInterface {
+  use(plugin: IPicGoPlugin, name?: string): IPicGoPluginInterface {
     if (name) {
       this.pluginLoader.registerPlugin(name, plugin)
       return this.pluginLoader.getPlugin(name)!
@@ -129,14 +129,14 @@ export class PicGo extends EventEmitter implements IPicGo {
     }
   }
 
-  registerCommands (): void {
+  registerCommands(): void {
     if (this.configPath !== '') {
       this.cmd.init()
       this.cmd.loadCommands()
     }
   }
 
-  getConfig<T> (name?: string): T {
+  getConfig<T>(name?: string): T {
     if (!name) {
       this._config = this.db.read(true) as IConfig
       return this._config as unknown as T
@@ -145,7 +145,7 @@ export class PicGo extends EventEmitter implements IPicGo {
     }
   }
 
-  saveConfig (config: IStringKeyMap<any>): void {
+  saveConfig(config: IStringKeyMap<any>): void {
     if (!isInputConfigValid(config)) {
       this.log.warn('the format of config is invalid, please provide object')
       return
@@ -154,7 +154,7 @@ export class PicGo extends EventEmitter implements IPicGo {
     this.db.saveConfig(config)
   }
 
-  removeConfig (key: string, propName: string): void {
+  removeConfig(key: string, propName: string): void {
     if (!key || !propName) return
     if (isConfigKeyInBlackList(key)) {
       this.log.warn(`the config.${key} can't be removed`)
@@ -164,7 +164,7 @@ export class PicGo extends EventEmitter implements IPicGo {
     this.db.unset(key, propName)
   }
 
-  setConfig (config: IStringKeyMap<any>): void {
+  setConfig(config: IStringKeyMap<any>): void {
     if (!isInputConfigValid(config)) {
       this.log.warn('the format of config is invalid, please provide object')
       return
@@ -183,7 +183,7 @@ export class PicGo extends EventEmitter implements IPicGo {
     })
   }
 
-  unsetConfig (key: string, propName: string): void {
+  unsetConfig(key: string, propName: string): void {
     if (!key || !propName) return
     if (isConfigKeyInBlackList(key)) {
       this.log.warn(`the config.${key} can't be unset`)
@@ -192,11 +192,11 @@ export class PicGo extends EventEmitter implements IPicGo {
     unset(this.getConfig(key), propName)
   }
 
-  get request (): IRequest['request'] {
+  get request(): IRequest['request'] {
     return this.Request.request.bind(this.Request)
   }
 
-  async upload (input?: any[]): Promise<IImgInfo[] | Error> {
+  async upload(input?: any[]): Promise<IImgInfo[] | Error> {
     if (this.configPath === '') {
       this.log.error('No config file found, please check your config file path')
       return []
@@ -207,7 +207,7 @@ export class PicGo extends EventEmitter implements IPicGo {
         const { imgPath, shouldKeepAfterUploading } = await getClipboardImage(this)
         const cleanup = (): void => {
           if (!shouldKeepAfterUploading) {
-            fs.remove(imgPath).catch((e) => { this.log.error(e) })
+            remove(imgPath).catch((e) => { this.log.error(e) })
           }
         }
         if (imgPath === 'no image') {

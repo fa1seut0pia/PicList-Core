@@ -1,4 +1,4 @@
-import type { IPicGo, IPicGoPlugin } from '../../types'
+import { IPicGo, IPicGoPlugin } from '../../types'
 import smmsUploader from './smms'
 import tcYunUploader from './tcyun'
 import githubUploader from './github'
@@ -16,7 +16,7 @@ import awss3plistUploader from './awss3plist'
 
 const buildInUploaders: IPicGoPlugin = () => {
   return {
-    register (ctx: IPicGo) {
+    register(ctx: IPicGo) {
       aliYunUploader(ctx)
       awss3plistUploader(ctx)
       githubUploader(ctx)

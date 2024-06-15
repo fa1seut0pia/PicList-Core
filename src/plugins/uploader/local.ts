@@ -1,9 +1,9 @@
-import fs from 'fs-extra'
+import fs, { ensureDirSync } from 'fs-extra'
 import path from 'path'
 
-import type { IPicGo, IPluginConfig, ILocalConfig } from '../../types'
+import { IPicGo, IPluginConfig, ILocalConfig } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
-import type { ILocalesKey } from '../../i18n/zh-CN'
+import { ILocalesKey } from '../../i18n/zh-CN'
 
 import { encodePath, formatPathHelper } from './utils'
 
@@ -29,8 +29,8 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           const imgTempPath = path.join(ctx.baseDir, 'imgTemp', 'local')
           const fileImgTempPath = path.join(imgTempPath, img.fileName)
           const fileUploadPath = path.join(uploadPath, img.fileName)
-          fs.ensureDirSync(path.dirname(fileUploadPath))
-          fs.ensureDirSync(path.dirname(fileImgTempPath))
+          ensureDirSync(path.dirname(fileUploadPath))
+          ensureDirSync(path.dirname(fileImgTempPath))
           fs.writeFileSync(fileUploadPath, image)
           fs.copyFileSync(fileUploadPath, fileImgTempPath)
           delete img.base64Image
@@ -64,37 +64,37 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'path',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_PATH') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_PATH') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_PATH') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_PATH') },
       default: userConfig.path || '',
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_MESSAGE_PATH') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_MESSAGE_PATH') },
       required: true
     },
     {
       name: 'customUrl',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_CUSTOMURL') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_CUSTOMURL') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_CUSTOMURL') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_CUSTOMURL') },
       default: userConfig.customUrl || '',
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_MESSAGE_CUSTOMURL') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_MESSAGE_CUSTOMURL') },
       required: false
     },
     {
       name: 'webPath',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_WEBPATH') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_WEBPATH') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_WEBPATH') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_WEBPATH') },
       default: userConfig.webPath || '',
       required: false,
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_MESSAGE_WEBPATH') }
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL_MESSAGE_WEBPATH') }
     }
   ]
   return config
 }
 
-export default function register (ctx: IPicGo): void {
+export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('local', {
-    get name () { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL') },
+    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_LOCAL') },
     handle,
     config
   })

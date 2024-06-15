@@ -6,7 +6,7 @@ import {
   getFSFile,
   getURLFile
 } from '../../utils/common'
-import type { IPicGo, IPathTransformedImgInfo, IImgInfo, IImgSize } from '../../types'
+import { IPicGo, IPathTransformedImgInfo, IImgInfo, IImgSize } from '../../types'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const results: IImgInfo[] = ctx.output

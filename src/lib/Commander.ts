@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Command } from 'commander'
-import inquirer, { type Inquirer } from 'inquirer'
+import inquirer, { Inquirer } from 'inquirer'
 
 import commanders from '../plugins/commander'
 import { getCurrentPluginName } from './LifecyclePlugins'
 
-import type { IPlugin, ICommander, IPicGo } from '../types'
+import { IPlugin, ICommander, IPicGo } from '../types'
 
 export class Commander implements ICommander {
   private readonly name = 'commander'
@@ -17,17 +17,17 @@ export class Commander implements ICommander {
   program: Command
   inquirer: Inquirer
 
-  constructor (ctx: IPicGo) {
+  constructor(ctx: IPicGo) {
     this.program = new Command()
     this.inquirer = inquirer
     this.ctx = ctx
   }
 
-  getName (): string {
+  getName(): string {
     return this.name
   }
 
-  init (): void {
+  init(): void {
     this.program
       .version(process.env.PICGO_VERSION, '-v, --version')
       .option('-d, --debug', 'debug mode', () => {
@@ -49,7 +49,7 @@ export class Commander implements ICommander {
     commanders(this.ctx)
   }
 
-  register (id: string, plugin: IPlugin): void {
+  register(id: string, plugin: IPlugin): void {
     if (!id) throw new TypeError('name is required!')
     if (typeof plugin.handle !== 'function') throw new TypeError('plugin.handle must be a function!')
     if (this.list.has(id)) throw new TypeError(`${this.name} plugin duplicate id: ${id}!`)
@@ -64,7 +64,7 @@ export class Commander implements ICommander {
     }
   }
 
-  unregister (pluginName: string): void {
+  unregister(pluginName: string): void {
     if (this.pluginIdMap.has(pluginName)) {
       const pluginList = this.pluginIdMap.get(pluginName)
       pluginList?.forEach((plugin: string) => {
@@ -73,7 +73,7 @@ export class Commander implements ICommander {
     }
   }
 
-  loadCommands (): void {
+  loadCommands(): void {
     this.getList().forEach((item: IPlugin) => {
       try {
         item.handle(this.ctx)
@@ -83,15 +83,15 @@ export class Commander implements ICommander {
     })
   }
 
-  get (id: string): IPlugin | undefined {
+  get(id: string): IPlugin | undefined {
     return this.list.get(id)
   }
 
-  getList (): IPlugin[] {
+  getList(): IPlugin[] {
     return [...this.list.values()]
   }
 
-  getIdList (): string[] {
+  getIdList(): string[] {
     return [...this.list.keys()]
   }
 }

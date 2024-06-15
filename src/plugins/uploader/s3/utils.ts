@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import FileType from 'file-type'
 import mime from 'mime'
 import { HttpsProxyAgent, HttpProxyAgent } from 'hpagent'
-import type { IImgInfo } from '../../../types'
+import { IImgInfo } from '../../../types'
 import { URL } from 'url'
 
 class FileNameGenerator {
@@ -25,40 +25,40 @@ class FileNameGenerator {
     'timestampMS' // 当前时间戳, 毫秒
   ]
 
-  constructor (info: IImgInfo) {
+  constructor(info: IImgInfo) {
     this.date = new Date()
     this.info = info
   }
 
-  public year (): string {
+  public year(): string {
     return `${this.date.getFullYear()}`
   }
 
-  public month (): string {
+  public month(): string {
     return (this.date.getMonth() + 1).toString().padStart(2, '0')
   }
 
-  public day (): string {
+  public day(): string {
     return this.date.getDate().toString().padStart(2, '0')
   }
 
-  public fullName (): string | undefined {
+  public fullName(): string | undefined {
     return this.info.fileName
   }
 
-  public fileName (): string {
+  public fileName(): string {
     return (this.info.fileName ?? '').replace(this.info.extname ?? '', '')
   }
 
-  public extName (): string {
+  public extName(): string {
     return (this.info.extname ?? '').replace('.', '')
   }
 
-  public md5 (): string {
+  public md5(): string {
     return crypto.createHash('md5').update(this.imgBuffer()!).digest('hex')
   }
 
-  public md5B64 (): string {
+  public md5B64(): string {
     return crypto
       .createHash('md5')
       .update(this.imgBuffer()!)
@@ -68,7 +68,7 @@ class FileNameGenerator {
       .replace(/=+$/, '')
   }
 
-  public md5B64Short (): string {
+  public md5B64Short(): string {
     return crypto
       .createHash('md5')
       .update(this.imgBuffer()!)
@@ -78,28 +78,28 @@ class FileNameGenerator {
       .slice(0, 7)
   }
 
-  public sha1 (): string {
+  public sha1(): string {
     return crypto.createHash('sha1').update(this.imgBuffer()!).digest('hex')
   }
 
-  public sha256 (): string {
+  public sha256(): string {
     return crypto.createHash('sha256').update(this.imgBuffer()!).digest('hex')
   }
 
-  public timestamp (): string {
+  public timestamp(): string {
     return Math.floor(Date.now() / 1000).toString()
   }
 
-  public timestampMS (): string {
+  public timestampMS(): string {
     return Date.now().toString()
   }
 
-  private imgBuffer (): string | Buffer | undefined {
+  private imgBuffer(): string | Buffer | undefined {
     return this.info.base64Image ? this.info.base64Image : this.info.buffer
   }
 }
 
-export function formatPath (info: IImgInfo, format?: string): string {
+export function formatPath(info: IImgInfo, format?: string): string {
   if (!format) {
     return info.fileName!
   }
@@ -117,7 +117,7 @@ export function formatPath (info: IImgInfo, format?: string): string {
   return formatPath
 }
 
-export async function extractInfo (info: IImgInfo): Promise<{
+export async function extractInfo(info: IImgInfo): Promise<{
   body?: Buffer
   contentType?: string
   contentEncoding?: string
@@ -151,7 +151,7 @@ export async function extractInfo (info: IImgInfo): Promise<{
   return result
 }
 
-function formatHttpProxyURL (url = ''): string {
+function formatHttpProxyURL(url = ''): string {
   if (!url) return ''
 
   if (!/^https?:\/\//.test(url)) {
@@ -167,7 +167,7 @@ function formatHttpProxyURL (url = ''): string {
   }
 }
 
-export function getProxyAgent (
+export function getProxyAgent(
   proxy: string | undefined,
   sslEnabled: boolean,
   rejectUnauthorized: boolean

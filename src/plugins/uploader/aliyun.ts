@@ -1,16 +1,16 @@
 import crypto from 'crypto'
-import mime from 'mime-types'
+import { lookup } from 'mime-types'
 import { IBuildInEvent } from '../../utils/enum'
-import type { ILocalesKey } from '../../i18n/zh-CN'
+import { ILocalesKey } from '../../i18n/zh-CN'
 import { encodePath, formatPathHelper } from './utils'
-import type { IPicGo, IPluginConfig, IAliyunConfig, IOldReqOptionsWithFullResponse } from '../../types'
+import { IPicGo, IPluginConfig, IAliyunConfig, IOldReqOptionsWithFullResponse } from '../../types'
 
 const getCurrentUTCDate = (): string => new Date().toUTCString()
 
 // generate OSS signature
 const generateSignature = (options: IAliyunConfig, fileName: string): string => {
   const date = getCurrentUTCDate()
-  const mimeType = mime.lookup(fileName) || 'application/octet-stream'
+  const mimeType = lookup(fileName) || 'application/octet-stream'
   const signString = `PUT\n\n${mimeType}\n${date}\n/${options.bucket}/${options.path}${fileName}`
   const signature = crypto.createHmac('sha1', options.accessKeySecret).update(signString).digest('base64')
   return `OSS ${options.accessKeyId}:${signature}`
@@ -24,7 +24,7 @@ const postOptions = (options: IAliyunConfig, fileName: string, signature: string
       Host: `${options.bucket}.${options.area}.aliyuncs.com`,
       Authorization: signature,
       Date: getCurrentUTCDate(),
-      'Content-Type': mime.lookup(fileName) || 'application/octet-stream'
+      'Content-Type': lookup(fileName) || 'application/octet-stream'
     },
     body: image,
     resolveWithFullResponse: true
@@ -80,60 +80,60 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'accessKeyId',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID') },
       default: userConfig.accessKeyId || '',
       required: true
     },
     {
       name: 'accessKeySecret',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET') },
       default: userConfig.accessKeySecret || '',
       required: true
     },
     {
       name: 'bucket',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET') },
       default: userConfig.bucket || '',
       required: true
     },
     {
       name: 'area',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA') },
       default: userConfig.area || '',
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_AREA') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_AREA') },
       required: true
     },
     {
       name: 'path',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_PATH') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_PATH') },
       default: userConfig.path || '',
       required: false
     },
     {
       name: 'customUrl',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_CUSTOMURL') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_CUSTOMURL') },
       default: userConfig.customUrl || '',
       required: false
     },
     {
       name: 'options',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_OPTIONS') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_OPTIONS') },
       default: userConfig.options || '',
       required: false
     }
@@ -141,9 +141,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
   return config
 }
 
-export default function register (ctx: IPicGo): void {
+export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('aliyun', {
-    get name () {
+    get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD')
     },
     handle,

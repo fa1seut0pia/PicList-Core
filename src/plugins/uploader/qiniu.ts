@@ -1,10 +1,10 @@
-import mime from 'mime-types'
+import { lookup } from 'mime-types'
 import qiniu from 'qiniu'
-import type { IPluginConfig, IQiniuConfig, IPicGo, IOldReqOptions } from '../../types'
+import { IPluginConfig, IQiniuConfig, IPicGo, IOldReqOptions } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
-import type { ILocalesKey } from '../../i18n/zh-CN'
+import { ILocalesKey } from '../../i18n/zh-CN'
 
-function postOptions (options: IQiniuConfig, fileName: string, token: string, imgBase64: string): IOldReqOptions {
+function postOptions(options: IQiniuConfig, fileName: string, token: string, imgBase64: string): IOldReqOptions {
   const area = selectArea(options.area || 'z0')
   const path = options.path || ''
   const base64FileName = Buffer.from(path + fileName, 'utf-8').toString('base64').replace(/\+/g, '-').replace(/\//g, '_')
@@ -13,17 +13,17 @@ function postOptions (options: IQiniuConfig, fileName: string, token: string, im
     url: `http://upload${area}.qiniup.com/putb64/-1/key/${base64FileName}`,
     headers: {
       Authorization: `UpToken ${token}`,
-      'Content-Type': mime.lookup(fileName) || 'application/octet-stream'
+      'Content-Type': lookup(fileName) || 'application/octet-stream'
     },
     body: imgBase64
   }
 }
 
-function selectArea (area: string): string {
+function selectArea(area: string): string {
   return area === 'z0' ? '' : '-' + area
 }
 
-function getToken (qiniuOptions: any): string {
+function getToken(qiniuOptions: any): string {
   const accessKey = qiniuOptions.accessKey
   const secretKey = qiniuOptions.secretKey
   const mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
@@ -85,60 +85,60 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'accessKey',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_ACCESSKEY') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_ACCESSKEY') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_ACCESSKEY') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_ACCESSKEY') },
       default: userConfig.accessKey || '',
       required: true
     },
     {
       name: 'secretKey',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_SECRETKEY') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_SECRETKEY') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_SECRETKEY') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_SECRETKEY') },
       default: userConfig.secretKey || '',
       required: true
     },
     {
       name: 'bucket',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_BUCKET') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_BUCKET') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_BUCKET') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_BUCKET') },
       default: userConfig.bucket || '',
       required: true
     },
     {
       name: 'url',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_URL') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_URL') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_URL') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_URL') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_URL') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_URL') },
       default: userConfig.url || '',
       required: true
     },
     {
       name: 'area',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_AREA') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_AREA') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_AREA') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_AREA') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_AREA') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_AREA') },
       default: userConfig.area || '',
       required: true
     },
     {
       name: 'options',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_OPTIONS') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_OPTIONS') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_OPTIONS') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_OPTIONS') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_OPTIONS') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_OPTIONS') },
       default: userConfig.options || '',
       required: false
     },
     {
       name: 'path',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_PATH') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_PATH') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_PATH') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_PATH') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_PATH') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU_MESSAGE_PATH') },
       default: userConfig.path || '',
       required: false
     }
@@ -146,9 +146,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
   return config
 }
 
-export default function register (ctx: IPicGo): void {
+export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('qiniu', {
-    get name () { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU') },
+    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU') },
     handle,
     config
   })

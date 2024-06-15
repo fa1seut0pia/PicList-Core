@@ -1,13 +1,13 @@
-import { ZH_CN, type ILocalesKey, type ILocales } from './zh-CN'
+import { ZH_CN, ILocalesKey, ILocales } from './zh-CN'
 import { merge } from 'lodash'
-import { type IPicGo } from '../types'
+import { IPicGo, IStringKeyMap, II18nManager } from '../types'
 import path from 'path'
-import fs from 'fs-extra'
+import fs, { pathExistsSync, ensureDirSync } from 'fs-extra'
 import yaml from 'js-yaml'
 
 import { ObjectAdapter, I18n } from '@picgo/i18n'
-import { type IStringKeyMap, type II18nManager } from '../types/index'
-import { type ILocale } from '@picgo/i18n/dist/types'
+
+import { ILocale } from '@picgo/i18n/dist/types'
 import { EN } from './en'
 import { ZH_TW } from './zh-TW'
 
@@ -21,7 +21,7 @@ class I18nManager implements II18nManager {
   private readonly i18n: I18n
   private readonly objectAdapter: ObjectAdapter
   private readonly ctx: IPicGo
-  constructor (ctx: IPicGo) {
+  constructor(ctx: IPicGo) {
     this.ctx = ctx
     this.objectAdapter = new ObjectAdapter(languageList)
     let language = this.ctx.getConfig<string>('settings.language') || 'zh-CN'
@@ -35,7 +35,7 @@ class I18nManager implements II18nManager {
     this.loadOutterI18n()
   }
 
-  private loadOutterI18n (): void {
+  private loadOutterI18n(): void {
     const i18nFolder = this.getOutterI18nFolder()
     const files = fs.readdirSync(i18nFolder, {
       withFileTypes: true
@@ -54,10 +54,10 @@ class I18nManager implements II18nManager {
     })
   }
 
-  private getOutterI18nFolder (): string {
+  private getOutterI18nFolder(): string {
     const i18nFolder = path.join(this.ctx.baseDir, 'i18n-cli')
-    if (!fs.pathExistsSync(i18nFolder)) {
-      fs.ensureDirSync(i18nFolder)
+    if (!pathExistsSync(i18nFolder)) {
+      ensureDirSync(i18nFolder)
     }
     return i18nFolder
   }
@@ -66,14 +66,14 @@ class I18nManager implements II18nManager {
     return this.i18n.translate(key, args) || key
   }
 
-  setLanguage (language: string): void {
+  setLanguage(language: string): void {
     this.i18n.setLanguage(language)
     this.ctx.saveConfig({
       'settings.language': language
     })
   }
 
-  addLocale (language: string, locales: ILocale): boolean {
+  addLocale(language: string, locales: ILocale): boolean {
     const originLocales = this.objectAdapter.getLocale(language)
     if (!originLocales) {
       return false
@@ -83,7 +83,7 @@ class I18nManager implements II18nManager {
     return true
   }
 
-  addLanguage (language: string, locales: ILocale): boolean {
+  addLanguage(language: string, locales: ILocale): boolean {
     const originLocales = this.objectAdapter.getLocale(language)
     if (originLocales) {
       return false
@@ -93,7 +93,7 @@ class I18nManager implements II18nManager {
     return true
   }
 
-  getLanguageList (): string[] {
+  getLanguageList(): string[] {
     return Object.keys(languageList)
   }
 }

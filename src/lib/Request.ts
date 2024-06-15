@@ -4,7 +4,7 @@ import axios from 'axios'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import FormData from 'form-data'
 import https from 'https'
-import tunnel from 'tunnel'
+import { httpsOverHttp } from 'tunnel'
 import { URL } from 'url'
 
 import type { IPicGo, Undefinable, IConfigChangePayload, IConfig, IRequestConfig, IOldReqOptions, IResponse, IFullResponse, IRequest } from '../types'
@@ -18,7 +18,7 @@ const httpsAgent = new https.Agent({
 })
 
 // thanks for https://github.dev/request/request/blob/master/index.js
-function appendFormData (form: FormData, key: string, data: any): void {
+function appendFormData(form: FormData, key: string, data: any): void {
   if (typeof data === 'object' && 'value' in data && 'options' in data) {
     form.append(key, data.value, data.options)
   } else {
@@ -26,7 +26,7 @@ function appendFormData (form: FormData, key: string, data: any): void {
   }
 }
 
-function requestInterceptor (options: IOldReqOptions | AxiosRequestConfig): AxiosRequestConfig & {
+function requestInterceptor(options: IOldReqOptions | AxiosRequestConfig): AxiosRequestConfig & {
   __isOldOptions?: boolean
 } {
   let __isOldOptions = false
@@ -53,7 +53,7 @@ function requestInterceptor (options: IOldReqOptions | AxiosRequestConfig): Axio
     if (proxyOptions) {
       if (options.url?.startsWith('https://')) {
         opt.proxy = false
-        opt.httpsAgent = tunnel.httpsOverHttp({
+        opt.httpsAgent = httpsOverHttp({
           proxy: {
             host: proxyOptions?.hostname,
             port: parseInt(proxyOptions?.port, 10)
@@ -94,7 +94,7 @@ function requestInterceptor (options: IOldReqOptions | AxiosRequestConfig): Axio
   return opt
 }
 
-function responseInterceptor (response: AxiosResponse): IFullResponse {
+function responseInterceptor(response: AxiosResponse): IFullResponse {
   return {
     ...response,
     statusCode: response.status,
@@ -102,7 +102,7 @@ function responseInterceptor (response: AxiosResponse): IFullResponse {
   }
 }
 
-function responseErrorHandler (error: any) {
+function responseErrorHandler(error: any) {
   const errorObj = {
     method: error?.config?.method?.toUpperCase() || '',
     url: error?.config?.url || '',
@@ -122,7 +122,7 @@ export class Request implements IRequest {
   private readonly ctx: IPicGo
   private proxy: Undefinable<string> = ''
   options: AxiosRequestConfig<any> = {}
-  constructor (ctx: IPicGo) {
+  constructor(ctx: IPicGo) {
     this.ctx = ctx
     this.init()
     eventBus.on(IBusEvent.CONFIG_CHANGE, (data: IConfigChangePayload<string | IConfig['picBed']>) => {
@@ -139,14 +139,14 @@ export class Request implements IRequest {
     })
   }
 
-  private init (): void {
+  private init(): void {
     const proxy = this.ctx.getConfig<Undefinable<string>>('picBed.proxy')
     if (proxy) {
       this.proxy = proxy
     }
   }
 
-  private handleProxy (): AxiosRequestConfig['proxy'] | false {
+  private handleProxy(): AxiosRequestConfig['proxy'] | false {
     if (this.proxy) {
       try {
         const proxyOptions = new URL(this.proxy)
@@ -155,8 +155,7 @@ export class Request implements IRequest {
           port: parseInt(proxyOptions.port || '0', 10),
           protocol: proxyOptions.protocol
         }
-      } catch (e) {
-      }
+      } catch (e) { /* empty */ }
     }
     return false
   }
@@ -164,13 +163,13 @@ export class Request implements IRequest {
   // #64 dynamic get proxy value
   request<T, U extends (
     IRequestConfig<U> extends IOldReqOptions ? IOldReqOptions : IRequestConfig<U> extends AxiosRequestConfig ? AxiosRequestConfig : never
-  )> (options: U): Promise<IResponse<T, U>> {
+  )>(options: U): Promise<IResponse<T, U>> {
     this.options.proxy = this.handleProxy()
     this.options.headers = options.headers || {}
     this.options.maxBodyLength = Infinity
     this.options.maxContentLength = Infinity
     if (this.options.proxy && options.url?.startsWith('https://')) {
-      this.options.httpsAgent = tunnel.httpsOverHttp({
+      this.options.httpsAgent = httpsOverHttp({
         proxy: {
           host: this.options.proxy.host,
           port: this.options.proxy.port

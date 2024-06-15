@@ -1,4 +1,4 @@
-import type { IPicGo, IPlugin } from '../../types'
+import { IPicGo, IPlugin } from '../../types'
 
 const proxy: IPlugin = {
   handle: (ctx: IPicGo) => {

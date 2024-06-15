@@ -1,26 +1,26 @@
-import { NodeSSH } from 'node-ssh-no-cpu-features'
-import type { Config } from 'node-ssh-no-cpu-features'
+import { NodeSSH, Config } from 'node-ssh-no-cpu-features'
+
 import path from 'path'
-import type { ISftpPlistConfig } from '../types'
+import { ISftpPlistConfig } from '../types'
 
 class SSHClient {
   private static _instance: SSHClient
   private static _client: NodeSSH
   private _isConnected = false
 
-  public static get instance (): SSHClient {
+  public static get instance(): SSHClient {
     return this._instance || (this._instance = new this())
   }
 
-  public static get client (): NodeSSH {
+  public static get client(): NodeSSH {
     return this._client || (this._client = new NodeSSH())
   }
 
-  private changeWinStylePathToUnix (path: string): string {
+  private changeWinStylePathToUnix(path: string): string {
     return path.replace(/\\/g, '/')
   }
 
-  public async connect (config: ISftpPlistConfig): Promise<boolean> {
+  public async connect(config: ISftpPlistConfig): Promise<boolean> {
     const { username, password, privateKey, passphrase } = config
     const loginInfo: Config = privateKey
       ? { username, privateKeyPath: privateKey, passphrase: passphrase || undefined }
@@ -38,7 +38,7 @@ class SSHClient {
     }
   }
 
-  public async upload (local: string, remote: string, config: ISftpPlistConfig): Promise<boolean> {
+  public async upload(local: string, remote: string, config: ISftpPlistConfig): Promise<boolean> {
     if (!this._isConnected) {
       throw new Error('SSH 未连接')
     }
@@ -58,7 +58,7 @@ class SSHClient {
     }
   }
 
-  private async mkdir (dirPath: string, config: ISftpPlistConfig): Promise<void> {
+  private async mkdir(dirPath: string, config: ISftpPlistConfig): Promise<void> {
     if (!SSHClient.client.isConnected()) {
       throw new Error('SSH 未连接')
     }
@@ -79,7 +79,7 @@ class SSHClient {
     }
   }
 
-  public async chown (remote: string, user: string, group?: string): Promise<boolean> {
+  public async chown(remote: string, user: string, group?: string): Promise<boolean> {
     remote = this.changeWinStylePathToUnix(remote)
     const [_user, _group] = group ? [user, group] : user.includes(':') ? user.split(':') : [user, user]
 
@@ -87,12 +87,12 @@ class SSHClient {
     return this.exec(script)
   }
 
-  private async exec (script: string): Promise<boolean> {
+  private async exec(script: string): Promise<boolean> {
     const execResult = await SSHClient.client.execCommand(script)
     return execResult.code === 0
   }
 
-  public close (): void {
+  public close(): void {
     SSHClient.client.dispose()
     this._isConnected = false
   }

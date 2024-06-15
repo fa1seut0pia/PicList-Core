@@ -1,18 +1,19 @@
 import {
+  S3ClientConfig,
   S3Client,
   PutObjectCommand,
-  GetObjectCommand
+  GetObjectCommand,
+  PutObjectCommandOutput
 } from '@aws-sdk/client-s3'
-import type { S3ClientConfig, PutObjectCommandOutput } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import {
   NodeHttpHandler
+  , NodeHttpHandlerOptions
 } from '@smithy/node-http-handler'
-import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler'
 
 import url from 'url'
-import type { HttpProxyAgent, HttpsProxyAgent } from 'hpagent'
-import type { IAwsS3PListUserConfig, IImgInfo } from '../../../types'
+import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent'
+import { IAwsS3PListUserConfig, IImgInfo } from '../../../types'
 import { extractInfo, getProxyAgent } from './utils'
 
 export interface IUploadResult {
@@ -24,7 +25,7 @@ export interface IUploadResult {
   eTag?: string
 }
 
-function createS3Client (opts: IAwsS3PListUserConfig): any {
+function createS3Client(opts: IAwsS3PListUserConfig): any {
   let sslEnabled = true
   try {
     const u = new url.URL(opts.endpoint!)
@@ -66,7 +67,7 @@ interface ICreateUploadTaskOpts {
   urlPrefix?: string
 }
 
-async function createUploadTask (
+async function createUploadTask(
   opts: ICreateUploadTaskOpts
 ): Promise<IUploadResult> {
   if (!opts.item.buffer && !opts.item.base64Image) {
@@ -78,7 +79,7 @@ async function createUploadTask (
   let contentEncoding: string | undefined
 
   try {
-    ;({ body, contentType, contentEncoding } = await extractInfo(opts.item))
+    ({ body, contentType, contentEncoding } = await extractInfo(opts.item))
   } catch (err) {
     return Promise.reject(err)
   }
@@ -120,7 +121,7 @@ async function createUploadTask (
   }
 }
 
-async function getFileURL (
+async function getFileURL(
   opts: ICreateUploadTaskOpts,
   eTag: string,
   versionId: string

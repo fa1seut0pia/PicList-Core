@@ -1,7 +1,7 @@
-import type { Command } from 'commander'
-import type { Inquirer } from 'inquirer'
-import type { FormatEnum, GravityEnum } from 'sharp'
-import type { IRequestPromiseOptions } from './oldRequest'
+import { Command } from 'commander'
+import { Inquirer } from 'inquirer'
+import { FormatEnum, GravityEnum } from 'sharp'
+import { IRequestPromiseOptions } from './oldRequest'
 
 export interface IPicGo extends NodeJS.EventEmitter {
   /**
@@ -228,12 +228,12 @@ interface IRequestOptionsWithResponseTypeArrayBuffer {
  */
 export type IResponse<T, U> = U extends IRequestOptionsWithFullResponse ? IFullResponse<T, U>
   : U extends IRequestOptionsWithJSON ? T
-    : U extends IRequestOptionsWithResponseTypeArrayBuffer ? Buffer
-      : U extends IOldReqOptionsWithFullResponse ? IFullResponse<T, U>
-        : U extends IOldReqOptionsWithJSON ? T
-          : U extends IOldReqOptions ? string
-            : U extends IReqOptionsWithBodyResOnly ? T
-              : string
+  : U extends IRequestOptionsWithResponseTypeArrayBuffer ? Buffer
+  : U extends IOldReqOptionsWithFullResponse ? IFullResponse<T, U>
+  : U extends IOldReqOptionsWithJSON ? T
+  : U extends IOldReqOptions ? string
+  : U extends IReqOptionsWithBodyResOnly ? T
+  : string
 
 /**
  * the old request lib will be removed in v1.5.0+
@@ -253,7 +253,7 @@ export type IRequestConfig<T> = T extends IRequestLibOnlyOptions ? IOldReqOption
 export interface IRequest {
   request: <T, U extends (
     IRequestConfig<U> extends IOldReqOptions ? IOldReqOptions : IRequestConfig<U> extends AxiosRequestConfig ? AxiosRequestConfig : never
-  )>(config: U) => Promise<IResponse<T, U>>
+  ) >(config: U) => Promise<IResponse<T, U>>
 }
 
 export type ILogColor = 'blue' | 'green' | 'yellow' | 'red'

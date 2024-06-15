@@ -1,10 +1,10 @@
 import path from 'path'
-import fs from 'fs-extra'
-import type { ReadStream } from 'fs'
+import fs, { ensureDirSync, remove } from 'fs-extra'
+import { ReadStream } from 'fs'
 
-import type { IPicGo, IPluginConfig, ITelegraphConfig, IOldReqOptions } from '../../types'
+import { IPicGo, IPluginConfig, ITelegraphConfig, IOldReqOptions } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
-import type { ILocalesKey } from '../../i18n/zh-CN'
+import { ILocalesKey } from '../../i18n/zh-CN'
 
 const postOptions = async (options: ITelegraphConfig, image: ReadStream): Promise<IOldReqOptions> => {
   const requestOptions: IOldReqOptions = {
@@ -37,13 +37,13 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           image = Buffer.from(img.base64Image, 'base64')
         }
         const uploadTempPath = path.join(ctx.baseDir, 'uploadTemp')
-        fs.ensureDirSync(uploadTempPath)
+        ensureDirSync(uploadTempPath)
         const tempFilePath = path.join(uploadTempPath, img.fileName)
         fs.writeFileSync(tempFilePath, image)
         const options = await postOptions(tgOptions, fs.createReadStream(tempFilePath))
         const res: string = await ctx.request(options)
         const body = typeof res === 'string' ? JSON.parse(res) : res
-        fs.remove(tempFilePath)
+        remove(tempFilePath)
         if (body?.[0]?.src) {
           delete img.base64Image
           delete img.buffer
@@ -71,9 +71,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'proxy',
       type: 'input',
-      get prefix () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
-      get alias () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
-      get message () { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_PROXY') },
+      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
+      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
+      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_PROXY') },
       default: userConfig.proxy || '',
       required: false
     }
@@ -81,9 +81,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
   return config
 }
 
-export default function register (ctx: IPicGo): void {
+export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('telegraphplist', {
-    get name () { return ctx.i18n.translate<ILocalesKey>('PICBED_TELEGRAPH') },
+    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_TELEGRAPH') },
     handle,
     config
   })

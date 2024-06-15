@@ -1,4 +1,4 @@
-import type { IPicGo, IPlugin, Undefinable, ICLIConfigs, IStringKeyMap } from '../../types'
+import { IPicGo, IPlugin, Undefinable, ICLIConfigs, IStringKeyMap } from '../../types'
 
 const use: IPlugin = {
   handle: async (ctx: IPicGo) => {

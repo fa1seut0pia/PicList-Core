@@ -1,8 +1,8 @@
 /** This file is deprecated */
 
-import type { PicGo } from '../core/PicGo'
-import type LifecyclePlugins from '../lib/LifecyclePlugins'
-import type { IWebdavPlistConfig } from '../types'
+import { PicGo } from '../core/PicGo'
+import { LifecyclePlugins } from '../lib/LifecyclePlugins'
+import { IWebdavPlistConfig } from '../types'
 
 /**
  * for plugin config

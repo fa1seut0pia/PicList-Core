@@ -1,4 +1,4 @@
-import fs from 'fs-extra'
+import fs, { readFile, readJSONSync } from 'fs-extra'
 import path from 'path'
 import { imageSize } from 'image-size'
 import { URL } from 'url'
@@ -7,7 +7,7 @@ import sharp from 'sharp'
 import crypto from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
 
-import type {
+import {
   IImgSize,
   IPathTransformedImgInfo,
   IPluginNameType,
@@ -17,28 +17,28 @@ import type {
   IBuildInWaterMarkOptions
 } from '../types'
 
-export function randomStringGenerator (length: number): string {
+export function randomStringGenerator(length: number): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   return Array.from({ length }).map(() => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
 }
 
-export function renameFileNameWithTimestamp (oldName: string): string {
+export function renameFileNameWithTimestamp(oldName: string): string {
   return `${Math.floor(Date.now() / 1000)}${randomStringGenerator(5)}${path.extname(oldName)}`
 }
 
-export function renameFileNameWithRandomString (oldName: string, length: number = 5): string {
+export function renameFileNameWithRandomString(oldName: string, length: number = 5): string {
   return `${randomStringGenerator(length)}${path.extname(oldName)}`
 }
 
-function formatHelper (num: number): string {
+function formatHelper(num: number): string {
   return num.toString().length === 1 ? `0${num}` : num.toString()
 }
 
-function getMd5 (input: crypto.BinaryLike): string {
+function getMd5(input: crypto.BinaryLike): string {
   return crypto.createHash('md5').update(input).digest('hex')
 }
 
-export function renameFileNameWithCustomString (oldName: string, customFormat: string, affixFileName?: string, fileBuffer?: crypto.BinaryLike): string {
+export function renameFileNameWithCustomString(oldName: string, customFormat: string, affixFileName?: string, fileBuffer?: crypto.BinaryLike): string {
   const now = new Date()
   const year = now.getFullYear().toString()
   const filebasename = path.basename(oldName, path.extname(oldName))
@@ -122,7 +122,7 @@ export const getFSFile = async (filePath: string): Promise<IPathTransformedImgIn
     return {
       extname: path.extname(filePath),
       fileName: path.basename(filePath),
-      buffer: await fs.readFile(filePath),
+      buffer: await readFile(filePath),
       success: true
     }
   } catch {
@@ -325,7 +325,7 @@ export const getNormalPluginName = (nameOrPath: string, logger: ILogger | Consol
         logger.warn(`Can't find plugin: ${nameOrPath}`)
         return ''
       } else {
-        const pkg = fs.readJSONSync(packageJSONPath) || {}
+        const pkg = readJSONSync(packageJSONPath) || {}
         if (!pkg.name?.includes('picgo-plugin-')) {
           logger.warn(`The plugin package.json's name filed is ${pkg.name as string || 'empty'}, need to include the prefix: picgo-plugin-`)
           return ''
@@ -406,7 +406,7 @@ export const isInputConfigValid = (config: any): boolean => {
   return false
 }
 
-export function safeParse<T> (str: string): T | string {
+export function safeParse<T>(str: string): T | string {
   try {
     return JSON.parse(str)
   } catch (error) {
@@ -441,7 +441,7 @@ export const isProd = (): boolean => {
   return process.env.NODE_ENV === 'production'
 }
 
-async function text2SVG (
+async function text2SVG(
   defaultWatermarkFontPath: string,
   text?: string,
   color?: string,
@@ -464,7 +464,7 @@ async function text2SVG (
 
 const defaultWatermarkImagePath = path.join(__dirname, 'assets', 'piclist.png')
 
-export async function AddWatermark (
+export async function AddWatermark(
   img: Buffer,
   watermarkType: 'text' | 'image',
   defaultWatermarkFontPath: string,
@@ -503,7 +503,7 @@ export async function AddWatermark (
   return composited
 }
 
-async function createWatermark (
+async function createWatermark(
   watermarkType: 'text' | 'image',
   defaultWatermarkFontPath: string,
   text?: string,
@@ -541,7 +541,7 @@ async function createWatermark (
     .toBuffer()
 }
 
-async function getSize (image: Buffer): Promise<{ width: number, height: number }> {
+async function getSize(image: Buffer): Promise<{ width: number, height: number }> {
   const { width, height } = await sharp(image).metadata()
   return { width: width || 200, height: height || 200 }
 }
@@ -594,7 +594,7 @@ const validOutputFormat = (format: string): boolean => {
 
 const imageExtList = ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'tiff', 'tif', 'svg', 'ico', 'avif', 'heif', 'heic']
 
-export async function imageAddWaterMark (img: Buffer, options: IBuildInWaterMarkOptions, defaultWatermarkFontPath: string, logger: ILogger): Promise<Buffer> {
+export async function imageAddWaterMark(img: Buffer, options: IBuildInWaterMarkOptions, defaultWatermarkFontPath: string, logger: ILogger): Promise<Buffer> {
   try {
     let image: sharp.Sharp = sharp(img, { animated: true })
     image = sharp(await AddWatermark(
@@ -617,7 +617,7 @@ export async function imageAddWaterMark (img: Buffer, options: IBuildInWaterMark
   }
 }
 
-function formatOptions (options: IBuildInCompressOptions): IBuildInCompressOptions {
+function formatOptions(options: IBuildInCompressOptions): IBuildInCompressOptions {
   const formatConvertObj = typeof options.formatConvertObj === 'string' ? safeParse(options.formatConvertObj) : options.formatConvertObj
   return {
     quality: forceNumber(options.quality),
@@ -638,7 +638,7 @@ function formatOptions (options: IBuildInCompressOptions): IBuildInCompressOptio
   }
 }
 
-export async function imageProcess (img: Buffer, options: IBuildInCompressOptions, rawFormat: string, logger: ILogger): Promise<Buffer> {
+export async function imageProcess(img: Buffer, options: IBuildInCompressOptions, rawFormat: string, logger: ILogger): Promise<Buffer> {
   options = formatOptions(options)
   try {
     rawFormat = rawFormat.toLowerCase().replace('.', '')
@@ -741,7 +741,7 @@ export async function imageProcess (img: Buffer, options: IBuildInCompressOption
   }
 }
 
-export function getConvertedFormat (options: IBuildInCompressOptions | undefined, rawFormat: string): string {
+export function getConvertedFormat(options: IBuildInCompressOptions | undefined, rawFormat: string): string {
   options = formatOptions(options || {})
   rawFormat = rawFormat.toLowerCase().replace('.', '')
   if (rawFormat === 'gif') return 'gif'
