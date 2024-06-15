@@ -72,11 +72,7 @@ const getClipboardImage = async (ctx: IPicGo): Promise<IClipboardImage> => {
     const scriptPath = path.join(ctx.baseDir, platform2ScriptFilename[platform])
     // If the script does not exist yet, we need to write the content to the script file
     if (!fs.existsSync(scriptPath)) {
-      fs.writeFileSync(
-        scriptPath,
-        platform2ScriptContent[platform],
-        'utf8'
-      )
+      fs.writeFileSync(scriptPath, platform2ScriptContent[platform], 'utf8')
     }
     let execution
     if (platform === 'darwin') {
@@ -87,12 +83,14 @@ const getClipboardImage = async (ctx: IPicGo): Promise<IClipboardImage> => {
         '-noninteractive',
         '-nologo',
         '-sta',
-        '-executionpolicy', 'unrestricted',
+        '-executionpolicy',
+        'unrestricted',
         // fix windows 10 native cmd crash bug when "picgo upload"
         // https://github.com/PicGo/PicGo-Core/issues/32
         // '-windowstyle','hidden',
         // '-noexit',
-        '-file', scriptPath,
+        '-file',
+        scriptPath,
         imagePath
       ])
     } else {

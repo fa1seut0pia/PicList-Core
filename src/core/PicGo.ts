@@ -25,7 +25,18 @@ import { eventBus } from '../utils/eventBus'
 
 import { I18nManager } from '../i18n'
 
-import { IHelper, IImgInfo, IConfig, IPicGo, IStringKeyMap, IPluginLoader, II18nManager, IPicGoPlugin, IPicGoPluginInterface, IRequest } from '../types'
+import {
+  IHelper,
+  IImgInfo,
+  IConfig,
+  IPicGo,
+  IStringKeyMap,
+  IPluginLoader,
+  II18nManager,
+  IPicGoPlugin,
+  IPicGoPluginInterface,
+  IRequest
+} from '../types'
 
 export class PicGo extends EventEmitter implements IPicGo {
   private _config!: IConfig
@@ -207,7 +218,9 @@ export class PicGo extends EventEmitter implements IPicGo {
         const { imgPath, shouldKeepAfterUploading } = await getClipboardImage(this)
         const cleanup = (): void => {
           if (!shouldKeepAfterUploading) {
-            remove(imgPath).catch((e) => { this.log.error(e) })
+            remove(imgPath).catch(e => {
+              this.log.error(e)
+            })
           }
         }
         if (imgPath === 'no image') {

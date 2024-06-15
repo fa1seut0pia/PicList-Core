@@ -38,7 +38,7 @@ const postOptions = (options: IPicListConfig, fileName: string, image: Buffer): 
 const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
   const piclistOptions = ctx.getConfig<IPicListConfig>('picBed.piclist')
   if (!piclistOptions) {
-    throw new Error('Can\'t find PicList config')
+    throw new Error("Can't find PicList config")
   }
   try {
     const imgList = ctx.output
@@ -50,7 +50,8 @@ const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
         }
         const options = postOptions(piclistOptions, img.fileName, image)
 
-        const res = await ctx.request(options)
+        const res = await ctx
+          .request(options)
           .then((res: any) => res)
           .catch((err: Error) => {
             return {
@@ -87,40 +88,60 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'host',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_HOST') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_HOST') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_HOST')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_HOST')
+      },
       default: userConfig.host || '127.0.0.1',
       required: true
     },
     {
       name: 'port',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PORT') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PORT') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PORT')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PORT')
+      },
       default: userConfig.port || 36677,
       required: false
     },
     {
       name: 'picbed',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PICBED') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PICBED') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PICBED')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_PICBED')
+      },
       default: userConfig.picbed || '',
       required: false
     },
     {
       name: 'configName',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_CONFIGNAME') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_CONFIGNAME') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_CONFIGNAME')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_CONFIGNAME')
+      },
       default: userConfig.configName || '',
       required: false
     },
     {
       name: 'serverKey',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_KEY') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_KEY') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_KEY')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST_KEY')
+      },
       default: userConfig.serverKey || '',
       required: false
     }
@@ -130,7 +151,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('piclist', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST')
+    },
     handle,
     config
   })

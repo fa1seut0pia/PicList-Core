@@ -1,43 +1,40 @@
 import dayjs from 'dayjs'
 
-import {
-  isUrl,
-  getImageSize,
-  getFSFile,
-  getURLFile
-} from '../../utils/common'
+import { isUrl, getImageSize, getFSFile, getURLFile } from '../../utils/common'
 import { IPicGo, IPathTransformedImgInfo, IImgInfo, IImgSize } from '../../types'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const results: IImgInfo[] = ctx.output
-  await Promise.all(ctx.input.map(async (item: string | Buffer, index: number) => {
-    let info: IPathTransformedImgInfo
-    if (Buffer.isBuffer(item)) {
-      info = {
-        success: true,
-        buffer: item,
-        fileName: '',
-        extname: ''
+  await Promise.all(
+    ctx.input.map(async (item: string | Buffer, index: number) => {
+      let info: IPathTransformedImgInfo
+      if (Buffer.isBuffer(item)) {
+        info = {
+          success: true,
+          buffer: item,
+          fileName: '',
+          extname: ''
+        }
+      } else if (isUrl(item)) {
+        info = await getURLFile(item, ctx)
+      } else {
+        info = await getFSFile(item)
       }
-    } else if (isUrl(item)) {
-      info = await getURLFile(item, ctx)
-    } else {
-      info = await getFSFile(item)
-    }
-    if (info.success && info.buffer) {
-      const imgSize = getImgSize(ctx, info.buffer, item)
-      const extname = info.extname || imgSize.extname || '.png'
-      results[index] = {
-        buffer: info.buffer,
-        fileName: info.fileName || `${dayjs().format('YYYYMMDDHHmmss')}${extname}`,
-        width: imgSize.width,
-        height: imgSize.height,
-        extname: info.extname
+      if (info.success && info.buffer) {
+        const imgSize = getImgSize(ctx, info.buffer, item)
+        const extname = info.extname || imgSize.extname || '.png'
+        results[index] = {
+          buffer: info.buffer,
+          fileName: info.fileName || `${dayjs().format('YYYYMMDDHHmmss')}${extname}`,
+          width: imgSize.width,
+          height: imgSize.height,
+          extname: info.extname
+        }
+      } else {
+        ctx.log.error(info.reason)
       }
-    } else {
-      ctx.log.error(info.reason)
-    }
-  }))
+    })
+  )
   // remove empty item
   ctx.output = results.filter(item => item)
   return ctx
@@ -49,7 +46,7 @@ const getImgSize = (ctx: IPicGo, file: Buffer, path: string | Buffer): IImgSize 
     if (typeof path === 'string') {
       ctx.log.warn(`can't get ${path}'s image size`)
     } else {
-      ctx.log.warn('can\'t get image size')
+      ctx.log.warn("can't get image size")
     }
     ctx.log.warn('fallback to 200 * 200')
   }

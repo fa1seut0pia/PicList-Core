@@ -10,7 +10,7 @@ import { encodePath, formatPathHelper } from './utils'
 const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
   const webdavplistOptions = ctx.getConfig<IWebdavPlistConfig>('picBed.webdavplist')
   if (!webdavplistOptions) {
-    throw new Error('Can\'t find webdavplist config')
+    throw new Error("Can't find webdavplist config")
   }
   webdavplistOptions.host = webdavplistOptions.host.replace(/^https?:\/\/|\/+$/g, '')
   webdavplistOptions.host = (webdavplistOptions.sslEnabled ? 'https://' : 'http://') + webdavplistOptions.host
@@ -86,69 +86,111 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'host',
       type: 'input',
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_HOST') },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_HOST')
+      },
       default: userConfig.host || '',
       required: true
     },
     {
       name: 'sslEnabled',
       type: 'confirm',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_SSLENABLED') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_SSLENABLED') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_SSLENABLED')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_SSLENABLED')
+      },
       required: false,
       default: userConfig.sslEnabled ?? false,
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_SSLENABLED') }
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_SSLENABLED')
+      }
     },
     {
       name: 'username',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_USERNAME') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_USERNAME') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_USERNAME')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_USERNAME')
+      },
       default: userConfig.username || '',
       required: true,
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_USERNAME') }
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_USERNAME')
+      }
     },
     {
       name: 'password',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PASSWORD') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PASSWORD') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PASSWORD')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PASSWORD')
+      },
       default: userConfig.password || '',
       required: true,
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_PASSWORD') }
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_PASSWORD')
+      }
     },
     {
       name: 'path',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PATH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PATH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PATH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_PATH')
+      },
       default: userConfig.path || '',
       required: false,
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_PATH') }
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_PATH')
+      }
     },
     {
       name: 'webpath',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_WEBSITE_PATH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_WEBSITE_PATH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_WEBSITE_PATH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_WEBSITE_PATH')
+      },
       default: userConfig.path || '',
       required: false,
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_WEBSITE_PATH') }
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_WEBSITE_PATH')
+      }
     },
     {
       name: 'customUrl',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_CUSTOMURL') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_CUSTOMURL') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_CUSTOMURL')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_CUSTOMURL')
+      },
       default: userConfig.customUrl || '',
       required: false,
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_CUSTOMURL') }
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_CUSTOMURL')
+      }
     },
     {
       name: 'authType',
       type: 'list',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_AUTHTYPE') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_AUTHTYPE') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_AUTHTYPE')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_AUTHTYPE')
+      },
       choices: ['basic', 'digest'],
       default: userConfig.authType || 'basic',
       required: false
@@ -156,9 +198,15 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'options',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_OPTIONS') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_OPTIONS') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_OPTIONS') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_OPTIONS')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_OPTIONS')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST_MESSAGE_OPTIONS')
+      },
       default: userConfig.options || '',
       required: false
     }
@@ -168,7 +216,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('webdavplist', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST')
+    },
     handle,
     config
   })

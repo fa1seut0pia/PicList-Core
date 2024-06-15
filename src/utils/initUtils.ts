@@ -28,14 +28,16 @@ const generate = async (ctx: IPicGo, options: IOptions): Promise<any> => {
           glob = item
         }
       })
-      if (glob) { // find a filter expression
+      if (glob) {
+        // find a filter expression
         return filters(ctx, opts.filters[glob], answers)
       } else {
         return true
       }
     })
     if (_files.length === 0) {
-      ctx.log.warn('Template files not found!'); return
+      ctx.log.warn('Template files not found!')
+      return
     }
     const files = render(_files, source, answers)
     writeFileTree(options.dest, files)
@@ -112,9 +114,4 @@ const writeFileTree = (dir: string, files: any): void => {
   })
 }
 
-export {
-  filters,
-  generate,
-  render,
-  writeFileTree
-}
+export { filters, generate, render, writeFileTree }

@@ -130,9 +130,7 @@ export async function extractInfo(info: IImgInfo): Promise<{
 
   if (info.base64Image) {
     const body = info.base64Image.replace(/^data:[/\w]+;base64,/, '')
-    result.contentType = info.base64Image.match(
-      /[^:]\w+\/[\w-+\d.]+(?=;|,)/
-    )?.[0]
+    result.contentType = info.base64Image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)?.[0]
     result.body = Buffer.from(body, 'base64')
     result.contentEncoding = 'base64'
   } else {

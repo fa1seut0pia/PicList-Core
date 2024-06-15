@@ -16,7 +16,12 @@ const generateSignature = (options: IAliyunConfig, fileName: string): string => 
   return `OSS ${options.accessKeyId}:${signature}`
 }
 
-const postOptions = (options: IAliyunConfig, fileName: string, signature: string, image: Buffer): IOldReqOptionsWithFullResponse => {
+const postOptions = (
+  options: IAliyunConfig,
+  fileName: string,
+  signature: string,
+  image: Buffer
+): IOldReqOptionsWithFullResponse => {
   return {
     method: 'PUT',
     url: `https://${options.bucket}.${options.area}.aliyuncs.com/${encodePath(`${options.path}${fileName}`)}`,
@@ -34,7 +39,7 @@ const postOptions = (options: IAliyunConfig, fileName: string, signature: string
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const aliYunOptions = ctx.getConfig<IAliyunConfig>('picBed.aliyun')
   if (!aliYunOptions) {
-    throw new Error('Can\'t find aliYun OSS config')
+    throw new Error("Can't find aliYun OSS config")
   }
   aliYunOptions.path = formatPathHelper({ path: aliYunOptions.path })
   try {
@@ -80,60 +85,96 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'accessKeyId',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYID')
+      },
       default: userConfig.accessKeyId || '',
       required: true
     },
     {
       name: 'accessKeySecret',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_ACCESSKEYSECRET')
+      },
       default: userConfig.accessKeySecret || '',
       required: true
     },
     {
       name: 'bucket',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_BUCKET')
+      },
       default: userConfig.bucket || '',
       required: true
     },
     {
       name: 'area',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_AREA')
+      },
       default: userConfig.area || '',
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_AREA') },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_AREA')
+      },
       required: true
     },
     {
       name: 'path',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_PATH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_PATH')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_PATH')
+      },
       default: userConfig.path || '',
       required: false
     },
     {
       name: 'customUrl',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_CUSTOMURL') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_CUSTOMURL')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_CUSTOMURL')
+      },
       default: userConfig.customUrl || '',
       required: false
     },
     {
       name: 'options',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_OPTIONS') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_OPTIONS')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD_MESSAGE_OPTIONS')
+      },
       default: userConfig.options || '',
       required: false
     }

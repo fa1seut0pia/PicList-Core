@@ -47,17 +47,16 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.buffer
           img.imgUrl = body.data.url
           img.hash = body.data.hash
-        } else if (body.code === 'image_repeated' && typeof body.images === 'string') { // do extra check since this error return is not documented at https://doc.sm.ms/#api-Image-Upload
+        } else if (body.code === 'image_repeated' && typeof body.images === 'string') {
+          // do extra check since this error return is not documented at https://doc.sm.ms/#api-Image-Upload
           delete img.base64Image
           delete img.buffer
           img.imgUrl = body.images
-          const uploadHistory = await axios.get(
-            'https://sm.ms/api/v2/upload_history',
-            {
-              headers: {
-                Authorization: smmsConfig.token
-              }
-            })
+          const uploadHistory = await axios.get('https://sm.ms/api/v2/upload_history', {
+            headers: {
+              Authorization: smmsConfig.token
+            }
+          })
           if (uploadHistory.data.code === 'success') {
             const images = uploadHistory.data.data
             for (const image of images) {
@@ -90,19 +89,27 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
       name: 'token',
       message: 'api token',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_TOKEN')
+      },
       default: userConfig.token || '',
       required: true
     },
     {
       name: 'backupDomain',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_MESSAGE_BACKUP_DOMAIN')
       },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN') },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS_BACKUP_DOMAIN')
+      },
       default: userConfig.backupDomain || '',
       required: false
     }
@@ -112,7 +119,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('smms', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS')
+    },
     handle,
     config
   })

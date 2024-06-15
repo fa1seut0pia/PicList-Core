@@ -98,7 +98,7 @@ const postOptions = (options: ILskyConfig, fileName: string | undefined, image: 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const lskyOptions = ctx.getConfig<ILskyConfig>('picBed.lskyplist')
   if (!lskyOptions) {
-    throw new Error('Can\'t find lsky uploader config')
+    throw new Error("Can't find lsky uploader config")
   }
   try {
     const imgList = ctx.output
@@ -108,10 +108,10 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         image = Buffer.from(img.base64Image, 'base64')
       }
       const postConfig = postOptions(lskyOptions, img.fileName, image)
-      let body = await ctx.Request.request(postConfig) as any
+      let body = (await ctx.Request.request(postConfig)) as any
       body = typeof body === 'string' ? JSON.parse(body) : body
       const isV2 = lskyOptions.version === 'V2'
-      const condition = isV2 ? (body.status === true) : (body.code === 200)
+      const condition = isV2 ? body.status === true : body.code === 200
       if (condition) {
         delete img.base64Image
         delete img.buffer
@@ -144,27 +144,45 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
       name: 'version',
       type: 'list',
       default: userConfig.version || 'V1',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_VERSION') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_VERSION') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_VERSION') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_VERSION')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_VERSION')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_VERSION')
+      },
       choices: ['V1', 'V2'],
       required: true
     },
     {
       name: 'host',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_HOST') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_HOST') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_HOST') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_HOST')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_HOST')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_HOST')
+      },
       default: userConfig.host || '',
       required: true
     },
     {
       name: 'token',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_TOKEN') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_TOKEN') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_TOKEN') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_TOKEN')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_TOKEN')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_TOKEN')
+      },
       default: userConfig.token,
       required: true
     },
@@ -173,18 +191,30 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
       type: 'input',
       default: userConfig.strategyId,
       required: false,
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_STRATEGY_ID') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_STRATEGY_ID') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_STRATEGY_ID') }
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_STRATEGY_ID')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_STRATEGY_ID')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_STRATEGY_ID')
+      }
     },
     {
       name: 'albumId',
       type: 'input',
       default: userConfig.albumId,
       required: false,
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_ALBUM_ID') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_ALBUM_ID') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_ALBUM_ID') }
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_ALBUM_ID')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_ALBUM_ID')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_ALBUM_ID')
+      }
     },
     {
       name: 'permission',
@@ -201,9 +231,15 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
         }
       ],
       required: false,
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_PERMISSION') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_PERMISSION') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_PERMISSION') }
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_PERMISSION')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_PERMISSION')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_MESSAGE_PERMISSION')
+      }
     }
   ]
   return config
@@ -211,7 +247,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('lskyplist', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_PLIST') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_PLIST')
+    },
     handle,
     config
   })

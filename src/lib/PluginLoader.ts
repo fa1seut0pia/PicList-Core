@@ -71,17 +71,18 @@ export class PluginLoader implements IPluginLoader {
     try {
       // register local plugin
       if (!plugin) {
-        if (this.ctx.getConfig(`picgoPlugins.${name}`) === true || (this.ctx.getConfig(`picgoPlugins.${name}`) === undefined)) {
+        if (
+          this.ctx.getConfig(`picgoPlugins.${name}`) === true ||
+          this.ctx.getConfig(`picgoPlugins.${name}`) === undefined
+        ) {
           this.list.push(name)
           setCurrentPluginName(name)
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           this.getPlugin(name)!.register(this.ctx)
           const plugin = `picgoPlugins[${name}]`
-          this.ctx.saveConfig(
-            {
-              [plugin]: true
-            }
-          )
+          this.ctx.saveConfig({
+            [plugin]: true
+          })
         }
       } else {
         // register provided plugin

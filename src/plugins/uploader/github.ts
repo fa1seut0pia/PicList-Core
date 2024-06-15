@@ -41,7 +41,7 @@ const getOptions = (fileName: string, options: IGithubConfig): IOldReqOptionsWit
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const githubOptions = ctx.getConfig<IGithubConfig>('picBed.github')
   if (!githubOptions) {
-    throw new Error('Can\'t find github config')
+    throw new Error("Can't find github config")
   }
   const uploadPath = formatPathHelper({ path: githubOptions.path })
   githubOptions.path = uploadPath
@@ -79,7 +79,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           if (err.statusCode === 422) {
             delete img.base64Image
             delete img.buffer
-            const res = await ctx.request(getOptions(img.fileName, githubOptions)) as any
+            const res = (await ctx.request(getOptions(img.fileName, githubOptions))) as any
             if (Object.keys(res).length) {
               img.hash = res.sha
               img.imgUrl = githubOptions.customUrl
@@ -110,44 +110,72 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'repo',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_REPO') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_REPO') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_REPO') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_REPO')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_REPO')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_REPO')
+      },
       default: userConfig.repo || '',
       required: true
     },
     {
       name: 'branch',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_BRANCH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_BRANCH') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_BRANCH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_BRANCH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_BRANCH')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_BRANCH')
+      },
       default: userConfig.branch || 'master',
       required: true
     },
     {
       name: 'token',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_TOKEN') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_TOKEN') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_TOKEN')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_TOKEN')
+      },
       default: userConfig.token || '',
       required: true
     },
     {
       name: 'path',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_PATH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_PATH') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_PATH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_PATH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_PATH')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_PATH')
+      },
       default: userConfig.path || '',
       required: false
     },
     {
       name: 'customUrl',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_CUSTOMURL') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_CUSTOMURL') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_CUSTOMURL') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_CUSTOMURL')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_CUSTOMURL')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB_MESSAGE_CUSTOMURL')
+      },
       default: userConfig.customUrl || '',
       required: false
     }
@@ -157,7 +185,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('github', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB')
+    },
     handle,
     config
   })

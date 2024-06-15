@@ -42,7 +42,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         await client.connect(sftpplistConfig)
         const remotePath = path.join(`/${sftpplistConfig.uploadPath}`.replace(/\/\/+/g, '/'), img.fileName)
         await client.upload(tempFilePath, remotePath, sftpplistConfig)
-        sftpplistConfig.fileUser && await client.chown(remotePath, sftpplistConfig.fileUser)
+        sftpplistConfig.fileUser && (await client.chown(remotePath, sftpplistConfig.fileUser))
         delete img.base64Image
         delete img.buffer
         const baseUrl = sftpplistConfig.customUrl || sftpplistConfig.host
@@ -75,8 +75,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'host',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_HOST') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_HOST') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_HOST')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_HOST')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_HOST')
       },
@@ -86,8 +90,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'port',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PORT') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PORT') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PORT')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PORT')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_PORT')
       },
@@ -97,24 +105,36 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'username',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_USERNAME') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_USERNAME') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_USERNAME')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_USERNAME')
+      },
       default: userConfig.username || '',
       required: true
     },
     {
       name: 'password',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PASSWORD') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PASSWORD') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PASSWORD')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PASSWORD')
+      },
       default: userConfig.password || '',
       required: false
     },
     {
       name: 'privateKey',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_PRIVATEKEY')
       },
@@ -124,8 +144,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'passphrase',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY_PASSPHRASE') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY_PASSPHRASE') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY_PASSPHRASE')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_PRIVATEKEY_PASSPHRASE')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_PRIVATEKEY_PASSPHRASE')
       },
@@ -135,8 +159,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'uploadPath',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_UPLOADPATH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_UPLOADPATH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_UPLOADPATH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_UPLOADPATH')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_UPLOADPATH')
       },
@@ -146,8 +174,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'customUrl',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_CUSTOMURL') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_CUSTOMURL') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_CUSTOMURL')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_CUSTOMURL')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_CUSTOMURL')
       },
@@ -157,8 +189,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'webPath',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_WEBSITE_PATH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_WEBSITE_PATH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_WEBSITE_PATH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_WEBSITE_PATH')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_WEBSITE_PATH')
       },
@@ -168,8 +204,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'fileUser',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_USER') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_USER') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_USER')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_USER')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_FILE_USER')
       },
@@ -179,8 +219,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'fileMode',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_MODE') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_MODE') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_MODE')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_FILE_MODE')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_FILE_MODE')
       },
@@ -190,8 +234,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'dirMode',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_DIR_MODE') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_DIR_MODE') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_DIR_MODE')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_DIR_MODE')
+      },
       get message() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST_MESSAGE_DIR_MODE')
       },
@@ -204,7 +252,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('sftpplist', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST')
+    },
     handle,
     config
   })

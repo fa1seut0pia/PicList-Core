@@ -57,7 +57,8 @@ export const EN: ILocales = {
   PICBED_TENCENTCLOUD_MESSAGE_OPTIONS: 'Ex. ?imageMogr2',
   PICBED_TENCENTCLOUD_MESSAGE_ENDPOINT: 'Ex. cos-internal.accelerate.tencentcos.cn',
   PICBED_TENCENTCLOUD_SLIM: 'Set ImageSlim',
-  PICBED_TENCENTCLOUD_SLIM_TIP: 'Image extremely intelligent compression, please refer to the [document description](https://cloud.tencent.com/document/product/436/86438)',
+  PICBED_TENCENTCLOUD_SLIM_TIP:
+    'Image extremely intelligent compression, please refer to the [document description](https://cloud.tencent.com/document/product/436/86438)',
   PICBED_TENCENTCLOUD_SLIM_CONFIRM: 'OPEN',
   PICBED_TENCENTCLOUD_SLIM_CANCEL: 'CLOSE',
   // GitHub
@@ -201,7 +202,8 @@ export const EN: ILocales = {
   PICBED_AWSS3PLIST_PATHSTYLEACCESS: 'Set PathStyleAccess',
   PICBED_AWSS3PLIST_REJECTUNAUTHORIZED: 'Set RejectUnauthorized',
   PICBED_AWSS3PLIST_ACL: 'Set ACL',
-  PICBED_AWSS3PLIST_DISABLEBUCKETPREFIXTOURL: 'when `pathStyleAccess` is enabled, whether to disable adding bucket prefix to url',
+  PICBED_AWSS3PLIST_DISABLEBUCKETPREFIXTOURL:
+    'when `pathStyleAccess` is enabled, whether to disable adding bucket prefix to url',
   PICBED_AWSS3PLIST_MESSAGE_ACCESSKEYID: 'Ex. xxx',
   PICBED_AWSS3PLIST_MESSAGE_SECRET_ACCESSKEY: 'Ex. xxx',
   PICBED_AWSS3PLIST_MESSAGE_BUCKET: 'Ex. test',
@@ -267,11 +269,14 @@ export const EN: ILocales = {
   // Plugin Handler
   PLUGIN_HANDLER_PLUGIN_INSTALL_SUCCESS: 'Plugin installed successfully',
   PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED: 'Plugin installation failed',
-  PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED_REASON: 'Plugin installation failed, error code is ${code}, error log is \n ${data}',
-  PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED_PATH: 'Plugin installation failed, please enter a valid plugin name or valid installation path',
+  PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED_REASON:
+    'Plugin installation failed, error code is ${code}, error log is \n ${data}',
+  PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED_PATH:
+    'Plugin installation failed, please enter a valid plugin name or valid installation path',
   PLUGIN_HANDLER_PLUGIN_UNINSTALL_SUCCESS: 'Plugin uninstalled successfully',
   PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED: 'Plugin uninstall failed',
-  PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED_REASON: 'Plugin uninstall failed, error code is ${code}, error log is \n ${data}',
+  PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED_REASON:
+    'Plugin uninstall failed, error code is ${code}, error log is \n ${data}',
   PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED_VALID: 'Plugin uninstall failed, please enter a valid plugin name',
   PLUGIN_HANDLER_PLUGIN_UPDATE_SUCCESS: 'Plugin updated successfully',
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED: 'Plugin update failed',

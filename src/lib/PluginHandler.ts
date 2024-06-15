@@ -20,11 +20,15 @@ export class PluginHandler implements IPluginHandler {
     this.ctx = ctx
   }
 
-  async install(plugins: string[], options: IPluginHandlerOptions = {}, env?: IProcessEnv): Promise<IPluginHandlerResult<boolean>> {
+  async install(
+    plugins: string[],
+    options: IPluginHandlerOptions = {},
+    env?: IProcessEnv
+  ): Promise<IPluginHandlerResult<boolean>> {
     const installedPlugins: string[] = []
     const processPlugins = plugins
       .map((item: string) => handlePluginNameProcess(this.ctx, item))
-      .filter((item) => {
+      .filter(item => {
         // detect if has already installed
         // or will cause error
         if (this.ctx.pluginLoader.hasPlugin(item.pkgName)) {
@@ -102,7 +106,9 @@ export class PluginHandler implements IPluginHandler {
   }
 
   async uninstall(plugins: string[]): Promise<IPluginHandlerResult<boolean>> {
-    const processPlugins = plugins.map((item: string) => handlePluginNameProcess(this.ctx, item)).filter(item => item.success)
+    const processPlugins = plugins
+      .map((item: string) => handlePluginNameProcess(this.ctx, item))
+      .filter(item => item.success)
     const pkgNameList = processPlugins.map(item => item.pkgName)
     if (pkgNameList.length > 0) {
       // uninstall plugins must use pkgNameList:
@@ -153,8 +159,14 @@ export class PluginHandler implements IPluginHandler {
     }
   }
 
-  async update(plugins: string[], options: IPluginHandlerOptions = {}, env?: IProcessEnv): Promise<IPluginHandlerResult<boolean>> {
-    const processPlugins = plugins.map((item: string) => handlePluginNameProcess(this.ctx, item)).filter(item => item.success)
+  async update(
+    plugins: string[],
+    options: IPluginHandlerOptions = {},
+    env?: IProcessEnv
+  ): Promise<IPluginHandlerResult<boolean>> {
+    const processPlugins = plugins
+      .map((item: string) => handlePluginNameProcess(this.ctx, item))
+      .filter(item => item.success)
     const pkgNameList = processPlugins.map(item => item.pkgName)
     if (pkgNameList.length > 0) {
       // update plugins must use pkgNameList:
@@ -202,7 +214,13 @@ export class PluginHandler implements IPluginHandler {
     }
   }
 
-  private async execCommand(cmd: string, modules: string[], where: string, options: IPluginHandlerOptions = {}, env: IProcessEnv = {}): Promise<IResult> {
+  private async execCommand(
+    cmd: string,
+    modules: string[],
+    where: string,
+    options: IPluginHandlerOptions = {},
+    env: IProcessEnv = {}
+  ): Promise<IResult> {
     // options first
     const registry = options.registry || this.ctx.getConfig<Undefinable<string>>('settings.registry')
     const proxy = options.proxy || this.ctx.getConfig<Undefinable<string>>('settings.proxy')
@@ -215,16 +233,23 @@ export class PluginHandler implements IPluginHandler {
         args = args.concat(`--proxy=${proxy}`)
       }
       try {
-        const npm = spawn('npm', args, { cwd: where, env: Object.assign({}, process.env, env) })
+        const npm = spawn('npm', args, {
+          cwd: where,
+          env: Object.assign({}, process.env, env)
+        })
 
         let output = ''
-        npm.stdout?.on('data', (data: string) => {
-          output += data
-        }).pipe(process.stdout)
+        npm.stdout
+          ?.on('data', (data: string) => {
+            output += data
+          })
+          .pipe(process.stdout)
 
-        npm.stderr?.on('data', (data: string) => {
-          output += data
-        }).pipe(process.stderr)
+        npm.stderr
+          ?.on('data', (data: string) => {
+            output += data
+          })
+          .pipe(process.stderr)
 
         npm.on('close', (code: number) => {
           if (!code) {

@@ -4,7 +4,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
-    'plugin:n/recommended'
+    'plugin:n/recommended',
+    'plugin:prettier/recommended',
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import'],
@@ -17,26 +18,33 @@ module.exports = {
         format: ['PascalCase'],
         custom: {
           regex: '^I[A-Z]',
-          match: true
-        }
-      }
+          match: true,
+        },
+      },
     ],
     '@typescript-eslint/prefer-nullish-coalescing': 0,
     '@typescript-eslint/no-non-null-assertion': 0,
     '@typescript-eslint/no-explicit-any': 0,
     'import/no-named-as-default': 0,
     'n/no-missing-import': 0,
-    'n/no-process-exit': 0
+    'n/no-process-exit': 0,
+    'prettier/prettier': [
+      'error',
+      {},
+      {
+        usePrettierrc: true,
+      },
+    ],
   },
   settings: {
     'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx']
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: './tsconfig.json'
-      }
+        project: './tsconfig.json',
+      },
     }
-  }
+  },
 }

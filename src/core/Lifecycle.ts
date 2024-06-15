@@ -5,8 +5,28 @@ import heicConvert from 'heic-convert'
 import { cloneDeep } from 'lodash'
 import path from 'path'
 
-import { IBuildInWaterMarkOptions, IBuildInCompressOptions, ILifecyclePlugins, IPathTransformedImgInfo, IPicGo, IPlugin, Undefinable, IImgInfo } from '../types'
-import { getURLFile, handleUrlEncode, imageProcess, isUrl, needCompress, needAddWatermark, imageAddWaterMark, removeExif, renameFileNameWithCustomString, getConvertedFormat } from '../utils/common'
+import {
+  IBuildInWaterMarkOptions,
+  IBuildInCompressOptions,
+  ILifecyclePlugins,
+  IPathTransformedImgInfo,
+  IPicGo,
+  IPlugin,
+  Undefinable,
+  IImgInfo
+} from '../types'
+import {
+  getURLFile,
+  handleUrlEncode,
+  imageProcess,
+  isUrl,
+  needCompress,
+  needAddWatermark,
+  imageAddWaterMark,
+  removeExif,
+  renameFileNameWithCustomString,
+  getConvertedFormat
+} from '../utils/common'
 import { IBuildInEvent } from '../utils/enum'
 import { createContext } from '../utils/createContext'
 
@@ -33,7 +53,9 @@ export class Lifecycle extends EventEmitter {
     if (fs.existsSync(this.ttfPath)) return true
     this.ctx.log.info('Download ttf file.')
     try {
-      const res = await axios.get(this.ttfLink, { responseType: 'arraybuffer' })
+      const res = await axios.get(this.ttfLink, {
+        responseType: 'arraybuffer'
+      })
       fs.writeFileSync(this.ttfPath, res.data)
       this.ctx.log.info('Download ttf file success.')
       return true
@@ -49,7 +71,10 @@ export class Lifecycle extends EventEmitter {
   } {
     const compressOptions = ctx.getConfig<Undefinable<IBuildInCompressOptions>>('buildIn.compress')
     const watermarkOptions = ctx.getConfig<Undefinable<IBuildInWaterMarkOptions>>('buildIn.watermark')
-    const type = ctx.getConfig<Undefinable<string>>('picBed.uploader') || ctx.getConfig<Undefinable<string>>('picBed.current') || 'smms'
+    const type =
+      ctx.getConfig<Undefinable<string>>('picBed.uploader') ||
+      ctx.getConfig<Undefinable<string>>('picBed.current') ||
+      'smms'
     const uploader = ctx.helper.uploader.get(type)
     if (!uploader && compressOptions) {
       compressOptions.picBed = 'smms'
@@ -79,65 +104,81 @@ export class Lifecycle extends EventEmitter {
       if (compressOptions || watermarkOptions) {
         const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
 
-        await Promise.allSettled(ctx.input.map(async (item: string, index: number) => {
-          const itemIsUrl = isUrl(item)
-          const info: IPathTransformedImgInfo = itemIsUrl ? await getURLFile(item, ctx) : { success: false }
-          if (itemIsUrl && (!info.success || !info.buffer)) return
+        await Promise.allSettled(
+          ctx.input.map(async (item: string, index: number) => {
+            const itemIsUrl = isUrl(item)
+            const info: IPathTransformedImgInfo = itemIsUrl ? await getURLFile(item, ctx) : { success: false }
+            if (itemIsUrl && (!info.success || !info.buffer)) return
 
-          let transformedBuffer: Undefinable<Buffer>
-          let isSkip = false
-          ctx.rawInputPath![index] = item
-          const extention = itemIsUrl ? info.extname || '' : path.extname(item)
-          const fileBuffer: Buffer = itemIsUrl ? info.buffer! : fs.readFileSync(item)
-          if (needAddWatermark(watermarkOptions, extention)) {
-            if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
-              const downloadTTFRet = await this.downloadTTF()
-              if (!downloadTTFRet) {
-                this.ctx.log.warn('Download ttf file failed, skip add watermark.')
-                isSkip = true
+            let transformedBuffer: Undefinable<Buffer>
+            let isSkip = false
+            ctx.rawInputPath![index] = item
+            const extention = itemIsUrl ? info.extname || '' : path.extname(item)
+            const fileBuffer: Buffer = itemIsUrl ? info.buffer! : fs.readFileSync(item)
+            if (needAddWatermark(watermarkOptions, extention)) {
+              if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
+                const downloadTTFRet = await this.downloadTTF()
+                if (!downloadTTFRet) {
+                  this.ctx.log.warn('Download ttf file failed, skip add watermark.')
+                  isSkip = true
+                }
+              }
+              if (!isSkip) {
+                ctx.log.info(watermarkMsg)
+                transformedBuffer = await imageAddWaterMark(fileBuffer, watermarkOptions!, this.ttfPath, ctx.log)
               }
             }
-            if (!isSkip) {
-              ctx.log.info(watermarkMsg)
-              transformedBuffer = await imageAddWaterMark(fileBuffer, watermarkOptions!, this.ttfPath, ctx.log)
+            if (needCompress(compressOptions, extention)) {
+              ctx.log.info(compressMsg)
+              if (!itemIsUrl && (extention === '.heic' || extention === '.heif')) {
+                const heicResult = await heicConvert({
+                  buffer: fileBuffer,
+                  format: 'JPEG',
+                  quality: 1
+                })
+                const tempHeicConvertFile = path.join(tempFilePath, `${path.basename(item, extention)}.jpg`)
+                fs.writeFileSync(tempHeicConvertFile, Buffer.from(heicResult))
+                transformedBuffer = await imageProcess(
+                  fs.readFileSync(tempHeicConvertFile),
+                  compressOptions!,
+                  '.jpg',
+                  ctx.log
+                )
+              } else {
+                transformedBuffer = await imageProcess(
+                  transformedBuffer ?? fileBuffer,
+                  compressOptions!,
+                  extention,
+                  ctx.log
+                )
+              }
             }
-          }
-          if (needCompress(compressOptions, extention)) {
-            ctx.log.info(compressMsg)
-            if (!itemIsUrl && (extention === '.heic' || extention === '.heif')) {
-              const heicResult = await heicConvert({
-                buffer: fileBuffer,
-                format: 'JPEG',
-                quality: 1
-              })
-              const tempHeicConvertFile = path.join(tempFilePath, `${path.basename(item, extention)}.jpg`)
-              fs.writeFileSync(tempHeicConvertFile, Buffer.from(heicResult))
-              transformedBuffer = await imageProcess(fs.readFileSync(tempHeicConvertFile), compressOptions!, '.jpg', ctx.log)
-            } else {
-              transformedBuffer = await imageProcess(transformedBuffer ?? fileBuffer, compressOptions!, extention, ctx.log)
+            if (!transformedBuffer && compressOptions?.isRemoveExif) {
+              ctx.log.info('Remove exif info.')
+              transformedBuffer = await removeExif(fileBuffer, extention)
             }
-          }
-          if (!transformedBuffer && compressOptions?.isRemoveExif) {
-            ctx.log.info('Remove exif info.')
-            transformedBuffer = await removeExif(fileBuffer, extention)
-          }
-          if (transformedBuffer) {
-            let newExt = compressOptions?.isConvert ? getConvertedFormat(compressOptions, extention) : extention
-            newExt = newExt.startsWith('.') ? newExt : `.${newExt}`
-            const tempFile = itemIsUrl
-              ? path.join(tempFilePath, `${info.fileName
-                ? `${path.basename(info.fileName, path.extname(info.fileName))}`
-                : new Date().getTime()}${newExt}`)
-              : path.join(tempFilePath, `${path.basename(item, extention)}${newExt}`)
-            ctx.rawInputPath![index] = path.join(
-              path.dirname(item),
-              itemIsUrl
-                ? path.basename(tempFile)
-                : `${path.basename(item, extention)}${newExt}`)
-            fs.writeFileSync(tempFile, transformedBuffer)
-            ctx.input[index] = tempFile
-          }
-        }))
+            if (transformedBuffer) {
+              let newExt = compressOptions?.isConvert ? getConvertedFormat(compressOptions, extention) : extention
+              newExt = newExt.startsWith('.') ? newExt : `.${newExt}`
+              const tempFile = itemIsUrl
+                ? path.join(
+                    tempFilePath,
+                    `${
+                      info.fileName
+                        ? `${path.basename(info.fileName, path.extname(info.fileName))}`
+                        : new Date().getTime()
+                    }${newExt}`
+                  )
+                : path.join(tempFilePath, `${path.basename(item, extention)}${newExt}`)
+              ctx.rawInputPath![index] = path.join(
+                path.dirname(item),
+                itemIsUrl ? path.basename(tempFile) : `${path.basename(item, extention)}${newExt}`
+              )
+              fs.writeFileSync(tempFile, transformedBuffer)
+              ctx.input[index] = tempFile
+            }
+          })
+        )
       } else {
         for (const item of ctx.input) {
           ctx.rawInputPath.push(item)
@@ -152,7 +193,12 @@ export class Lifecycle extends EventEmitter {
         ctx.output = ctx.output.map((item: IImgInfo, index: number) => {
           let fileName = item.fileName
           if (format) {
-            fileName = renameFileNameWithCustomString(ctx.rawInputPath![index], format, undefined, item.base64Image ? item.base64Image : item.buffer)
+            fileName = renameFileNameWithCustomString(
+              ctx.rawInputPath![index],
+              format,
+              undefined,
+              item.base64Image ? item.base64Image : item.buffer
+            )
             fileName = fileName.replace(/\/+/g, '/')
             if (fileName.slice(-1) === '/') {
               fileName = fileName + index.toString()
@@ -211,7 +257,10 @@ export class Lifecycle extends EventEmitter {
   }
 
   private async doUpload(ctx: IPicGo): Promise<IPicGo> {
-    let type = ctx.getConfig<Undefinable<string>>('picBed.uploader') || ctx.getConfig<Undefinable<string>>('picBed.current') || 'smms'
+    let type =
+      ctx.getConfig<Undefinable<string>>('picBed.uploader') ||
+      ctx.getConfig<Undefinable<string>>('picBed.current') ||
+      'smms'
     let uploader = ctx.helper.uploader.get(type)
     let currentTransformer = type
     if (!uploader) {
@@ -254,15 +303,17 @@ export class Lifecycle extends EventEmitter {
     const plugins = lifeCyclePlugins.getList()
     const pluginNames = lifeCyclePlugins.getIdList()
     const lifeCycleName = lifeCyclePlugins.getName()
-    await Promise.all(plugins.map(async (plugin: IPlugin, index: number) => {
-      try {
-        ctx.log.info(`${lifeCycleName}: ${pluginNames[index]} running`)
-        await plugin.handle(ctx)
-      } catch (e) {
-        ctx.log.error(`${lifeCycleName}: ${pluginNames[index]} error`)
-        throw e
-      }
-    }))
+    await Promise.all(
+      plugins.map(async (plugin: IPlugin, index: number) => {
+        try {
+          ctx.log.info(`${lifeCycleName}: ${pluginNames[index]} running`)
+          await plugin.handle(ctx)
+        } catch (e) {
+          ctx.log.error(`${lifeCycleName}: ${pluginNames[index]} error`)
+          throw e
+        }
+      })
+    )
     return ctx
   }
 }

@@ -71,9 +71,15 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'proxy',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_PROXY') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_PROXY')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR_MESSAGE_PROXY')
+      },
       default: userConfig.proxy || '',
       required: false
     }
@@ -83,7 +89,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('telegraphplist', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_TELEGRAPH') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_TELEGRAPH')
+    },
     handle,
     config
   })

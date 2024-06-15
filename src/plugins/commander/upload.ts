@@ -12,7 +12,7 @@ const upload: IPlugin = {
       .arguments('[input...]')
       .alias('u')
       .action((input: string[]) => {
-        (async () => {
+        ;(async () => {
           const inputList = input
             .map((item: string) => {
               return isUrl(item) ? item : path.resolve(item)
@@ -25,7 +25,9 @@ const upload: IPlugin = {
               return exist
             })
           await ctx.upload(inputList)
-        })().catch((e) => { ctx.log.error(e) })
+        })().catch(e => {
+          ctx.log.error(e)
+        })
       })
   }
 }

@@ -21,7 +21,12 @@ const generateSignature = (options: IUpyunConfig, fileName: string): string => {
   return `UPYUN ${operator}:${sign}`
 }
 
-const postOptions = (options: IUpyunConfig, fileName: string, signature: string, image: Buffer): IOldReqOptionsWithFullResponse => {
+const postOptions = (
+  options: IUpyunConfig,
+  fileName: string,
+  signature: string,
+  image: Buffer
+): IOldReqOptionsWithFullResponse => {
   const bucket = options.bucket
   const path = options.path
   let endpoint = (options.endpoint || 'https://v0.api.upyun.com').replace(/\/+$/g, '')
@@ -45,7 +50,12 @@ function MD5(content: string): string {
   return crypto.createHash('md5').update(content).digest('hex')
 }
 
-const getAntiLeechParam = (antiLeechToken: string, expireTime: string | number | undefined, options: IUpyunConfig, fileName: string): string => {
+const getAntiLeechParam = (
+  antiLeechToken: string,
+  expireTime: string | number | undefined,
+  options: IUpyunConfig,
+  fileName: string
+): string => {
   const uri = `/${options.path || ''}${fileName}`.replace(/%2F/g, '/').replace(/^\/+/g, '/')
   const now = Math.round(new Date().getTime() / 1000)
   const expire = expireTime ? now + parseInt(expireTime.toString(), 10) : now + 1800
@@ -57,7 +67,7 @@ const getAntiLeechParam = (antiLeechToken: string, expireTime: string | number |
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const upyunOptions = ctx.getConfig<IUpyunConfig>('picBed.upyun')
   if (!upyunOptions) {
-    throw new Error('Can\'t find upYun config')
+    throw new Error("Can't find upYun config")
   }
   try {
     const imgList = ctx.output
@@ -78,7 +88,12 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.buffer
           img.imgUrl = `${upyunOptions.url}/${encodePath(`${path}${img.fileName}`)}${suffix}`
           if (upyunOptions.antiLeechToken) {
-            const upt = getAntiLeechParam(upyunOptions.antiLeechToken, upyunOptions.expireTime, upyunOptions, img.fileName)
+            const upt = getAntiLeechParam(
+              upyunOptions.antiLeechToken,
+              upyunOptions.expireTime,
+              upyunOptions,
+              img.fileName
+            )
             img.imgUrl = img.imgUrl.includes('?') ? `${img.imgUrl}&${upt}` : `${img.imgUrl}?${upt}`
           }
         } else {
@@ -113,8 +128,12 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
     {
       name: 'bucket',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_BUCKET') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_BUCKET') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_BUCKET')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_BUCKET')
+      },
       default: userConfig.bucket || '',
       required: true
     },
@@ -124,71 +143,117 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
       get prefix() {
         return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_OPERATOR')
       },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_OPERATOR') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_OPERATOR') },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_OPERATOR')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_OPERATOR')
+      },
       default: userConfig.operator || '',
       required: true
     },
     {
       name: 'password',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_PASSWORD') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_PASSWORD') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_PASSWORD') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_PASSWORD')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_PASSWORD')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_PASSWORD')
+      },
       default: userConfig.password || '',
       required: true
     },
     {
       name: 'url',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_URL') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_URL') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_URL') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_URL')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_URL')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_URL')
+      },
       default: userConfig.url || '',
       required: true
     },
     {
       name: 'options',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_OPTIONS') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_OPTIONS') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_OPTIONS') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_OPTIONS')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_OPTIONS')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_OPTIONS')
+      },
       default: userConfig.options || '',
       required: false
     },
     {
       name: 'path',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_PATH') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_PATH') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_PATH') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_PATH')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_PATH')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_PATH')
+      },
       default: userConfig.path || '',
       required: false
     },
     {
       name: 'antiLeechToken',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ANTI_LEECH_TOKEN') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ANTI_LEECH_TOKEN') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ANTI_LEECH_TOKEN') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ANTI_LEECH_TOKEN')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ANTI_LEECH_TOKEN')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ANTI_LEECH_TOKEN')
+      },
       default: userConfig.antiLeechToken || '',
       required: false
     },
     {
       name: 'expireTime',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_EXPIRE_TIME') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_EXPIRE_TIME') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_EXPIRE_TIME') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_EXPIRE_TIME')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_EXPIRE_TIME')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_EXPIRE_TIME')
+      },
       default: userConfig.expireTime || '',
       required: false
     },
     {
       name: 'endpoint',
       type: 'input',
-      get prefix() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ENDPOINT') },
-      get alias() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ENDPOINT') },
-      get message() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_ENDPOINT') },
+      get prefix() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ENDPOINT')
+      },
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_ENDPOINT')
+      },
+      get message() {
+        return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN_MESSAGE_ENDPOINT')
+      },
       default: userConfig.endpoint || 'https://v0.api.upyun.com',
       required: false
     }
@@ -198,7 +263,9 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 
 export default function register(ctx: IPicGo): void {
   ctx.helper.uploader.register('upyun', {
-    get name() { return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN') },
+    get name() {
+      return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN')
+    },
     handle,
     config
   })

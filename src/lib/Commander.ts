@@ -41,7 +41,9 @@ export class Commander implements ICommander {
         })
       })
       .on('command:*', () => {
-        this.ctx.log.error(`Invalid command: ${this.program.args.join(' ')}\nSee --help for a list of available commands.`)
+        this.ctx.log.error(
+          `Invalid command: ${this.program.args.join(' ')}\nSee --help for a list of available commands.`
+        )
         process.exit(1)
       })
 

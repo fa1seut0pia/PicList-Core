@@ -5,14 +5,7 @@ import path from 'path'
 import util from 'util'
 
 import { ILogType } from '../utils/enum'
-import {
-  ILogArgvType,
-  ILogArgvTypeWithError,
-  Undefinable,
-  ILogColor,
-  ILogger,
-  IPicGo
-} from '../types'
+import { ILogArgvType, ILogArgvTypeWithError, Undefinable, ILogColor, ILogger, IPicGo } from '../types'
 import { forceNumber, isDev } from '../utils/common'
 
 export class Logger implements ILogger {
@@ -36,13 +29,14 @@ export class Logger implements ILogger {
     if (!this.ctx.getConfig<Undefinable<string>>('silent') && this.checkLogLevel(type, this.logLevel)) {
       const logHeader = chalk[this.level[type] as ILogColor](`[PicList ${type.toUpperCase()}]:`)
       console.log(logHeader, ...msg)
-      this.logPath = this.ctx.getConfig<Undefinable<string>>('settings.logPath') || path.join(this.ctx.baseDir, './piclist.log')
+      this.logPath =
+        this.ctx.getConfig<Undefinable<string>>('settings.logPath') || path.join(this.ctx.baseDir, './piclist.log')
       setTimeout(() => {
         // fix log file is too large, now the log file's default size is 10 MB
         try {
           const result = this.checkLogFileIsLarge(this.logPath)
           if (result.isLarge) {
-            const warningMsg = `Log file is too large (> ${(result.logFileSizeLimit!) / 1024 / 1024 || '10'} MB), recreate log file`
+            const warningMsg = `Log file is too large (> ${result.logFileSizeLimit! / 1024 / 1024 || '10'} MB), recreate log file`
             console.log(chalk.yellow('[PicList WARN]:'), warningMsg)
             this.recreateLogFile(this.logPath)
             msg.unshift(warningMsg)
@@ -63,7 +57,8 @@ export class Logger implements ILogger {
   } {
     if (fs.existsSync(logPath)) {
       const logFileSize = fs.statSync(logPath).size
-      const logFileSizeLimit = forceNumber(this.ctx.getConfig<Undefinable<number>>('settings.logFileSizeLimit') || 10) * 1024 * 1024 // 10 MB default
+      const logFileSizeLimit =
+        forceNumber(this.ctx.getConfig<Undefinable<number>>('settings.logFileSizeLimit') || 10) * 1024 * 1024 // 10 MB default
       return {
         isLarge: logFileSize > logFileSizeLimit,
         logFileSize,
@@ -108,7 +103,7 @@ export class Logger implements ILogger {
       return true
     }
     if (Array.isArray(level)) {
-      return level.some((item: string) => (item === type || item === 'all'))
+      return level.some((item: string) => item === type || item === 'all')
     } else {
       return type === level
     }

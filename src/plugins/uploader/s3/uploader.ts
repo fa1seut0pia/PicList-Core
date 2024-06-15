@@ -6,10 +6,7 @@ import {
   PutObjectCommandOutput
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import {
-  NodeHttpHandler
-  , NodeHttpHandlerOptions
-} from '@smithy/node-http-handler'
+import { NodeHttpHandler, NodeHttpHandlerOptions } from '@smithy/node-http-handler'
 
 import url from 'url'
 import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent'
@@ -67,9 +64,7 @@ interface ICreateUploadTaskOpts {
   urlPrefix?: string
 }
 
-async function createUploadTask(
-  opts: ICreateUploadTaskOpts
-): Promise<IUploadResult> {
+async function createUploadTask(opts: ICreateUploadTaskOpts): Promise<IUploadResult> {
   if (!opts.item.buffer && !opts.item.base64Image) {
     return Promise.reject(new Error('undefined image'))
   }
@@ -79,7 +74,7 @@ async function createUploadTask(
   let contentEncoding: string | undefined
 
   try {
-    ({ body, contentType, contentEncoding } = await extractInfo(opts.item))
+    ;({ body, contentType, contentEncoding } = await extractInfo(opts.item))
   } catch (err) {
     return Promise.reject(err)
   }
@@ -121,11 +116,7 @@ async function createUploadTask(
   }
 }
 
-async function getFileURL(
-  opts: ICreateUploadTaskOpts,
-  eTag: string,
-  versionId: string
-): Promise<string> {
+async function getFileURL(opts: ICreateUploadTaskOpts, eTag: string, versionId: string): Promise<string> {
   try {
     const signedUrl = await getSignedUrl(
       opts.client,

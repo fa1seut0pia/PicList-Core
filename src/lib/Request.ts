@@ -7,7 +7,17 @@ import https from 'https'
 import { httpsOverHttp } from 'tunnel'
 import { URL } from 'url'
 
-import type { IPicGo, Undefinable, IConfigChangePayload, IConfig, IRequestConfig, IOldReqOptions, IResponse, IFullResponse, IRequest } from '../types'
+import type {
+  IPicGo,
+  Undefinable,
+  IConfigChangePayload,
+  IConfig,
+  IRequestConfig,
+  IOldReqOptions,
+  IResponse,
+  IFullResponse,
+  IRequest
+} from '../types'
 import { IBusEvent } from '../utils/enum'
 import { eventBus } from '../utils/eventBus'
 
@@ -155,15 +165,22 @@ export class Request implements IRequest {
           port: parseInt(proxyOptions.port || '0', 10),
           protocol: proxyOptions.protocol
         }
-      } catch (e) { /* empty */ }
+      } catch (e) {
+        /* empty */
+      }
     }
     return false
   }
 
   // #64 dynamic get proxy value
-  request<T, U extends (
-    IRequestConfig<U> extends IOldReqOptions ? IOldReqOptions : IRequestConfig<U> extends AxiosRequestConfig ? AxiosRequestConfig : never
-  )>(options: U): Promise<IResponse<T, U>> {
+  request<
+    T,
+    U extends IRequestConfig<U> extends IOldReqOptions
+      ? IOldReqOptions
+      : IRequestConfig<U> extends AxiosRequestConfig
+        ? AxiosRequestConfig
+        : never
+  >(options: U): Promise<IResponse<T, U>> {
     this.options.proxy = this.handleProxy()
     this.options.headers = options.headers || {}
     this.options.maxBodyLength = Infinity

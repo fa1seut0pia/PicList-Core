@@ -10,13 +10,17 @@ import { IOptions, IPlugin, IPicGo } from '../../types'
 
 const run = (ctx: IPicGo, options: IOptions): void => {
   // const name = options.inPlace ? path.relative('../', process.cwd()) : options.project
-  if (options.offline) { // offline mode
+  if (options.offline) {
+    // offline mode
     if (fs.existsSync(options.template)) {
-      generate(ctx, options).catch((e) => { ctx.log.error(e) })
+      generate(ctx, options).catch(e => {
+        ctx.log.error(e)
+      })
     } else {
       ctx.log.error(`Local template ${options.template} not found`)
     }
-  } else { // online mode
+  } else {
+    // online mode
     options.template = !options.hasSlash
       ? 'PicGo/picgo-template-' + options.template // official template
       : options.template
@@ -36,10 +40,13 @@ const downloadAndGenerate = (ctx: IPicGo, options: IOptions): void => {
   ctx.log.info('Template files are downloading...')
   download(options.template, options.tmp, { clone: options.clone }, (err: Error) => {
     if (err) {
-      ctx.log.error(err); return
+      ctx.log.error(err)
+      return
     }
     ctx.log.success('Template files are downloaded!')
-    generate(ctx, options).catch((e) => { ctx.log.error(e) })
+    generate(ctx, options).catch(e => {
+      ctx.log.error(e)
+    })
   })
 }
 
@@ -51,9 +58,9 @@ const init: IPlugin = {
       .arguments('<template> [project]')
       .option('--clone', 'use git clone')
       .option('--offline', 'use cached template')
-      .description('create picgo plugin\'s development templates')
+      .description("create picgo plugin's development templates")
       .action((template: string, project: string, program: any) => {
-        (async () => {
+        ;(async () => {
           // Thanks to vue-cli init: https://github.com/vuejs/vue-cli/blob/master/bin/vue-init
           try {
             const hasSlash = template.includes('/')
@@ -80,20 +87,21 @@ const init: IPlugin = {
 
             // check if project is empty or exist
             if (inPlace || fs.existsSync(dest)) {
-              await ctx.cmd.inquirer.prompt([
-                {
-                  type: 'confirm',
-                  message: inPlace
-                    ? 'Generate project in current directory?'
-                    : 'Target directory exists. Continue?',
-                  name: 'ok'
-                }
-              ]).then((answer: any) => {
-                if (answer.ok) {
-                  run(ctx, options)
-                }
-              })
-            } else { // project is given
+              await ctx.cmd.inquirer
+                .prompt([
+                  {
+                    type: 'confirm',
+                    message: inPlace ? 'Generate project in current directory?' : 'Target directory exists. Continue?',
+                    name: 'ok'
+                  }
+                ])
+                .then((answer: any) => {
+                  if (answer.ok) {
+                    run(ctx, options)
+                  }
+                })
+            } else {
+              // project is given
               run(ctx, options)
             }
           } catch (e: any) {
@@ -102,7 +110,9 @@ const init: IPlugin = {
               throw e
             }
           }
-        })().catch((e) => { ctx.log.error(e) })
+        })().catch(e => {
+          ctx.log.error(e)
+        })
       })
       .on('--help', () => {
         console.log()

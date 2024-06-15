@@ -23,7 +23,11 @@ class SSHClient {
   public async connect(config: ISftpPlistConfig): Promise<boolean> {
     const { username, password, privateKey, passphrase } = config
     const loginInfo: Config = privateKey
-      ? { username, privateKeyPath: privateKey, passphrase: passphrase || undefined }
+      ? {
+          username,
+          privateKeyPath: privateKey,
+          passphrase: passphrase || undefined
+        }
       : { username, password }
     try {
       await SSHClient.client.connect({

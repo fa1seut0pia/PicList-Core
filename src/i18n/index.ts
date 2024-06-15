@@ -98,6 +98,4 @@ class I18nManager implements II18nManager {
   }
 }
 
-export {
-  I18nManager
-}
+export { I18nManager }

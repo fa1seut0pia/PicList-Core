@@ -8,7 +8,7 @@ const use: IPlugin = {
       .arguments('[module]')
       .description('use modules of picgo')
       .action((module: string) => {
-        (async () => {
+        ;(async () => {
           try {
             let prompts: any[] = []
             const config: ICLIConfigs = {
@@ -31,7 +31,9 @@ const use: IPlugin = {
                 name: 'plugins',
                 message: 'Use plugins',
                 choices: ctx.pluginLoader.getFullList(),
-                default: Object.keys(ctx.getConfig('picgoPlugins')).filter((item: string) => ctx.getConfig(`picgoPlugins.${item}`))
+                default: Object.keys(ctx.getConfig('picgoPlugins')).filter((item: string) =>
+                  ctx.getConfig(`picgoPlugins.${item}`)
+                )
               }
             }
             // if an option is specific, then just set this option in config
@@ -40,7 +42,8 @@ const use: IPlugin = {
                 prompts.push(config[module])
               } else {
                 ctx.log.warn(`No module named ${module}`)
-                ctx.log.warn('Available modules are uploader|transformer|plugins'); return
+                ctx.log.warn('Available modules are uploader|transformer|plugins')
+                return
               }
             } else {
               prompts = Object.keys(config).map((item: string) => config[item])
@@ -75,7 +78,9 @@ const use: IPlugin = {
               throw e
             }
           }
-        })().catch((e) => { ctx.log.error(e) })
+        })().catch(e => {
+          ctx.log.error(e)
+        })
       })
   }
 }

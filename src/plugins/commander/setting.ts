@@ -6,13 +6,14 @@ import rename from '../beforeupload/buildInRename'
 // handle modules config -> save to picgo config file
 const handleConfig = async (ctx: IPicGo, prompts: IPluginConfig[], module: string, name: string): Promise<void> => {
   const answer = await ctx.cmd.inquirer.prompt(prompts)
-  const configName = module === 'uploader'
-    ? `picBed.${name}`
-    : module === 'transformer'
-      ? `transformer.${name}`
-      : module === 'buildin'
-        ? `buildIn.${name}`
-        : name
+  const configName =
+    module === 'uploader'
+      ? `picBed.${name}`
+      : module === 'transformer'
+        ? `transformer.${name}`
+        : module === 'buildin'
+          ? `buildIn.${name}`
+          : name
   ctx.saveConfig({
     [configName]: answer
   })
@@ -37,7 +38,7 @@ const setting = {
       .arguments('<module> [name]')
       .description('configure config of picgo modules, uploader|transformer|plugin|buildin')
       .action((module: string, name: string) => {
-        (async () => {
+        ;(async () => {
           try {
             // // load third-party plugins
             // await ctx.pluginLoader.load()
@@ -74,7 +75,8 @@ const setting = {
                 if (name) {
                   const item = ctx.helper[module].get(name)
                   if (!item) {
-                    ctx.log.error(`No ${module} named ${name}`); return
+                    ctx.log.error(`No ${module} named ${name}`)
+                    return
                   }
                   if (item.config) {
                     await handleConfig(ctx, item.config(ctx), module, name)
@@ -106,7 +108,8 @@ const setting = {
                       await handleConfig(ctx, ctx.pluginLoader.getPlugin(name)!.config!(ctx), 'plugin', name)
                     }
                   } else {
-                    ctx.log.error(`No plugin named ${name}`); return
+                    ctx.log.error(`No plugin named ${name}`)
+                    return
                   }
                 } else {
                   const prompts = [
@@ -119,17 +122,23 @@ const setting = {
                   ]
                   const answer = await ctx.cmd.inquirer.prompt<any>(prompts)
                   if (ctx.pluginLoader.getPlugin(answer.plugin)?.config) {
-                    await handleConfig(ctx, ctx.pluginLoader.getPlugin(answer.plugin)!.config!(ctx), 'plugin', answer.plugin)
+                    await handleConfig(
+                      ctx,
+                      ctx.pluginLoader.getPlugin(answer.plugin)!.config!(ctx),
+                      'plugin',
+                      answer.plugin
+                    )
                   }
                 }
                 break
               default:
                 ctx.log.warn(`No module named ${module}`)
-                ctx.log.warn('Available modules are uploader|transformer|plugin|buildin'); return
+                ctx.log.warn('Available modules are uploader|transformer|plugin|buildin')
+                return
             }
             ctx.log.success('Configure config successfully!')
             if (module === 'plugin') {
-              ctx.log.info('If you want to use this config, please run \'picgo use plugins\'')
+              ctx.log.info("If you want to use this config, please run 'picgo use plugins'")
             }
           } catch (e: any) {
             ctx.log.error(e)
@@ -137,7 +146,9 @@ const setting = {
               throw e
             }
           }
-        })().catch((e) => { ctx.log.error(e) })
+        })().catch(e => {
+          ctx.log.error(e)
+        })
       })
   }
 }
