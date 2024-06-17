@@ -71,6 +71,3 @@ class DB {
 }
 
 export default DB
-
-const s = '123'
-1 + 2 + s

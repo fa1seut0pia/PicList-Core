@@ -1,32 +1,26 @@
-import path from 'path'
 import { spawn } from 'child_process'
 import dayjs from 'dayjs'
-import os from 'os'
 import fs, { ensureDirSync } from 'fs-extra'
 import isWsl from 'is-wsl'
-import { IPicGo, IClipboardImage } from '../types'
-import { IBuildInEvent } from './enum'
+import path from 'path'
+import os from 'os'
+
 import macClipboardScript from './clipboard/mac.applescript'
 import windowsClipboardScript from './clipboard/windows.ps1'
 import windows10ClipboardScript from './clipboard/windows10.ps1'
 import linuxClipboardScript from './clipboard/linux.sh'
 import wslClipboardScript from './clipboard/wsl.sh'
+import { IBuildInEvent } from './enum'
+import { IPicGo, IClipboardImage } from '../types'
 import { CLIPBOARD_IMAGE_FOLDER } from './static'
 
 export type Platform = 'darwin' | 'win32' | 'win10' | 'linux' | 'wsl'
 
 const getCurrentPlatform = (): Platform => {
   const platform = process.platform
-  if (isWsl) {
-    return 'wsl'
-  }
+  if (isWsl) return 'wsl'
   if (platform === 'win32') {
-    const currentOS = os.release().split('.')[0]
-    if (currentOS === '10') {
-      return 'win10'
-    } else {
-      return 'win32'
-    }
+    return os.release().split('.')[0] === '10' ? 'win10' : 'win32'
   } else if (platform === 'darwin') {
     return 'darwin'
   } else {
@@ -43,6 +37,7 @@ const platform2ScriptContent: {
   linux: linuxClipboardScript,
   wsl: wslClipboardScript
 }
+
 /**
  * powershell will report error if file does not have a '.ps1' extension,
  * so we should keep the extension name consistent with corresponding shell
