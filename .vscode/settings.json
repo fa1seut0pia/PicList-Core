@@ -13,9 +13,4 @@
   "eslint.enable": true,
   "editor.tabSize": 2,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "[go]": {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    }
-  }
 }

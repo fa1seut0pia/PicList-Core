@@ -1,27 +1,28 @@
 import { NodeSSH, Config } from 'node-ssh-no-cpu-features'
-
 import path from 'path'
+
 import { ISftpPlistConfig } from '../types'
 
 class SSHClient {
-  private static _instance: SSHClient
-  private static _client: NodeSSH
-  private _isConnected = false
+  private static instance: SSHClient
+  private client = new NodeSSH()
+  isConnected = false
 
-  public static get instance(): SSHClient {
-    return this._instance || (this._instance = new this())
+  private constructor() {}
+
+  public static getInstance(): SSHClient {
+    if (!SSHClient.instance) {
+      SSHClient.instance = new SSHClient()
+    }
+    return SSHClient.instance
   }
 
-  public static get client(): NodeSSH {
-    return this._client || (this._client = new NodeSSH())
-  }
-
-  private changeWinStylePathToUnix(path: string): string {
+  private static changeWinStylePathToUnix(path: string): string {
     return path.replace(/\\/g, '/')
   }
 
-  public async connect(config: ISftpPlistConfig): Promise<boolean> {
-    const { username, password, privateKey, passphrase } = config
+  public async connect(config: ISftpPlistConfig): Promise<void> {
+    const { host, port, username, password, privateKey, passphrase } = config
     const loginInfo: Config = privateKey
       ? {
           username,
@@ -30,41 +31,37 @@ class SSHClient {
         }
       : { username, password }
     try {
-      await SSHClient.client.connect({
-        host: config.host,
-        port: Number(config.port) || 22,
+      await this.client.connect({
+        host: host,
+        port: Number(port) || 22,
         ...loginInfo
       })
-      this._isConnected = true
-      return true
+      this.isConnected = true
     } catch (err: any) {
       throw new Error(err)
     }
   }
 
-  public async upload(local: string, remote: string, config: ISftpPlistConfig): Promise<boolean> {
-    if (!this._isConnected) {
-      throw new Error('SSH 未连接')
+  public async upload(local: string, remote: string, config: ISftpPlistConfig): Promise<void> {
+    if (!this.isConnected) {
+      throw new Error('SSH client is not connected')
     }
     try {
-      remote = this.changeWinStylePathToUnix(remote)
+      remote = SSHClient.changeWinStylePathToUnix(remote)
       await this.mkdir(path.dirname(remote).replace(/^\/+|\/+$/g, ''), config)
-      await SSHClient.client.putFile(local, remote)
+      await this.client.putFile(local, remote)
       const fileMode = config.fileMode || '0644'
       if (fileMode !== '0644') {
-        const script = `chmod ${fileMode} "${remote}"`
-        const result = await this.exec(script)
-        return result
+        await this.exec(`chmod ${fileMode} "${remote}"`)
       }
-      return true
     } catch (err: any) {
       throw new Error(err)
     }
   }
 
   private async mkdir(dirPath: string, config: ISftpPlistConfig): Promise<void> {
-    if (!SSHClient.client.isConnected()) {
-      throw new Error('SSH 未连接')
+    if (!this.client.isConnected()) {
+      throw new Error('sftp client is not connected')
     }
     const directoryMode = config.dirMode || '0755'
     if (directoryMode !== '0755') {
@@ -83,22 +80,21 @@ class SSHClient {
     }
   }
 
-  public async chown(remote: string, user: string, group?: string): Promise<boolean> {
-    remote = this.changeWinStylePathToUnix(remote)
+  public async chown(remote: string, user: string, group?: string): Promise<void> {
+    remote = SSHClient.changeWinStylePathToUnix(remote)
     const [_user, _group] = group ? [user, group] : user.includes(':') ? user.split(':') : [user, user]
 
-    const script = `chown ${_user}:${_group} "${remote}"`
-    return this.exec(script)
+    await this.exec(`chown ${_user}:${_group} "${remote}"`)
   }
 
   private async exec(script: string): Promise<boolean> {
-    const execResult = await SSHClient.client.execCommand(script)
+    const execResult = await this.client.execCommand(script)
     return execResult.code === 0
   }
 
   public close(): void {
-    SSHClient.client.dispose()
-    this._isConnected = false
+    this.client.dispose()
+    this.isConnected = false
   }
 }
 
