@@ -1,3 +1,17 @@
+## :tada: 1.8.11 (2024-06-24)
+
+
+### :sparkles: Features
+
+* **custom:** picgo-server now support configName ([95f9b18](https://github.com/Kuingsmile/PicList-Core/commit/95f9b18))
+
+
+### :bug: Bug Fixes
+
+* **custom:** remove unused code ([ef137fe](https://github.com/Kuingsmile/PicList-Core/commit/ef137fe))
+
+
+
 ## :tada: 1.8.10 (2024-06-14)
 
 
