@@ -1,3 +1,12 @@
+## :tada: 1.8.12 (2024-06-27)
+
+
+### :sparkles: Features
+
+* **custom:** optimize upload progress event ([048b338](https://github.com/Kuingsmile/PicList-Core/commit/048b338))
+
+
+
 ## :tada: 1.8.11 (2024-06-24)
 
 
