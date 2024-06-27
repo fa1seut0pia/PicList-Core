@@ -18,10 +18,10 @@ import {
 import {
   getURLFile,
   handleUrlEncode,
-  imageProcess,
+  imageCompress,
   isUrl,
-  needCompress,
-  needAddWatermark,
+  isNeedCompress,
+  isNeedAddWatermark,
   imageAddWaterMark,
   removeExif,
   renameFileNameWithCustomString,
@@ -48,8 +48,7 @@ export class Lifecycle extends EventEmitter {
   }
 
   async downloadTTF(): Promise<boolean> {
-    const outputDir = path.dirname(this.ttfPath)
-    ensureDirSync(outputDir)
+    ensureDirSync(path.dirname(this.ttfPath))
     if (fs.existsSync(this.ttfPath)) return true
     this.ctx.log.info('Download ttf file.')
     try {
@@ -100,7 +99,9 @@ export class Lifecycle extends EventEmitter {
       ctx.rawInput = cloneDeep(input)
       ctx.output = [] as IImgInfo[]
       const { compressOptions, watermarkOptions } = this.helpGetOption(ctx)
-
+      ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 0)
+      ctx.emit(IBuildInEvent.BEFORE_TRANSFORM, ctx)
+      ctx.log.info('Before transform')
       if (compressOptions || watermarkOptions) {
         const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
 
@@ -115,7 +116,7 @@ export class Lifecycle extends EventEmitter {
             ctx.rawInputPath![index] = item
             const extention = itemIsUrl ? info.extname || '' : path.extname(item)
             const fileBuffer: Buffer = itemIsUrl ? info.buffer! : fs.readFileSync(item)
-            if (needAddWatermark(watermarkOptions, extention)) {
+            if (isNeedAddWatermark(watermarkOptions, extention)) {
               if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
                 const downloadTTFRet = await this.downloadTTF()
                 if (!downloadTTFRet) {
@@ -128,7 +129,7 @@ export class Lifecycle extends EventEmitter {
                 transformedBuffer = await imageAddWaterMark(fileBuffer, watermarkOptions!, this.ttfPath, ctx.log)
               }
             }
-            if (needCompress(compressOptions, extention)) {
+            if (isNeedCompress(compressOptions, extention)) {
               ctx.log.info(compressMsg)
               if (!itemIsUrl && (extention === '.heic' || extention === '.heif')) {
                 const heicResult = await heicConvert({
@@ -138,14 +139,14 @@ export class Lifecycle extends EventEmitter {
                 })
                 const tempHeicConvertFile = path.join(tempFilePath, `${path.basename(item, extention)}.jpg`)
                 fs.writeFileSync(tempHeicConvertFile, Buffer.from(heicResult))
-                transformedBuffer = await imageProcess(
+                transformedBuffer = await imageCompress(
                   fs.readFileSync(tempHeicConvertFile),
                   compressOptions!,
                   '.jpg',
                   ctx.log
                 )
               } else {
-                transformedBuffer = await imageProcess(
+                transformedBuffer = await imageCompress(
                   transformedBuffer ?? fileBuffer,
                   compressOptions!,
                   extention,
@@ -226,9 +227,6 @@ export class Lifecycle extends EventEmitter {
   }
 
   private async beforeTransform(ctx: IPicGo): Promise<IPicGo> {
-    ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 0)
-    ctx.emit(IBuildInEvent.BEFORE_TRANSFORM, ctx)
-    ctx.log.info('Before transform')
     await this.handlePlugins(ctx.helper.beforeTransformPlugins, ctx)
     return ctx
   }

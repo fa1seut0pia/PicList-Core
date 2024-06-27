@@ -426,32 +426,11 @@ export function safeParse<T>(str: string): T | string {
   }
 }
 
-// hold...
-// export const configWhiteList: RegExp[] = [
-//   /^picBed/,
-//   /^picgoPlugins/,
-//   /^@[^/]+\/picgo-plugin-/,
-//   /debug/,
-//   /silent/,
-//   /configPath/,
-//   /^settings/,
-// ]
-
-// export const isConfigKeyInWhiteList = (key: string): boolean => {
-//   return configWhiteList.some(whiteItem => whiteItem.test(key))
-// }
-
 export const forceNumber = (num: string | number = 0): number => {
   return isNaN(Number(num)) ? 0 : Number(num)
 }
 
-export const isDev = (): boolean => {
-  return process.env.NODE_ENV === 'development'
-}
-
-export const isProd = (): boolean => {
-  return process.env.NODE_ENV === 'production'
-}
+export const isDev = (): boolean => process.env.NODE_ENV === 'development'
 
 async function text2SVG(
   defaultWatermarkFontPath: string,
@@ -470,8 +449,7 @@ async function text2SVG(
     }
   }
   const textSVG = text2SVG.getSVG(text, options)
-  const svg = Buffer.from(textSVG)
-  return svg
+  return Buffer.from(textSVG)
 }
 
 const defaultWatermarkImagePath = path.join(__dirname, 'assets', 'piclist.png')
@@ -504,7 +482,7 @@ export async function AddWatermark(
     imgWidth,
     watermarkDegree
   )
-  const composited = await image
+  return await image
     .composite([
       {
         input: watermark,
@@ -513,7 +491,6 @@ export async function AddWatermark(
       }
     ])
     .toBuffer()
-  return composited
 }
 
 async function createWatermark(
@@ -559,22 +536,17 @@ async function getSize(image: Buffer): Promise<{ width: number; height: number }
 
 const validParam = (...params: any[]): boolean => {
   return params.every(param => {
-    if (param === undefined || param === null) {
-      return false
-    }
-    if (typeof param === 'string') {
-      return param !== ''
-    }
-    if (typeof param === 'number') {
-      return param > 0
-    }
-    if (typeof param === 'object') {
-      return Object.keys(param).length > 0
-    }
+    if (param === undefined || param === null) return false
+    if (typeof param === 'string') return param !== ''
+    if (typeof param === 'number') return param > 0
+    if (typeof param === 'object') return Object.keys(param).length > 0
     return true
   })
 }
 
+/**
+ * 转换后可以输出的格式列表
+ */
 const availableConvertFormatList = [
   'avif',
   'dz',
@@ -599,11 +571,26 @@ const availableConvertFormatList = [
   'webp'
 ]
 
-const validOutputFormat = (format: string): boolean => {
-  return availableConvertFormatList.includes(format)
-}
+/**
+ * 可以处理的图片格式列表
+ */
+const imageFormatList = [
+  'jpg',
+  'jpeg',
+  'png',
+  'webp',
+  'bmp',
+  'tiff',
+  'tif',
+  'svg',
+  'ico',
+  'avif',
+  'heif',
+  'heic',
+  'gif'
+]
 
-const imageExtList = ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'tiff', 'tif', 'svg', 'ico', 'avif', 'heif', 'heic']
+const validOutputFormat = (format: string): boolean => availableConvertFormatList.includes(format)
 
 export async function imageAddWaterMark(
   img: Buffer,
@@ -658,7 +645,7 @@ function formatOptions(options: IBuildInCompressOptions): IBuildInCompressOption
   }
 }
 
-export async function imageProcess(
+export async function imageCompress(
   img: Buffer,
   options: IBuildInCompressOptions,
   rawFormat: string,
@@ -666,10 +653,8 @@ export async function imageProcess(
 ): Promise<Buffer> {
   options = formatOptions(options)
   try {
-    rawFormat = rawFormat.toLowerCase().replace('.', '')
-    if (!imageExtList.includes(rawFormat)) {
-      return img
-    }
+    rawFormat = normalizeImageExt(rawFormat)
+    if (!imageFormatList.includes(rawFormat) || rawFormat === 'gif') return img
     let image: sharp.Sharp = sharp(img, { animated: true })
     let quality = 100
     if (validParam(options.quality) && options.quality! < 100) {
@@ -770,9 +755,13 @@ export async function imageProcess(
   }
 }
 
+const normalizeImageExt = (ext: string): string => {
+  return ext.toLowerCase().replace('.', '')
+}
+
 export function getConvertedFormat(options: IBuildInCompressOptions | undefined, rawFormat: string): string {
   options = formatOptions(options || {})
-  rawFormat = rawFormat.toLowerCase().replace('.', '')
+  rawFormat = normalizeImageExt(rawFormat)
   if (rawFormat === 'gif') return 'gif'
   let newFormat = options?.convertFormat || 'jpg'
   if (options?.formatConvertObj && Object.keys(options.formatConvertObj).length > 0) {
@@ -791,35 +780,18 @@ export function getConvertedFormat(options: IBuildInCompressOptions | undefined,
   return newFormat
 }
 
-const imageFormatList = [
-  'jpg',
-  'jpeg',
-  'png',
-  'webp',
-  'bmp',
-  'tiff',
-  'tif',
-  'svg',
-  'ico',
-  'avif',
-  'heif',
-  'heic',
-  'gif'
-]
-
-export const needAddWatermark = (watermarkOptions: IBuildInWaterMarkOptions | undefined, fileExt: string): boolean => {
-  fileExt = fileExt.toLowerCase().replace('.', '')
+export const isNeedAddWatermark = (
+  watermarkOptions: IBuildInWaterMarkOptions | undefined,
+  fileExt: string
+): boolean => {
+  fileExt = normalizeImageExt(fileExt)
   return (
     !!watermarkOptions && !!watermarkOptions.isAddWatermark && imageFormatList.includes(fileExt) && fileExt !== 'svg'
   )
 }
 
-export const needCompress = (compressOptions: IBuildInCompressOptions | undefined, fileExt: string): boolean => {
-  const normalizedExt = fileExt.toLowerCase().replace('.', '')
-
-  if (!imageFormatList.includes(normalizedExt) || !compressOptions) {
-    return false
-  }
+export const isNeedCompress = (compressOptions: IBuildInCompressOptions | undefined, fileExt: string): boolean => {
+  if (!imageFormatList.includes(normalizeImageExt(fileExt)) || !compressOptions) return false
 
   const {
     quality,
@@ -836,24 +808,16 @@ export const needCompress = (compressOptions: IBuildInCompressOptions | undefine
     isFlop
   } = formatOptions(compressOptions)
 
-  if (validParam(quality) && quality! < 100) {
-    return true
-  }
-  if (isReSizeByPercent && validParam(reSizePercent)) {
-    return true
-  }
+  if (validParam(quality) && quality! < 100) return true
+  if (isReSizeByPercent && validParam(reSizePercent)) return true
   if (
     isReSize &&
     ((typeof reSizeHeight === 'number' && reSizeHeight > 0) || (typeof reSizeWidth === 'number' && reSizeWidth > 0))
   ) {
     return true
   }
-  if (isRotate && rotateDegree) {
-    return true
-  }
-  if (isFlip || isFlop) {
-    return true
-  }
+  if (isRotate && rotateDegree) return true
+  if (isFlip || isFlop) return true
   if (isConvert) {
     const newFormat = convertFormat || 'jpg'
     return fileExt !== newFormat
@@ -862,10 +826,8 @@ export const needCompress = (compressOptions: IBuildInCompressOptions | undefine
 }
 
 export const removeExif = async (img: Buffer, fileExt: string): Promise<Buffer> => {
-  fileExt = fileExt.toLowerCase().replace('.', '')
-  if (!imageFormatList.includes(fileExt) || fileExt === 'svg') {
-    return img
-  }
+  fileExt = normalizeImageExt(fileExt)
+  if (!imageFormatList.includes(fileExt) || fileExt === 'svg') return img
   return await sharp(img, {
     animated: true
   }).toBuffer()
