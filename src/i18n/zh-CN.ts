@@ -22,6 +22,23 @@ export const ZH_CN = {
   PICBED_LOCAL_WEBPATH: '设定网站路径',
   PICBED_LOCAL_MESSAGE_WEBPATH: '用于拼接网址路径',
 
+  // alist
+  PICBED_ALIST_PLIST: 'AList',
+  PICBED_ALIST_URL: '设定URL',
+  PICBED_ALIST_MESSAGE_URL: '例如：https://alist.example.com',
+  PICBED_ALIST_TOKEN: '设定Token',
+  PICBED_ALIST_MESSAGE_TOKEN: '请输入Token(与用户名-密码二选一)',
+  PICBED_ALIST_USERNAME: '设定用户名',
+  PICBED_ALIST_MESSAGE_USERNAME: '请输入用户名(与Token二选一)',
+  PICBED_ALIST_PASSWORD: '设定密码',
+  PICBED_ALIST_MESSAGE_PASSWORD: '请输入密码',
+  PICBED_ALIST_UPLOAD_PATH: '设定上传路径',
+  PICBED_ALIST_MESSAGE_UPLOAD_PATH: '例如：/test',
+  PICBED_ALIST_WEB_PATH: '设定网站路径',
+  PICBED_ALIST_MESSAGE_WEB_PATH: '用于拼接网址路径',
+  PICBED_ALIST_CUSTOMURL: '设定自定义域名',
+  PICBED_ALIST_MESSAGE_CUSTOMURL: '例如：https://test.com',
+
   // Ali-cloud
   PICBED_ALICLOUD: '阿里云OSS',
   PICBED_ALICLOUD_ACCESSKEYID: '设定accessKeyId',

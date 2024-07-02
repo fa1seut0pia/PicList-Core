@@ -24,6 +24,23 @@ export const ZH_TW: ILocales = {
   PICBED_LOCAL_WEBPATH: '設定網址路徑',
   PICBED_LOCAL_MESSAGE_WEBPATH: '用于網頁顯示的路徑',
 
+  // alist
+  PICBED_ALIST_PLIST: 'AList',
+  PICBED_ALIST_URL: '設定URL',
+  PICBED_ALIST_MESSAGE_URL: '例如：https://alist.example.com',
+  PICBED_ALIST_TOKEN: '設定Token',
+  PICBED_ALIST_MESSAGE_TOKEN: '請輸入Token(與用戶名-密碼二選一)',
+  PICBED_ALIST_USERNAME: '設定用戶名',
+  PICBED_ALIST_MESSAGE_USERNAME: '請輸入用戶名(與Token二選一)',
+  PICBED_ALIST_PASSWORD: '設定密碼',
+  PICBED_ALIST_MESSAGE_PASSWORD: '請輸入密碼',
+  PICBED_ALIST_UPLOAD_PATH: '設定上傳路徑',
+  PICBED_ALIST_MESSAGE_UPLOAD_PATH: '例如：/test',
+  PICBED_ALIST_WEB_PATH: '設定網址路徑',
+  PICBED_ALIST_MESSAGE_WEB_PATH: '用于網頁顯示的路徑',
+  PICBED_ALIST_CUSTOMURL: '設定自訂網址',
+  PICBED_ALIST_MESSAGE_CUSTOMURL: '例如：https://test.com',
+
   // Ali-cloud
   PICBED_ALICLOUD: '阿里云OSS',
   PICBED_ALICLOUD_ACCESSKEYID: '設定accessKeyId',

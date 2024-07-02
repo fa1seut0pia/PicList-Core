@@ -307,6 +307,16 @@ export interface ISmmsConfig {
   token: string
   backupDomain?: string
 }
+/** 内置alist 图床配置项 */
+export interface IAlistConfig {
+  url: string
+  token?: string
+  username?: string
+  password?: string
+  uploadPath?: string
+  webPath?: string
+  customUrl?: string
+}
 /** 本地图床配置项 */
 export interface ILocalConfig {
   path: string

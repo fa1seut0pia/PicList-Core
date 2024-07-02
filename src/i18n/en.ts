@@ -24,6 +24,23 @@ export const EN: ILocales = {
   PICBED_LOCAL_WEBPATH: 'Set Web Path',
   PICBED_LOCAL_MESSAGE_WEBPATH: 'Used to generate url path',
 
+  // alist
+  PICBED_ALIST_PLIST: 'AList',
+  PICBED_ALIST_URL: 'Set URL',
+  PICBED_ALIST_MESSAGE_URL: 'Ex. https://alist.example.com',
+  PICBED_ALIST_TOKEN: 'Set Token',
+  PICBED_ALIST_MESSAGE_TOKEN: 'Please enter the token(choose one of either username-password or token)',
+  PICBED_ALIST_USERNAME: 'Set Username',
+  PICBED_ALIST_MESSAGE_USERNAME: 'Please enter the username(choose one of either username-password or token)',
+  PICBED_ALIST_PASSWORD: 'Set Password',
+  PICBED_ALIST_MESSAGE_PASSWORD: 'Please enter the password',
+  PICBED_ALIST_UPLOAD_PATH: 'Set Upload Path',
+  PICBED_ALIST_MESSAGE_UPLOAD_PATH: 'Ex. /test/',
+  PICBED_ALIST_WEB_PATH: 'Set Web Path',
+  PICBED_ALIST_MESSAGE_WEB_PATH: 'Used to generate url path',
+  PICBED_ALIST_CUSTOMURL: 'Set Custom URL',
+  PICBED_ALIST_MESSAGE_CUSTOMURL: 'Ex. https://test.com',
+
   // Ali-cloud
   PICBED_ALICLOUD: 'Ali Cloud',
   PICBED_ALICLOUD_ACCESSKEYID: 'Set accessKeyId',

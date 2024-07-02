@@ -13,10 +13,12 @@ import telegraphUploader from './telegraph'
 import piclistUploader from './piclist'
 import lskyUploader from './lsky'
 import awss3plistUploader from './awss3plist'
+import alistUploader from './alist'
 
 const buildInUploaders: IPicGoPlugin = () => {
   return {
     register(ctx: IPicGo) {
+      alistUploader(ctx)
       aliYunUploader(ctx)
       awss3plistUploader(ctx)
       githubUploader(ctx)
