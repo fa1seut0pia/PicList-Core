@@ -95,9 +95,7 @@ const postOptions = (
 
 const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
   const tcYunOptions = ctx.getConfig<ITcyunConfig>('picBed.tcyun')
-  if (!tcYunOptions) {
-    throw new Error("Can't find tencent COS config")
-  }
+  if (!tcYunOptions) throw new Error("Can't find tencent COS config")
   try {
     const imgList = ctx.output
     const customUrl = (tcYunOptions.customUrl || '').replace(/\/$/, '')

@@ -97,44 +97,35 @@ const postOptions = (options: ILskyConfig, fileName: string | undefined, image: 
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const lskyOptions = ctx.getConfig<ILskyConfig>('picBed.lskyplist')
-  if (!lskyOptions) {
-    throw new Error("Can't find lsky uploader config")
-  }
-  try {
-    const imgList = ctx.output
-    for (const img of imgList) {
-      let image = img.buffer!
-      if (!image && img.base64Image) {
-        image = Buffer.from(img.base64Image, 'base64')
-      }
-      const postConfig = postOptions(lskyOptions, img.fileName, image)
-      let body = (await ctx.Request.request(postConfig)) as any
-      body = typeof body === 'string' ? JSON.parse(body) : body
-      const isV2 = lskyOptions.version === 'V2'
-      const condition = isV2 ? body.status === true : body.code === 200
-      if (condition) {
-        delete img.base64Image
-        delete img.buffer
-        img.imgUrl = isV2 ? body.data.links.url : body.data.url
-        if (isV2) {
-          img.hash = body.data.key
-        }
-      } else {
-        ctx.emit('notification', {
-          title: 'upload failed',
-          body: body.message
-        })
-        throw new Error(body.message)
-      }
+  if (!lskyOptions) throw new Error("Can't find lsky uploader config")
+
+  const imgList = ctx.output
+  for (const img of imgList) {
+    let image = img.buffer!
+    if (!image && img.base64Image) {
+      image = Buffer.from(img.base64Image, 'base64')
     }
-    return ctx
-  } catch (err) {
-    ctx.emit(IBuildInEvent.NOTIFICATION, {
-      title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
-      body: ctx.i18n.translate<ILocalesKey>('CHECK_SETTINGS')
-    })
-    throw err
+    const postConfig = postOptions(lskyOptions, img.fileName, image)
+    let body = (await ctx.request(postConfig)) as any
+    body = typeof body === 'string' ? JSON.parse(body) : body
+    const isV2 = lskyOptions.version === 'V2'
+    const condition = isV2 ? body.status === true : body.code === 200
+    if (condition) {
+      delete img.base64Image
+      delete img.buffer
+      img.imgUrl = isV2 ? body.data.links.url : body.data.url
+      if (isV2) {
+        img.hash = body.data.key
+      }
+    } else {
+      ctx.emit(IBuildInEvent.NOTIFICATION, {
+        title: 'upload failed',
+        body: body.message
+      })
+      throw new Error(body.message)
+    }
   }
+  return ctx
 }
 
 const config = (ctx: IPicGo): IPluginConfig[] => {

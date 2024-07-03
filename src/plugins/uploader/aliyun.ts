@@ -38,9 +38,7 @@ const postOptions = (
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const aliYunOptions = ctx.getConfig<IAliyunConfig>('picBed.aliyun')
-  if (!aliYunOptions) {
-    throw new Error("Can't find aliYun OSS config")
-  }
+  if (!aliYunOptions) throw new Error("Can't find aliYun OSS config")
   aliYunOptions.path = formatPathHelper({ path: aliYunOptions.path })
   try {
     const imgList = ctx.output
@@ -70,7 +68,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       }
     }
     return ctx
-  } catch (err) {
+  } catch (err: any) {
     ctx.emit(IBuildInEvent.NOTIFICATION, {
       title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
       body: ctx.i18n.translate<ILocalesKey>('CHECK_SETTINGS')

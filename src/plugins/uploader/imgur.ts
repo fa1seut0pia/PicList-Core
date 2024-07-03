@@ -82,9 +82,7 @@ const postOptions = async (
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const imgurOptions = ctx.getConfig<IImgurConfig>('picBed.imgur')
-  if (!imgurOptions) {
-    throw new Error("Can't find imgur config")
-  }
+  if (!imgurOptions) throw new Error("Can't find imgur config")
   try {
     const imgList = ctx.output
     for (const img of imgList) {
@@ -104,13 +102,12 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       }
     }
     return ctx
-  } catch (err) {
+  } catch (err: any) {
     ctx.emit(IBuildInEvent.NOTIFICATION, {
       title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
       body: ctx.i18n.translate<ILocalesKey>('CHECK_SETTINGS_AND_NETWORK'),
       text: 'http://docs.imgur.com/api/errno/'
     })
-    // @ts-expect-error string | IError
     throw err?.response?.data || err
   }
 }

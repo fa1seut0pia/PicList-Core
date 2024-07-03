@@ -32,6 +32,7 @@ import { createContext } from '../utils/createContext'
 
 const watermarkMsg = 'Add watermark to image'
 const compressMsg = 'Compress or convert image'
+
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo
   private readonly ttfLink: string = 'https://release.piclist.cn/simhei.ttf'

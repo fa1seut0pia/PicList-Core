@@ -1,7 +1,9 @@
+import { ILocalesKey } from '../../i18n/zh-CN'
 import { IPicGo, IPluginConfig, IStringKeyMap } from '../../types'
 import compress from '../beforetransformer/compress'
 import watermark from '../beforetransformer/watermark'
 import rename from '../beforeupload/buildInRename'
+import { uploaderTranslators } from './utils'
 
 // handle modules config -> save to picgo config file
 const handleConfig = async (ctx: IPicGo, prompts: IPluginConfig[], module: string, name: string): Promise<void> => {
@@ -56,7 +58,11 @@ const setting = {
                     {
                       type: 'list',
                       name: 'buildin',
-                      choices: ['compress', 'watermark', 'rename'],
+                      choices: [
+                        { name: ctx.i18n.translate<ILocalesKey>('BUILDIN_COMPRESS'), value: 'compress' },
+                        { name: ctx.i18n.translate<ILocalesKey>('BUILDIN_WATERMARK'), value: 'watermark' },
+                        { name: ctx.i18n.translate<ILocalesKey>('BUILDIN_RENAME'), value: 'rename' }
+                      ],
                       message: 'Choose a buildin module'
                     }
                   ]
@@ -86,7 +92,12 @@ const setting = {
                     {
                       type: 'list',
                       name: `${module}`,
-                      choices: ctx.helper[module].getIdList(),
+                      choices: ctx.helper[module].getIdList().map((item: string) => {
+                        return {
+                          name: uploaderTranslators(ctx)[item] || item,
+                          value: item
+                        }
+                      }),
                       message: `Choose a(n) ${module}`
                       // default: ctx.getConfig('picBed.uploader') || ctx.getConfig('picBed.current')
                     }

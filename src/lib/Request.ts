@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/promise-function-async */
 import axios from 'axios'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import FormData from 'form-data'

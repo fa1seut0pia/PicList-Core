@@ -2,9 +2,19 @@ import { IPlugin, ILifecyclePlugins } from '../types'
 
 export class LifecyclePlugins implements ILifecyclePlugins {
   static currentPlugin: string | null
-  private readonly list: Map<string, IPlugin>
-  private readonly pluginIdMap: Map<string, string[]>
+
+  /**
+   * The name of the plugin
+   */
   private readonly name: string
+  /**
+   * The list of plugins
+   */
+  private readonly list: Map<string, IPlugin>
+  /**
+   * The map of plugin id
+   */
+  private readonly pluginIdMap: Map<string, string[]>
 
   constructor(name: string) {
     this.name = name
@@ -16,7 +26,9 @@ export class LifecyclePlugins implements ILifecyclePlugins {
     if (!id) throw new TypeError('id is required!')
     if (typeof plugin.handle !== 'function') throw new TypeError('plugin.handle must be a function!')
     if (this.list.has(id)) throw new TypeError(`${this.name} duplicate id: ${id}!`)
+
     this.list.set(id, plugin)
+
     if (LifecyclePlugins.currentPlugin) {
       if (this.pluginIdMap.has(LifecyclePlugins.currentPlugin)) {
         this.pluginIdMap.get(LifecyclePlugins.currentPlugin)?.push(id)

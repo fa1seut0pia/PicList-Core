@@ -12,6 +12,7 @@ export const EN: ILocales = {
   // smms
   PICBED_SMMS: 'SM.MS',
   PICBED_SMMS_TOKEN: 'Set Token',
+  PICBED_SMMS_MESSAGE_TOKEN: 'Please enter the token',
   PICBED_SMMS_BACKUP_DOMAIN: 'Set Backup Upload Domain',
   PICBED_SMMS_MESSAGE_BACKUP_DOMAIN: 'Ex. smms.app',
 
@@ -234,9 +235,11 @@ export const EN: ILocales = {
   PICBED_AWSS3PLIST_MESSAGE_ACL: 'Ex. public-read',
   PICBED_AWSS3PLIST_MESSAGE_DISABLEBUCKETPREFIXTOURL: 'Enable when `pathStyleAccess` is enabled',
 
+  BUILDIN_RENAME: 'Rename Settings',
   BUILDIN_RENAME_FORMAT: 'Set rename format',
   BUILDIN_RENAME_ENABLE: 'Enable rename',
 
+  BUILDIN_WATERMARK: 'Watermark Settings',
   BUILDIN_WATERMARK_ISADDWATERMARK: 'Whether to add watermark',
   BUILDIN_WATERMARK_MESSAGE_ISADDWATERMARK: 'Enable when watermark is required',
   BUILDIN_WATERMARK_WATERMARKTYPE: 'Set watermark type',
@@ -258,6 +261,7 @@ export const EN: ILocales = {
   BUILDIN_WATERMARK_WATERMARKPOSITION: 'Set watermark position',
   BUILDIN_WATERMARK_MESSAGE_WATERMARKPOSITION: 'Please select watermark position',
 
+  BUILDIN_COMPRESS: 'Processing Settings',
   BUILDIN_COMPRESS_QUALITY: 'Set image quality',
   BUILDIN_COMPRESS_MESSAGE_QUALITY: 'Please enter an integer between 0-100',
   BUILDIN_COMPRESS_ISCONVERT: 'Whether to perform format conversion',

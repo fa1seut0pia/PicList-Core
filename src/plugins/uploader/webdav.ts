@@ -9,9 +9,7 @@ import { encodePath, formatPathHelper } from './utils'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
   const webdavplistOptions = ctx.getConfig<IWebdavPlistConfig>('picBed.webdavplist')
-  if (!webdavplistOptions) {
-    throw new Error("Can't find webdavplist config")
-  }
+  if (!webdavplistOptions) throw new Error("Can't find webdavplist config")
   webdavplistOptions.host = webdavplistOptions.host.replace(/^https?:\/\/|\/+$/g, '')
   webdavplistOptions.host = (webdavplistOptions.sslEnabled ? 'https://' : 'http://') + webdavplistOptions.host
   webdavplistOptions.path = formatPathHelper({

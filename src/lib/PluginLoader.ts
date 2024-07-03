@@ -42,12 +42,12 @@ export class PluginLoader implements IPluginLoader {
 
   // load all third party plugin
   load(): boolean {
-    const packagePath = path.join(this.ctx.baseDir, 'package.json')
     const pluginDir = path.join(this.ctx.baseDir, 'node_modules/')
     // Thanks to hexo -> https://github.com/hexojs/hexo/blob/master/lib/hexo/load_plugins.js
     if (!fs.existsSync(pluginDir)) {
       return false
     }
+    const packagePath = path.join(this.ctx.baseDir, 'package.json')
     const json = readJSONSync(packagePath)
     const deps = Object.keys(json.dependencies || {})
     const devDeps = Object.keys(json.devDependencies || {})

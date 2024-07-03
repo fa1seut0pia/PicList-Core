@@ -1,4 +1,5 @@
 import { IPicGo, IPlugin, Undefinable, ICLIConfigs, IStringKeyMap } from '../../types'
+import { uploaderTranslators } from './utils'
 
 const use: IPlugin = {
   handle: async (ctx: IPicGo) => {
@@ -16,7 +17,12 @@ const use: IPlugin = {
                 type: 'list',
                 name: 'uploader',
                 message: 'Use an uploader',
-                choices: ctx.helper.uploader.getIdList(),
+                choices: ctx.helper.uploader.getIdList().map((item: string) => {
+                  return {
+                    name: uploaderTranslators(ctx)[item] || item,
+                    value: item
+                  }
+                }),
                 default: ctx.getConfig('picBed.uploader') || ctx.getConfig('picBed.current') || 'smms'
               },
               transformer: {

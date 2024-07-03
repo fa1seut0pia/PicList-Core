@@ -93,12 +93,14 @@ const extractConfig = (config: IAlistConfig) => {
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const alistConfig = ctx.getConfig<IAlistConfig>('picBed.alistplist')
   if (!alistConfig) throw new Error('Can not find alist config!')
+
   const { url, username, password, uploadPath, webPath, customUrl } = extractConfig(alistConfig)
   let { token } = extractConfig(alistConfig)
   if (!token) {
     token = await getAlistToken(ctx, url, username, password)
   }
   if (!url || !(token || (username && password))) throw new Error('Please check your alist config!')
+
   const imgList = ctx.output
   for (const img of imgList) {
     if (img.fileName && img.buffer) {
@@ -108,55 +110,50 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       }
       const fullUploadPath = `${uploadPath}${img.fileName}`
       const postConfig = postOptions(url, token, img.fileName, fullUploadPath, image)
-      try {
-        const uploadRes = (await ctx.request(postConfig)) as unknown as IFullResponse
-        handleResError(ctx, uploadRes)
-        const refreshUrl = `${url}/api/fs/list`
-        const getInfoUrl = `${url}/api/fs/get`
-        const refreshRes = (await ctx.request({
-          method: 'POST',
-          url: refreshUrl,
-          headers: {
-            Authorization: token,
-            'Content-Type': 'application/json'
-          },
-          body: {
-            password: '',
-            page: 1,
-            per_page: 1,
-            refresh: true,
-            path: path.dirname(fullUploadPath)
-          },
-          resolveWithFullResponse: true
-        })) as unknown as IFullResponse
-        handleResError(ctx, refreshRes)
-        const getInfoRes = (await ctx.request({
-          method: 'POST',
-          url: getInfoUrl,
-          headers: {
-            Authorization: token,
-            'Content-Type': 'application/json'
-          },
-          body: {
-            password: '',
-            path: fullUploadPath,
-            page: 1,
-            per_page: 1,
-            refresh: true
-          },
-          resolveWithFullResponse: true
-        })) as unknown as IFullResponse
-        handleResError(ctx, getInfoRes)
-        const sign = getInfoRes.body.data.sign
-        const encodedPath = encodePath(`${webPath || uploadPath}${img.fileName}`)
-        img.imgUrl = `${customUrl || url}/d${encodedPath}`
-        img.imgUrl += sign ? `?sign=${sign}` : ''
-        delete img.base64Image
-        delete img.buffer
-      } catch (e: any) {
-        ctx.log.error(e)
-        throw e
-      }
+      const uploadRes = (await ctx.request(postConfig)) as unknown as IFullResponse
+      handleResError(ctx, uploadRes)
+      const refreshUrl = `${url}/api/fs/list`
+      const getInfoUrl = `${url}/api/fs/get`
+      const refreshRes = (await ctx.request({
+        method: 'POST',
+        url: refreshUrl,
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: {
+          password: '',
+          page: 1,
+          per_page: 1,
+          refresh: true,
+          path: path.dirname(fullUploadPath)
+        },
+        resolveWithFullResponse: true
+      })) as unknown as IFullResponse
+      handleResError(ctx, refreshRes)
+      const getInfoRes = (await ctx.request({
+        method: 'POST',
+        url: getInfoUrl,
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: {
+          password: '',
+          path: fullUploadPath,
+          page: 1,
+          per_page: 1,
+          refresh: true
+        },
+        resolveWithFullResponse: true
+      })) as unknown as IFullResponse
+      handleResError(ctx, getInfoRes)
+      const sign = getInfoRes.body.data.sign
+      const encodedPath = encodePath(`${webPath || uploadPath}${img.fileName}`)
+      img.imgUrl = `${customUrl || url}/d${encodedPath}`
+      img.imgUrl += sign ? `?sign=${sign}` : ''
+      delete img.base64Image
+      delete img.buffer
     }
   }
   return ctx

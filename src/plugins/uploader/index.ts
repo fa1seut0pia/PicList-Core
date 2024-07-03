@@ -1,21 +1,21 @@
-import { IPicGo, IPicGoPlugin } from '../../types'
+import { IPicGo } from '../../types'
+import alistUploader from './alist'
+import aliYunUploader from './aliyun'
+import awss3plistUploader from './awss3plist'
+import githubUploader from './github'
+import imgurUploader from './imgur'
+import localUploader from './local'
+import lskyUploader from './lsky'
+import piclistUploader from './piclist'
+import qiniuUploader from './qiniu'
+import sftpUploader from './sftp'
 import smmsUploader from './smms'
 import tcYunUploader from './tcyun'
-import githubUploader from './github'
-import qiniuUploader from './qiniu'
-import imgurUploader from './imgur'
-import aliYunUploader from './aliyun'
+import telegraphUploader from './telegraph'
 import upYunUploader from './upyun'
 import webdavplistUploader from './webdav'
-import localUploader from './local'
-import sftpUploader from './sftp'
-import telegraphUploader from './telegraph'
-import piclistUploader from './piclist'
-import lskyUploader from './lsky'
-import awss3plistUploader from './awss3plist'
-import alistUploader from './alist'
 
-const buildInUploaders: IPicGoPlugin = () => {
+const buildInUploaders = () => {
   return {
     register(ctx: IPicGo) {
       alistUploader(ctx)

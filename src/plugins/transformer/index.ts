@@ -1,8 +1,8 @@
-import { IPicGo, IPicGoPlugin } from '../../types'
+import { IPicGo } from '../../types'
 import ImgFromPath from './path'
 import ImgFromBase64 from './base64'
 
-const buildInTransformers: IPicGoPlugin = () => {
+const buildInTransformers = () => {
   return {
     register(ctx: IPicGo) {
       ctx.helper.transformer.register('path', ImgFromPath)

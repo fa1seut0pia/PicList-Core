@@ -54,13 +54,12 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       }
     }
     return ctx
-  } catch (err) {
+  } catch (err: any) {
     ctx.emit(IBuildInEvent.NOTIFICATION, {
       title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
       body: ctx.i18n.translate<ILocalesKey>('CHECK_SETTINGS_AND_NETWORK'),
       text: ''
     })
-    // @ts-expect-error string | IError
     throw err?.response?.data || err
   }
 }

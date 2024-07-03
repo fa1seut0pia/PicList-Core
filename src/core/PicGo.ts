@@ -13,8 +13,8 @@ import { Request } from '../lib/Request'
 
 import { Lifecycle } from './Lifecycle'
 
-import uploaders from '../plugins/uploader'
-import transformers from '../plugins/transformer'
+import buildInUploaders from '../plugins/uploader'
+import buildInTransformers from '../plugins/transformer'
 
 import getClipboardImage from '../utils/getClipboardImage'
 
@@ -112,8 +112,8 @@ export class PicGo extends EventEmitter implements IPicGo {
       this._pluginLoader = new PluginLoader(this)
       // load self plugins
       setCurrentPluginName('picgo')
-      uploaders(this).register(this)
-      transformers(this).register(this)
+      buildInUploaders().register(this)
+      buildInTransformers().register(this)
       setCurrentPluginName('')
       // load third-party plugins
       this._pluginLoader.load()
@@ -212,7 +212,7 @@ export class PicGo extends EventEmitter implements IPicGo {
       this.log.error('No config file found, please check your config file path')
       return []
     }
-    // upload from clipboard
+
     if (input === undefined || input.length === 0) {
       try {
         const { imgPath, shouldKeepAfterUploading } = await getClipboardImage(this)
@@ -236,7 +236,6 @@ export class PicGo extends EventEmitter implements IPicGo {
         throw e
       }
     } else {
-      // upload from path
       const { output } = await this.lifecycle.start(input)
       return output
     }

@@ -66,9 +66,7 @@ const getAntiLeechParam = (
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const upyunOptions = ctx.getConfig<IUpyunConfig>('picBed.upyun')
-  if (!upyunOptions) {
-    throw new Error("Can't find upYun config")
-  }
+  if (!upyunOptions) throw new Error("Can't find upYun config")
   try {
     const imgList = ctx.output
     const path = formatPathHelper({ path: upyunOptions.path })

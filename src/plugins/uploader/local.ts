@@ -9,9 +9,8 @@ import { encodePath, formatPathHelper } from './utils'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const localConfig = ctx.getConfig<ILocalConfig>('picBed.local')
-  if (!localConfig) {
-    throw new Error('Can not find local config!')
-  }
+  if (!localConfig) throw new Error('Can not find local config!')
+
   const uploadPath = localConfig.path || ''
   const customUrl = (localConfig.customUrl || '').replace(/\/$/, '')
   const webPath = formatPathHelper({
@@ -25,33 +24,28 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         image = Buffer.from(img.base64Image, 'base64')
       }
       try {
-        try {
-          const imgTempPath = path.join(ctx.baseDir, 'imgTemp', 'local')
-          const fileImgTempPath = path.join(imgTempPath, img.fileName)
-          const fileUploadPath = path.join(uploadPath, img.fileName)
-          ensureDirSync(path.dirname(fileUploadPath))
-          ensureDirSync(path.dirname(fileImgTempPath))
-          fs.writeFileSync(fileUploadPath, image)
-          fs.copyFileSync(fileUploadPath, fileImgTempPath)
-          delete img.base64Image
-          delete img.buffer
-          if (customUrl) {
-            img.imgUrl = `${customUrl}/${encodePath(`${webPath}${img.fileName}`)}`
-          } else {
-            img.imgUrl = path.join(uploadPath, img.fileName)
-          }
-          img.hash = path.join(uploadPath, img.fileName)
-          img.galleryPath = `http://localhost:36699/local/${encodeURIComponent(img.fileName)}`
-        } catch (e: any) {
-          ctx.emit(IBuildInEvent.NOTIFICATION, {
-            title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
-            body: 'failed to upload image'
-          })
-          throw new Error('failed to upload image')
+        const imgTempPath = path.join(ctx.baseDir, 'imgTemp', 'local')
+        const fileImgTempPath = path.join(imgTempPath, img.fileName)
+        const fileUploadPath = path.join(uploadPath, img.fileName)
+        ensureDirSync(path.dirname(fileUploadPath))
+        ensureDirSync(path.dirname(fileImgTempPath))
+        fs.writeFileSync(fileUploadPath, image)
+        fs.copyFileSync(fileUploadPath, fileImgTempPath)
+        delete img.base64Image
+        delete img.buffer
+        if (customUrl) {
+          img.imgUrl = `${customUrl}/${encodePath(`${webPath}${img.fileName}`)}`
+        } else {
+          img.imgUrl = path.join(uploadPath, img.fileName)
         }
+        img.hash = path.join(uploadPath, img.fileName)
+        img.galleryPath = `http://localhost:36699/local/${encodePath(img.fileName).replace(/^\//, '')}`
       } catch (e: any) {
-        ctx.log.error(e)
-        throw e
+        ctx.emit(IBuildInEvent.NOTIFICATION, {
+          title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
+          body: 'failed to upload image'
+        })
+        throw new Error('failed to upload image')
       }
     }
   }

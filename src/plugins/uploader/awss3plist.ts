@@ -3,6 +3,7 @@ import uploader, { IUploadResult } from './s3/uploader'
 import { formatPath } from './s3/utils'
 import { IAwsS3PListUserConfig, IPicGo, IPluginConfig } from '../../types'
 import { ILocalesKey } from '../../i18n/zh-CN'
+import { IBuildInEvent } from '../../utils/enum'
 
 function formatDisableBucketPrefixToURL(disableBucketPrefixToURL: string | boolean | undefined): boolean {
   if (typeof disableBucketPrefixToURL === 'string') {
@@ -13,9 +14,8 @@ function formatDisableBucketPrefixToURL(disableBucketPrefixToURL: string | boole
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const userConfig: IAwsS3PListUserConfig = ctx.getConfig('picBed.aws-s3-plist')
-  if (!userConfig) {
-    throw new Error("Can't find amazon s3 uploader config")
-  }
+  if (!userConfig) throw new Error("Can't find aws s3 uploader config")
+
   const disableBucketPrefixToURL = formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL)
   let urlPrefix = userConfig.urlPrefix
   if (urlPrefix) {
@@ -46,8 +46,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
     results = await Promise.all(tasks)
   } catch (err: any) {
     ctx.log.error('上传到 S3 存储发生错误，请检查网络连接和配置是否正确')
-    ctx.log.error(err)
-    ctx.emit('notification', {
+    ctx.emit(IBuildInEvent.NOTIFICATION, {
       title: 'S3 存储上传错误',
       body: '请检查配置是否正确',
       text: ''

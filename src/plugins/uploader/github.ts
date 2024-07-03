@@ -40,9 +40,8 @@ const getOptions = (fileName: string, options: IGithubConfig): IOldReqOptionsWit
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const githubOptions = ctx.getConfig<IGithubConfig>('picBed.github')
-  if (!githubOptions) {
-    throw new Error("Can't find github config")
-  }
+  if (!githubOptions) throw new Error("Can't find github config")
+
   const uploadPath = formatPathHelper({ path: githubOptions.path })
   githubOptions.path = uploadPath
   githubOptions.customUrl = (githubOptions.customUrl || '').replace(/\/$/, '')
@@ -76,18 +75,15 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
             throw new Error('Server error, please try again')
           }
         } catch (err: any) {
-          if (err.statusCode === 422) {
-            delete img.base64Image
-            delete img.buffer
-            const res = (await ctx.request(getOptions(img.fileName, githubOptions))) as any
-            if (Object.keys(res).length) {
-              img.hash = res.sha
-              img.imgUrl = githubOptions.customUrl
-                ? `${githubOptions.customUrl}/${encodePath(`${uploadPath}${img.fileName}`)}`
-                : res.download_url
-            } else {
-              throw err
-            }
+          if (err.statusCode !== 422) throw err
+          delete img.base64Image
+          delete img.buffer
+          const res = (await ctx.request(getOptions(img.fileName, githubOptions))) as any
+          if (Object.keys(res).length) {
+            img.hash = res.sha
+            img.imgUrl = githubOptions.customUrl
+              ? `${githubOptions.customUrl}/${encodePath(`${uploadPath}${img.fileName}`)}`
+              : res.download_url
           } else {
             throw err
           }
@@ -95,7 +91,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       }
     }
     return ctx
-  } catch (err) {
+  } catch (err: any) {
     ctx.emit(IBuildInEvent.NOTIFICATION, {
       title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
       body: ctx.i18n.translate<ILocalesKey>('CHECK_SETTINGS_AND_NETWORK')

@@ -7,6 +7,7 @@ import { string } from 'rollup-plugin-string'
 import json from '@rollup/plugin-json'
 import builtins from 'builtins'
 import replace from '@rollup/plugin-replace'
+
 const version = process.env.VERSION || pkg.version
 const sourcemap = 'inline'
 const banner = `/*
