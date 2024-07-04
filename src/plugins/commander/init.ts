@@ -9,7 +9,6 @@ import { generate } from '../../utils/initUtils'
 import { IOptions, IPlugin, IPicGo } from '../../types'
 
 const run = (ctx: IPicGo, options: IOptions): void => {
-  // const name = options.inPlace ? path.relative('../', process.cwd()) : options.project
   if (options.offline) {
     // offline mode
     if (fs.existsSync(options.template)) {

@@ -33,31 +33,28 @@ import { createContext } from '../utils/createContext'
 const watermarkMsg = 'Add watermark to image'
 const compressMsg = 'Compress or convert image'
 
+const ttfFileLink = 'https://release.piclist.cn/simhei.ttf'
+
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo
-  private readonly ttfLink: string = 'https://release.piclist.cn/simhei.ttf'
   ttfPath: string
 
   constructor(ctx: IPicGo) {
     super()
     this.ctx = ctx
-    const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
-    const imgFilePath = path.join(ctx.baseDir, 'imgTemp')
     this.ttfPath = path.join(ctx.baseDir, 'assets', 'simhei.ttf')
-    ensureDirSync(imgFilePath)
-    emptyDirSync(tempFilePath)
+    ensureDirSync(path.join(ctx.baseDir, 'imgTemp'))
+    emptyDirSync(path.join(ctx.baseDir, 'piclistTemp'))
   }
 
-  async downloadTTF(): Promise<boolean> {
-    ensureDirSync(path.dirname(this.ttfPath))
-    if (fs.existsSync(this.ttfPath)) return true
-    this.ctx.log.info('Download ttf file.')
+  private async downloadTTF(): Promise<boolean> {
     try {
-      const res = await axios.get(this.ttfLink, {
-        responseType: 'arraybuffer'
-      })
+      ensureDirSync(path.dirname(this.ttfPath))
+      if (fs.existsSync(this.ttfPath) && fs.statSync(this.ttfPath).size > 0) return true
+      this.ctx.log.info('Download ttf file.')
+      const res = await axios.get(ttfFileLink, { responseType: 'arraybuffer' })
       fs.writeFileSync(this.ttfPath, res.data)
-      this.ctx.log.info('Download ttf file success.')
+      this.ctx.log.info('Download ttf file successfully.')
       return true
     } catch (e: any) {
       this.ctx.log.error('Download ttf file failed.')
@@ -65,7 +62,7 @@ export class Lifecycle extends EventEmitter {
     }
   }
 
-  helpGetOption(ctx: IPicGo): {
+  private helpGetOption(ctx: IPicGo): {
     compressOptions: Undefinable<IBuildInCompressOptions>
     watermarkOptions: Undefinable<IBuildInWaterMarkOptions>
   } {
@@ -91,10 +88,7 @@ export class Lifecycle extends EventEmitter {
     // ensure every upload process has an unique context
     const ctx = createContext(this.ctx)
     try {
-      // images input
-      if (!Array.isArray(input)) {
-        throw new Error('Input must be an array.')
-      }
+      if (!Array.isArray(input)) throw new Error('Input must be an array.')
       ctx.input = input
       ctx.rawInputPath = [] as string[]
       ctx.rawInput = cloneDeep(input)

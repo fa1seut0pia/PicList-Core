@@ -24,7 +24,6 @@ export class Logger implements ILogger {
   }
 
   private handleLog(type: ILogType, ...msg: ILogArgvTypeWithError[]): void {
-    // check config.silent
     this.logLevel = this.ctx.getConfig('settings.logLevel')
     if (!this.ctx.getConfig<Undefinable<string>>('silent') && this.checkLogLevel(type, this.logLevel)) {
       const logHeader = chalk[this.level[type] as ILogColor](`[PicList ${type.toUpperCase()}]:`)
@@ -32,7 +31,6 @@ export class Logger implements ILogger {
       this.logPath =
         this.ctx.getConfig<Undefinable<string>>('settings.logPath') || path.join(this.ctx.baseDir, './piclist.log')
       setTimeout(() => {
-        // fix log file is too large, now the log file's default size is 10 MB
         try {
           const result = this.checkLogFileIsLarge(this.logPath)
           if (result.isLarge) {
@@ -43,7 +41,6 @@ export class Logger implements ILogger {
           }
           this.handleWriteLog(this.logPath, type, ...msg)
         } catch (e) {
-          // why???
           console.error('[PicList Error] on checking log file size', e)
         }
       }, 0)
@@ -65,9 +62,7 @@ export class Logger implements ILogger {
         logFileSizeLimit
       }
     }
-    return {
-      isLarge: false
-    }
+    return { isLarge: false }
   }
 
   private recreateLogFile(logPath: string): void {
@@ -91,7 +86,6 @@ export class Logger implements ILogger {
         }
       })
       log += '\n'
-      // A synchronized approach to avoid log msg sequence errors
       fs.appendFileSync(logPath, log)
     } catch (e) {
       console.error('[PicList Error] on writing log file', e)
@@ -99,14 +93,11 @@ export class Logger implements ILogger {
   }
 
   private checkLogLevel(type: string, level: undefined | string | string[]): boolean {
-    if (level === undefined || level === 'all') {
-      return true
-    }
+    if (level === undefined || level === 'all') return true
     if (Array.isArray(level)) {
       return level.some((item: string) => item === type || item === 'all')
-    } else {
-      return type === level
     }
+    return type === level
   }
 
   success(...msg: ILogArgvType[]): void {
