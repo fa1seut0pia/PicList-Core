@@ -1,3 +1,13 @@
+# :tada: 1.9.0 (2024-07-05)
+
+
+### :sparkles: Features
+
+* **custom:** add buildin alist ([c7f5659](https://github.com/Kuingsmile/PicList-Core/commit/c7f5659))
+* **custom:** optimize commander ([9e42652](https://github.com/Kuingsmile/PicList-Core/commit/9e42652))
+
+
+
 ## :tada: 1.8.12 (2024-06-27)
 
 
