@@ -104,6 +104,15 @@ Then run:
 docker-compose up -d
 ```
 
+#### Install plugins in docker
+
+You can use `docker exec` to install plugins in docker.
+
+```bash
+docker exec -it piclist sh
+picgo install picgo-plugin-xxx
+```
+
 ### Server
 
 You can use `picgo-server` to start a server, default port is `36677`.
