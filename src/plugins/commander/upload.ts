@@ -5,8 +5,7 @@ import { IPicGo, IPlugin } from '../../types'
 
 const upload: IPlugin = {
   handle: (ctx: IPicGo) => {
-    const cmd = ctx.cmd
-    cmd.program
+    ctx.cmd.program
       .command('upload')
       .description('upload, go go go')
       .arguments('[input...]')

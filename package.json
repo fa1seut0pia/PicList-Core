@@ -26,11 +26,11 @@
     "server": "node ./bin/picgo-server",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "build": "cross-env NODE_ENV=production rimraf ./dist && rollup -c rollup.config.js",
+    "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/index.ts",
     "dev": "cross-env NODE_ENV=development rollup -c rollup.config.js -w",
+    "build": "cross-env NODE_ENV=production rimraf ./dist && rollup -c rollup.config.js",
     "cz": "git-cz",
     "release": "bump-version",
-    "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/index.ts",
     "publish:npm": "cross-env NODE_ENV=production rimraf ./dist && rollup -c rollup.config.js && npm publish"
   },
   "keywords": [

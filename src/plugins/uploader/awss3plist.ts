@@ -1,4 +1,4 @@
-import uploader, { IUploadResult } from './s3/uploader'
+import uploader from './s3/uploader'
 
 import { formatPath } from './s3/utils'
 import { IAwsS3PListUserConfig, IPicGo, IPluginConfig } from '../../types'
@@ -15,54 +15,41 @@ function formatDisableBucketPrefixToURL(disableBucketPrefixToURL: string | boole
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const userConfig: IAwsS3PListUserConfig = ctx.getConfig('picBed.aws-s3-plist')
   if (!userConfig) throw new Error("Can't find aws s3 uploader config")
-
-  const disableBucketPrefixToURL = formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL)
-  let urlPrefix = userConfig.urlPrefix
-  if (urlPrefix) {
-    urlPrefix = urlPrefix.replace(/\/?$/, '')
-    if (userConfig.pathStyleAccess && !disableBucketPrefixToURL) {
-      urlPrefix += '/' + userConfig.bucketName
-    }
-  }
-
-  const client = uploader.createS3Client(userConfig)
-  const output = ctx.output
-
-  const tasks = output.map(async (item, idx) =>
-    uploader.createUploadTask({
-      client,
-      index: idx,
-      bucketName: userConfig.bucketName,
-      path: formatPath(item, userConfig.uploadPath),
-      item,
-      acl: userConfig.acl || 'public-read',
-      urlPrefix
-    })
-  )
-
-  let results: IUploadResult[]
-
   try {
-    results = await Promise.all(tasks)
+    const disableBucketPrefixToURL = formatDisableBucketPrefixToURL(userConfig.disableBucketPrefixToURL)
+    let urlPrefix = userConfig.urlPrefix
+    if (urlPrefix) {
+      urlPrefix = urlPrefix.replace(/\/?$/, '')
+      if (userConfig.pathStyleAccess && !disableBucketPrefixToURL) {
+        urlPrefix += '/' + userConfig.bucketName
+      }
+    }
+    const client = uploader.createS3Client(userConfig)
+    const imgList = ctx.output
+    for (const img of imgList) {
+      const task = await uploader.createUploadTask({
+        client,
+        bucketName: userConfig.bucketName,
+        path: formatPath(img, userConfig.uploadPath),
+        item: img,
+        acl: userConfig.acl || 'public-read',
+        urlPrefix
+      })
+      delete img.buffer
+      delete img.base64Image
+      img.imgUrl = task.imgURL
+      img.url = task.url
+    }
+
+    return ctx
   } catch (err: any) {
-    ctx.log.error('上传到 S3 存储发生错误，请检查网络连接和配置是否正确')
     ctx.emit(IBuildInEvent.NOTIFICATION, {
-      title: 'S3 存储上传错误',
-      body: '请检查配置是否正确',
+      title: ctx.i18n.translate<ILocalesKey>('UPLOAD_FAILED'),
+      body: ctx.i18n.translate<ILocalesKey>('CHECK_SETTINGS_AND_NETWORK'),
       text: ''
     })
     throw err
   }
-
-  for (const result of results) {
-    const { index, url, imgURL } = result
-    delete output[index].buffer
-    delete output[index].base64Image
-    output[index].imgUrl = imgURL
-    output[index].url = url
-  }
-
-  return ctx
 }
 
 const config = (ctx: IPicGo): IPluginConfig[] => {
