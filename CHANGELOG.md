@@ -1,3 +1,22 @@
+## :tada: 1.9.1 (2024-07-25)
+
+
+### :sparkles: Features
+
+* **custom:** add advanced picbed ([3c4c806](https://github.com/Kuingsmile/PicList-Core/commit/3c4c806))
+
+
+### :package: Chore
+
+* **custom:** remove eol in prettierrc ([6332a9b](https://github.com/Kuingsmile/PicList-Core/commit/6332a9b))
+
+
+### :pencil: Documentation
+
+* **custom:** update docs ([696a054](https://github.com/Kuingsmile/PicList-Core/commit/696a054))
+
+
+
 # :tada: 1.9.0 (2024-07-05)
 
 
