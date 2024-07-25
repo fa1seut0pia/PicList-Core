@@ -3,7 +3,7 @@ import { lookup } from 'mime-types'
 import { IPicGo, IPluginConfig, IGithubConfig, IOldReqOptionsWithJSON } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
-import { encodePath, formatPathHelper } from './utils'
+import { buildInUploaderNames, encodePath, formatPathHelper } from './utils'
 
 function buildGithubApiUrl(repo: string, path: string, fileName: string, extra: string = ''): string {
   return `https://api.github.com/repos/${repo}/contents/${encodePath(`${path}${fileName}`)}${extra}`
@@ -180,7 +180,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('github', {
+  ctx.helper.uploader.register(buildInUploaderNames.github, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_GITHUB')
     },

@@ -5,7 +5,7 @@ import { IPicGo, IPluginConfig, ISftpPlistConfig } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
 import SSHClient from '../../utils/sshClient'
-import { encodePath, formatPathHelper } from './utils'
+import { buildInUploaderNames, encodePath, formatPathHelper } from './utils'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const sftpplistConfig = ctx.getConfig<ISftpPlistConfig>('picBed.sftpplist')
@@ -251,7 +251,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('sftpplist', {
+  ctx.helper.uploader.register(buildInUploaderNames.sftpplist, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST')
     },

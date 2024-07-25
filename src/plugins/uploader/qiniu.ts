@@ -3,6 +3,7 @@ import qiniu from 'qiniu'
 import { IPluginConfig, IQiniuConfig, IPicGo, IOldReqOptions } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
+import { buildInUploaderNames } from './utils'
 
 function postOptions(options: IQiniuConfig, fileName: string, token: string, imgBase64: string): IOldReqOptions {
   const area = selectArea(options.area || 'z0')
@@ -186,7 +187,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('qiniu', {
+  ctx.helper.uploader.register(buildInUploaderNames.qiniu, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_QINIU')
     },

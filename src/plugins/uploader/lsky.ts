@@ -5,6 +5,7 @@ import https from 'https'
 import { ILskyConfig, IPicGo, IPluginConfig } from '../../types'
 import { ILocalesKey } from '../../i18n/zh-CN'
 import { IBuildInEvent } from '../../utils/enum'
+import { buildInUploaderNames } from './utils'
 
 export interface IMGTYPE {
   imgUrl?: string
@@ -237,7 +238,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('lskyplist', {
+  ctx.helper.uploader.register(buildInUploaderNames.lskyplist, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_LSKY_PLIST')
     },

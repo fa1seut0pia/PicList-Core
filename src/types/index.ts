@@ -307,6 +307,16 @@ export interface ISmmsConfig {
   token: string
   backupDomain?: string
 }
+/** 内置高级自定义图床 */
+export interface IAdvancedPlistConfig {
+  endpoint: string
+  method?: string
+  formDataKey?: string
+  headers?: string
+  body?: string
+  resDataPath?: string
+  customPrefix?: string
+}
 /** 内置alist 图床配置项 */
 export interface IAlistConfig {
   url: string

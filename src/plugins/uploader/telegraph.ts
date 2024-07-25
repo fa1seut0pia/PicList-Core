@@ -5,6 +5,7 @@ import { ReadStream } from 'fs'
 import { IPicGo, IPluginConfig, ITelegraphConfig, IOldReqOptions } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
+import { buildInUploaderNames } from './utils'
 
 const postOptions = async (options: ITelegraphConfig, image: ReadStream): Promise<IOldReqOptions> => {
   const requestOptions: IOldReqOptions = {
@@ -87,7 +88,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('telegraphplist', {
+  ctx.helper.uploader.register(buildInUploaderNames.telegraphplist, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_TELEGRAPH')
     },

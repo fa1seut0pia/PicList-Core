@@ -5,7 +5,7 @@ import { WebDAVClient, WebDAVClientOptions, AuthType, createClient } from 'webda
 import { IPicGo, IPluginConfig, IWebdavPlistConfig } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
-import { encodePath, formatPathHelper } from './utils'
+import { buildInUploaderNames, encodePath, formatPathHelper } from './utils'
 
 const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
   const webdavplistOptions = ctx.getConfig<IWebdavPlistConfig>('picBed.webdavplist')
@@ -213,7 +213,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('webdavplist', {
+  ctx.helper.uploader.register(buildInUploaderNames.webdavplist, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST')
     },

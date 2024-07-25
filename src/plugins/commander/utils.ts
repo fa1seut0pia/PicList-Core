@@ -3,6 +3,7 @@ import { IPicGo, IStringKeyMap } from '../../types'
 
 export const uploaderTranslators = (ctx: IPicGo) => {
   return {
+    advancedplist: ctx.i18n.translate<ILocalesKey>('PICBED_ADVANCEDPLIST'),
     alistplist: ctx.i18n.translate<ILocalesKey>('PICBED_ALIST_PLIST'),
     aliyun: ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD'),
     'aws-s3-plist': ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST'),

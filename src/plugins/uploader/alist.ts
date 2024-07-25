@@ -2,7 +2,7 @@ import axios from 'axios'
 import { IPicGo, IPluginConfig, IAlistConfig, IOldReqOptions, IFullResponse } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
-import { encodePath, formatPathHelper } from './utils'
+import { buildInUploaderNames, encodePath, formatPathHelper } from './utils'
 import path from 'path'
 
 interface IAlistTokenStore {
@@ -272,7 +272,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('alistplist', {
+  ctx.helper.uploader.register(buildInUploaderNames.alistplist, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_ALIST_PLIST')
     },

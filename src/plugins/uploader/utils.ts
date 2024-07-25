@@ -23,3 +23,22 @@ export function encodePath(path: string): string {
     .map(p => encodeURIComponent(p))
     .join('/')
 }
+
+export const buildInUploaderNames = {
+  advancedplist: 'advancedplist',
+  alistplist: 'alistplist',
+  aliyun: 'aliyun',
+  'aws-s3-plist': 'aws-s3-plist',
+  github: 'github',
+  imgur: 'imgur',
+  local: 'local',
+  lskyplist: 'lskyplist',
+  piclist: 'piclist',
+  qiniu: 'qiniu',
+  sftpplist: 'sftpplist',
+  smms: 'smms',
+  tcyun: 'tcyun',
+  telegraphplist: 'telegraphplist',
+  upyun: 'upyun',
+  webdavplist: 'webdavplist'
+}

@@ -1,6 +1,7 @@
 import { IPicGo, IPluginConfig, IImgurConfig, IOldReqOptions, IFullResponse } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
+import { buildInUploaderNames } from './utils'
 
 const formatAccessToken = (accessToken: string): string =>
   accessToken ? (accessToken.startsWith('Bearer') ? accessToken : `Bearer ${accessToken}`) : ''
@@ -195,7 +196,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('imgur', {
+  ctx.helper.uploader.register(buildInUploaderNames.imgur, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_IMGUR')
     },

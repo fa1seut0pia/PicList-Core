@@ -5,7 +5,7 @@ import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
 import { safeParse } from '../../utils/common'
 
-import { encodePath, formatPathHelper } from './utils'
+import { buildInUploaderNames, encodePath, formatPathHelper } from './utils'
 import { IPicGo, IPluginConfig, IUpyunConfig, IOldReqOptionsWithFullResponse } from '../../types'
 
 // generate COS signature string
@@ -260,7 +260,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('upyun', {
+  ctx.helper.uploader.register(buildInUploaderNames.upyun, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN')
     },

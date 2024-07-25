@@ -2,6 +2,7 @@ import axios from 'axios'
 import { IPicGo, IPluginConfig, ISmmsConfig, IOldReqOptions } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
+import { buildInUploaderNames } from './utils'
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ''): IOldReqOptions => {
   let domain = backupDomain || 'sm.ms'
@@ -115,7 +116,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('smms', {
+  ctx.helper.uploader.register(buildInUploaderNames.smms, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_SMMS')
     },

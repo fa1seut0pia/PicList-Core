@@ -4,6 +4,7 @@ import { formatPath } from './s3/utils'
 import { IAwsS3PListUserConfig, IPicGo, IPluginConfig } from '../../types'
 import { ILocalesKey } from '../../i18n/zh-CN'
 import { IBuildInEvent } from '../../utils/enum'
+import { buildInUploaderNames } from './utils'
 
 function formatDisableBucketPrefixToURL(disableBucketPrefixToURL: string | boolean | undefined): boolean {
   if (typeof disableBucketPrefixToURL === 'string') {
@@ -259,7 +260,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('aws-s3-plist', {
+  ctx.helper.uploader.register(buildInUploaderNames['aws-s3-plist'], {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_AWSS3PLIST')
     },

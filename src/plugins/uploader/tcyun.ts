@@ -3,7 +3,7 @@ import { lookup } from 'mime-types'
 import { IPicGo, IPluginConfig, ITcyunConfig, IOldReqOptionsWithFullResponse } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
-import { encodePath, formatPathHelper } from './utils'
+import { buildInUploaderNames, encodePath, formatPathHelper } from './utils'
 
 // generate COS signature string
 
@@ -357,7 +357,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('tcyun', {
+  ctx.helper.uploader.register(buildInUploaderNames.tcyun, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_TENCENTCLOUD')
     },

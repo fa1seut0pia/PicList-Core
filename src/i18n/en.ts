@@ -16,6 +16,22 @@ export const EN: ILocales = {
   PICBED_SMMS_BACKUP_DOMAIN: 'Set Backup Upload Domain',
   PICBED_SMMS_MESSAGE_BACKUP_DOMAIN: 'Ex. smms.app',
 
+  //advancedplist
+  PICBED_ADVANCEDPLIST: 'Advanced',
+  PICBED_ADVANCEDPLIST_ENDPOINT: 'Set Endpoint',
+  PICBED_ADVANCEDPLIST_MESSAGE_ENDPOINT: 'Please enter the endpoint',
+  PICBED_ADVANCEDPLIST_METHOD: 'Set Method',
+  PICBED_ADVANCEDPLIST_MESSAGE_METHOD: 'Please select the request method',
+  PICBED_ADVANCEDPLIST_FORM_DATA_KEY: 'Set FormData Key',
+  PICBED_ADVANCEDPLIST_MESSAGE_FORM_DATA_KEY: 'Please enter the FormData key',
+  PICBED_ADVANCEDPLIST_HEADERS: 'Set Headers',
+  PICBED_ADVANCEDPLIST_MESSAGE_HEADERS: 'such as {"Content-Type": "multipart/form-data"}',
+  PICBED_ADVANCEDPLIST_BODY: 'Set Body',
+  PICBED_ADVANCEDPLIST_MESSAGE_BODY: 'such as {"key": "value"}',
+  PICBED_ADVANCEDPLIST_CUSTOM_PREFIX: 'Set Custom Prefix',
+  PICBED_ADVANCEDPLIST_MESSAGE_CUSTOM_PREFIX: 'such as https://example.com/',
+  PICBED_ADVANCEDPLIST_RES_DATA_PATH: 'Set Response Data Path',
+  PICBED_ADVANCEDPLIST_MESSAGE_RES_DATA_PATH: 'such as data.url',
   // local
   PICBED_LOCAL: 'Local',
   PICBED_LOCAL_PATH: 'Set Path',

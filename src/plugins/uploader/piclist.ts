@@ -2,6 +2,7 @@ import { lookup } from 'mime-types'
 import { IPicListConfig, IPicGo, IPluginConfig, IOldReqOptionsWithFullResponse } from '../../types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
+import { buildInUploaderNames } from './utils'
 
 const postOptions = (options: IPicListConfig, fileName: string, image: Buffer): IOldReqOptionsWithFullResponse => {
   const host = options.host || '127.0.0.1'
@@ -150,7 +151,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('piclist', {
+  ctx.helper.uploader.register(buildInUploaderNames.piclist, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_PICLIST')
     },

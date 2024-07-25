@@ -1,4 +1,5 @@
 import { IPicGo } from '../../types'
+import advancedplistUploader from './advancedplist'
 import alistUploader from './alist'
 import aliYunUploader from './aliyun'
 import awss3plistUploader from './awss3plist'
@@ -18,6 +19,7 @@ import webdavplistUploader from './webdav'
 const buildInUploaders = () => {
   return {
     register(ctx: IPicGo) {
+      advancedplistUploader(ctx)
       alistUploader(ctx)
       aliYunUploader(ctx)
       awss3plistUploader(ctx)

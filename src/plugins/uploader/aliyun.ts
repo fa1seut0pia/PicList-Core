@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import { lookup } from 'mime-types'
 import { IBuildInEvent } from '../../utils/enum'
 import { ILocalesKey } from '../../i18n/zh-CN'
-import { encodePath, formatPathHelper } from './utils'
+import { buildInUploaderNames, encodePath, formatPathHelper } from './utils'
 import { IPicGo, IPluginConfig, IAliyunConfig, IOldReqOptionsWithFullResponse } from '../../types'
 
 const getCurrentUTCDate = (): string => new Date().toUTCString()
@@ -181,7 +181,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
 }
 
 export default function register(ctx: IPicGo): void {
-  ctx.helper.uploader.register('aliyun', {
+  ctx.helper.uploader.register(buildInUploaderNames.aliyun, {
     get name() {
       return ctx.i18n.translate<ILocalesKey>('PICBED_ALICLOUD')
     },
