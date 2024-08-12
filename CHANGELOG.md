@@ -1,3 +1,12 @@
+## :tada: 1.9.2 (2024-08-12)
+
+
+### :sparkles: Features
+
+* **custom:** optimize windows clipboard script ([52b4612](https://github.com/Kuingsmile/PicList-Core/commit/52b4612))
+
+
+
 ## :tada: 1.9.1 (2024-07-25)
 
 
