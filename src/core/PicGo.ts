@@ -134,10 +134,8 @@ export class PicGo extends EventEmitter implements IPicGo {
     if (name) {
       this.pluginLoader.registerPlugin(name, plugin)
       return this.pluginLoader.getPlugin(name)!
-    } else {
-      const pluginInstance = plugin(this)
-      return pluginInstance
     }
+    return plugin(this)
   }
 
   registerCommands(): void {
@@ -151,9 +149,8 @@ export class PicGo extends EventEmitter implements IPicGo {
     if (!name) {
       this._config = this.db.read(true) as IConfig
       return this._config as unknown as T
-    } else {
-      return get(this._config, name)
     }
+    return get(this._config, name)
   }
 
   saveConfig(config: IStringKeyMap<any>): void {

@@ -93,117 +93,11 @@ export class Lifecycle extends EventEmitter {
       ctx.rawInputPath = [] as string[]
       ctx.rawInput = cloneDeep(input)
       ctx.output = [] as IImgInfo[]
-      const { compressOptions, watermarkOptions } = this.helpGetOption(ctx)
-      ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 0)
-      ctx.emit(IBuildInEvent.BEFORE_TRANSFORM, ctx)
-      ctx.log.info('Before transform')
-      if (compressOptions || watermarkOptions) {
-        const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
-
-        await Promise.allSettled(
-          ctx.input.map(async (item: string, index: number) => {
-            const itemIsUrl = isUrl(item)
-            const info: IPathTransformedImgInfo = itemIsUrl ? await getURLFile(item, ctx) : { success: false }
-            if (itemIsUrl && (!info.success || !info.buffer)) return
-
-            let transformedBuffer: Undefinable<Buffer>
-            let isSkip = false
-            ctx.rawInputPath![index] = item
-            const extention = itemIsUrl ? info.extname || '' : path.extname(item)
-            const fileBuffer: Buffer = itemIsUrl ? info.buffer! : fs.readFileSync(item)
-            if (isNeedAddWatermark(watermarkOptions, extention)) {
-              if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
-                const downloadTTFRet = await this.downloadTTF()
-                if (!downloadTTFRet) {
-                  this.ctx.log.warn('Download ttf file failed, skip add watermark.')
-                  isSkip = true
-                }
-              }
-              if (!isSkip) {
-                ctx.log.info(watermarkMsg)
-                transformedBuffer = await imageAddWaterMark(fileBuffer, watermarkOptions!, this.ttfPath, ctx.log)
-              }
-            }
-            if (isNeedCompress(compressOptions, extention)) {
-              ctx.log.info(compressMsg)
-              if (!itemIsUrl && (extention === '.heic' || extention === '.heif')) {
-                const heicResult = await heicConvert({
-                  buffer: fileBuffer,
-                  format: 'JPEG',
-                  quality: 1
-                })
-                const tempHeicConvertFile = path.join(tempFilePath, `${path.basename(item, extention)}.jpg`)
-                fs.writeFileSync(tempHeicConvertFile, Buffer.from(heicResult))
-                transformedBuffer = await imageCompress(
-                  fs.readFileSync(tempHeicConvertFile),
-                  compressOptions!,
-                  '.jpg',
-                  ctx.log
-                )
-              } else {
-                transformedBuffer = await imageCompress(
-                  transformedBuffer ?? fileBuffer,
-                  compressOptions!,
-                  extention,
-                  ctx.log
-                )
-              }
-            }
-            if (!transformedBuffer && compressOptions?.isRemoveExif) {
-              ctx.log.info('Remove exif info.')
-              transformedBuffer = await removeExif(fileBuffer, extention)
-            }
-            if (transformedBuffer) {
-              let newExt = compressOptions?.isConvert ? getConvertedFormat(compressOptions, extention) : extention
-              newExt = newExt.startsWith('.') ? newExt : `.${newExt}`
-              const tempFile = itemIsUrl
-                ? path.join(
-                    tempFilePath,
-                    `${
-                      info.fileName
-                        ? `${path.basename(info.fileName, path.extname(info.fileName))}`
-                        : new Date().getTime()
-                    }${newExt}`
-                  )
-                : path.join(tempFilePath, `${path.basename(item, extention)}${newExt}`)
-              ctx.rawInputPath![index] = path.join(
-                path.dirname(item),
-                itemIsUrl ? path.basename(tempFile) : `${path.basename(item, extention)}${newExt}`
-              )
-              fs.writeFileSync(tempFile, transformedBuffer)
-              ctx.input[index] = tempFile
-            }
-          })
-        )
-      } else {
-        for (const item of ctx.input) {
-          ctx.rawInputPath.push(item)
-        }
-      }
       // lifecycle main
+      await this.preprocess(ctx)
       await this.beforeTransform(ctx)
       await this.doTransform(ctx)
-      const renameConfig = ctx.getConfig<any>('buildIn.rename') || {}
-      if (renameConfig.enable) {
-        const format = renameConfig.format || '{filename}'
-        ctx.output = ctx.output.map((item: IImgInfo, index: number) => {
-          let fileName = item.fileName
-          if (format) {
-            fileName = renameFileNameWithCustomString(
-              ctx.rawInputPath![index],
-              format,
-              undefined,
-              item.base64Image ? item.base64Image : item.buffer
-            )
-            fileName = fileName.replace(/\/+/g, '/')
-            if (fileName.slice(-1) === '/') {
-              fileName = fileName + index.toString()
-            }
-          }
-          item.fileName = fileName
-          return item
-        })
-      }
+      await this.buildInRename(ctx)
       await this.beforeUpload(ctx)
       await this.doUpload(ctx)
       ctx.input = ctx.rawInput
@@ -219,6 +113,122 @@ export class Lifecycle extends EventEmitter {
       }
       return ctx
     }
+  }
+
+  private async preprocess(ctx: IPicGo): Promise<IPicGo> {
+    const { compressOptions, watermarkOptions } = this.helpGetOption(ctx)
+    ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 0)
+    ctx.emit(IBuildInEvent.BEFORE_TRANSFORM, ctx)
+    ctx.log.info('Before transform')
+    if (compressOptions || watermarkOptions) {
+      const tempFilePath = path.join(ctx.baseDir, 'piclistTemp')
+
+      await Promise.allSettled(
+        ctx.input.map(async (item: string, index: number) => {
+          const itemIsUrl = isUrl(item)
+          const info: IPathTransformedImgInfo = itemIsUrl ? await getURLFile(item, ctx) : { success: false }
+          if (itemIsUrl && (!info.success || !info.buffer)) return
+
+          let transformedBuffer: Undefinable<Buffer>
+          let isSkip = false
+          ctx.rawInputPath![index] = item
+          const extention = itemIsUrl ? info.extname || '' : path.extname(item)
+          const fileBuffer: Buffer = itemIsUrl ? info.buffer! : fs.readFileSync(item)
+          if (isNeedAddWatermark(watermarkOptions, extention)) {
+            if (!(watermarkOptions?.watermarkFontPath || watermarkOptions?.watermarkType === 'image')) {
+              const downloadTTFRet = await this.downloadTTF()
+              if (!downloadTTFRet) {
+                this.ctx.log.warn('Download ttf file failed, skip add watermark.')
+                isSkip = true
+              }
+            }
+            if (!isSkip) {
+              ctx.log.info(watermarkMsg)
+              transformedBuffer = await imageAddWaterMark(fileBuffer, watermarkOptions!, this.ttfPath, ctx.log)
+            }
+          }
+          if (isNeedCompress(compressOptions, extention)) {
+            ctx.log.info(compressMsg)
+            if (!itemIsUrl && (extention === '.heic' || extention === '.heif')) {
+              const heicResult = await heicConvert({
+                buffer: fileBuffer,
+                format: 'JPEG',
+                quality: 1
+              })
+              const tempHeicConvertFile = path.join(tempFilePath, `${path.basename(item, extention)}.jpg`)
+              fs.writeFileSync(tempHeicConvertFile, Buffer.from(heicResult))
+              transformedBuffer = await imageCompress(
+                fs.readFileSync(tempHeicConvertFile),
+                compressOptions!,
+                '.jpg',
+                ctx.log
+              )
+            } else {
+              transformedBuffer = await imageCompress(
+                transformedBuffer ?? fileBuffer,
+                compressOptions!,
+                extention,
+                ctx.log
+              )
+            }
+          }
+          if (!transformedBuffer && compressOptions?.isRemoveExif) {
+            ctx.log.info('Remove exif info.')
+            transformedBuffer = await removeExif(fileBuffer, extention)
+          }
+          if (transformedBuffer) {
+            let newExt = compressOptions?.isConvert ? getConvertedFormat(compressOptions, extention) : extention
+            newExt = newExt.startsWith('.') ? newExt : `.${newExt}`
+            const tempFile = itemIsUrl
+              ? path.join(
+                  tempFilePath,
+                  `${
+                    info.fileName
+                      ? `${path.basename(info.fileName, path.extname(info.fileName))}`
+                      : new Date().getTime()
+                  }${newExt}`
+                )
+              : path.join(tempFilePath, `${path.basename(item, extention)}${newExt}`)
+            ctx.rawInputPath![index] = path.join(
+              path.dirname(item),
+              itemIsUrl ? path.basename(tempFile) : `${path.basename(item, extention)}${newExt}`
+            )
+            fs.writeFileSync(tempFile, transformedBuffer)
+            ctx.input[index] = tempFile
+          }
+        })
+      )
+    } else {
+      for (const item of ctx.input) {
+        ctx.rawInputPath!.push(item)
+      }
+    }
+    return ctx
+  }
+
+  private async buildInRename(ctx: IPicGo): Promise<IPicGo> {
+    const renameConfig = ctx.getConfig<any>('buildIn.rename') || {}
+    if (renameConfig.enable) {
+      const format = renameConfig.format || '{filename}'
+      ctx.output = ctx.output.map((item: IImgInfo, index: number) => {
+        let fileName = item.fileName
+        if (format) {
+          fileName = renameFileNameWithCustomString(
+            ctx.rawInputPath![index],
+            format,
+            undefined,
+            item.base64Image ? item.base64Image : item.buffer
+          )
+          fileName = fileName.replace(/\/+/g, '/')
+          if (fileName.slice(-1) === '/') {
+            fileName = fileName + index.toString()
+          }
+        }
+        item.fileName = fileName
+        return item
+      })
+    }
+    return ctx
   }
 
   private async beforeTransform(ctx: IPicGo): Promise<IPicGo> {
