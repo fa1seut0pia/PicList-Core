@@ -1,3 +1,12 @@
+## :tada: 1.9.3 (2024-08-20)
+
+
+### :sparkles: Features
+
+* **custom:** support picgo-server for piclist picbed ([3e91a9c](https://github.com/Kuingsmile/PicList-Core/commit/3e91a9c))
+
+
+
 ## :tada: 1.9.2 (2024-08-12)
 
 
