@@ -5,18 +5,15 @@ import { ILocalesKey } from '../../i18n/zh-CN'
 import { buildInUploaderNames } from './utils'
 
 const postOptions = (options: IPicListConfig, fileName: string, image: Buffer): IOldReqOptionsWithFullResponse => {
-  const host = options.host || '127.0.0.1'
-  const port = options.port || 36677
-  const picbed = options.picbed || ''
-  const configName = options.configName || 'Default'
-  const serverKey = options.serverKey || ''
-  let url = `http://${host}:${port}/upload?configName=${configName}`
-  if (picbed) {
-    url += `&picbed=${picbed}`
-  }
-  if (serverKey) {
-    url += `&key=${serverKey}`
-  }
+  const { host = '127.0.0.1', port = '', picbed = '', configName = 'Default', serverKey = '' } = options
+  const isIp = host.match(/(\d+)\.(\d+)\.(\d+)\.(\d+)/)
+  const protocol = host.startsWith('https://') ? 'https://' : 'http://'
+  const formatHost = host.replace(/(http:\/\/|https:\/\/)/, '')
+  const defaultPort = port || '36677'
+  const endpoint = isIp
+    ? `${protocol}${formatHost}:${defaultPort}`
+    : `${protocol}${formatHost}${port ? `:${port}` : ''}`
+  const url = `${endpoint}/upload?configName=${configName}${picbed ? `&picbed=${picbed}` : ''}${serverKey ? `&key=${serverKey}` : ''}`
   return {
     method: 'POST',
     url,
@@ -67,7 +64,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
           delete img.base64Image
           delete img.buffer
           img.imgUrl = res.body.result[0]
-          img.fullResult = res.body.fullResult[0]
+          img.fullResult = res.body.fullResult ? res.body.fullResult[0] : ''
         } else {
           throw new Error(res.body.message)
         }
