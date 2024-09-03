@@ -1,3 +1,12 @@
+## :tada: 1.9.4 (2024-09-03)
+
+
+### :bug: Bug Fixes
+
+* **custom:** fix webdav url bug ([38bc174](https://github.com/Kuingsmile/PicList-Core/commit/38bc174))
+
+
+
 ## :tada: 1.9.3 (2024-08-20)
 
 
