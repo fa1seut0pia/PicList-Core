@@ -58,9 +58,9 @@ const handle = async (ctx: IPicGo): Promise<IPicGo | boolean> => {
           delete img.buffer
           const baseUrl = customUrl || webdavplistOptions.host
           if (webdavplistOptions.webpath) {
-            img.imgUrl = `${baseUrl}/${encodePath(`${webpath}${img.fileName}`)}${suffix}`
+            img.imgUrl = `${baseUrl}/${encodePath(`${webpath}${img.fileName}`).replace(/^\/+/g, '')}${suffix}`
           } else {
-            img.imgUrl = `${baseUrl}/${encodePath(`${uploadPath}${img.fileName}`)}${suffix}`
+            img.imgUrl = `${baseUrl}/${encodePath(`${uploadPath}${img.fileName}`).replace(/^\/+/g, '')}${suffix}`
           }
           img.galleryPath = `http://localhost:36699/webdavplist/${encodeURIComponent(img.fileName)}`
         } else {
