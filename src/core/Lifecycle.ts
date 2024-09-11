@@ -44,7 +44,10 @@ export class Lifecycle extends EventEmitter {
     this.ctx = ctx
     this.ttfPath = path.join(ctx.baseDir, 'assets', 'simhei.ttf')
     ensureDirSync(path.join(ctx.baseDir, 'imgTemp'))
-    emptyDirSync(path.join(ctx.baseDir, 'piclistTemp'))
+    const enableSecondUploader = ctx.getConfig<Undefinable<boolean>>('settings.enableSecondUploader') || false
+    if (!enableSecondUploader) {
+      emptyDirSync(path.join(ctx.baseDir, 'piclistTemp'))
+    }
   }
 
   private async downloadTTF(): Promise<boolean> {
@@ -84,21 +87,30 @@ export class Lifecycle extends EventEmitter {
     }
   }
 
-  async start(input: any[]): Promise<IPicGo> {
+  async start(input: any[], skipProcess = false): Promise<IPicGo> {
     // ensure every upload process has an unique context
     const ctx = createContext(this.ctx)
     try {
       if (!Array.isArray(input)) throw new Error('Input must be an array.')
       ctx.input = input
+      ctx.output = [] as IImgInfo[]
       ctx.rawInputPath = [] as string[]
       ctx.rawInput = cloneDeep(input)
-      ctx.output = [] as IImgInfo[]
+      if (skipProcess) {
+        ctx.log.info('Skip process.')
+        ctx.output = input
+        await this.doUpload(ctx)
+        ctx.input = ctx.rawInput
+        await this.afterUpload(ctx)
+        return ctx
+      }
       // lifecycle main
       await this.preprocess(ctx)
       await this.beforeTransform(ctx)
       await this.doTransform(ctx)
       await this.buildInRename(ctx)
       await this.beforeUpload(ctx)
+      ctx.processedInput = cloneDeep(ctx.output)
       await this.doUpload(ctx)
       ctx.input = ctx.rawInput
       await this.afterUpload(ctx)

@@ -51,6 +51,7 @@ export class PicGo extends EventEmitter implements IPicGo {
   output: IImgInfo[]
   input: any[]
   rawInput: any[]
+  processedInput: any[]
   pluginHandler: PluginHandler
   /**
    * @deprecated will be removed in v1.5.0+
@@ -71,6 +72,7 @@ export class PicGo extends EventEmitter implements IPicGo {
     this.configPath = configPath
     this.input = []
     this.rawInput = []
+    this.processedInput = []
     this.output = []
     this.helper = {
       transformer: new LifecyclePlugins('transformer'),
@@ -235,6 +237,38 @@ export class PicGo extends EventEmitter implements IPicGo {
     } else {
       const { output } = await this.lifecycle.start(input)
       return output
+    }
+  }
+
+  async uploadReturnCtx(input?: any[], skipProcess = false): Promise<IPicGo> {
+    if (this.configPath === '') {
+      this.log.error('No config file found, please check your config file path')
+      return this
+    }
+
+    if (input === undefined || input.length === 0) {
+      try {
+        const { imgPath, shouldKeepAfterUploading } = await getClipboardImage(this)
+        const cleanup = (): void => {
+          if (!shouldKeepAfterUploading) {
+            remove(imgPath).catch(e => {
+              this.log.error(e)
+            })
+          }
+        }
+        if (imgPath === 'no image') {
+          throw new Error('image not found in clipboard')
+        } else {
+          this.once(IBuildInEvent.FAILED, cleanup)
+          this.once(IBuildInEvent.FINISHED, cleanup)
+          return await this.lifecycle.start([imgPath], skipProcess)
+        }
+      } catch (e) {
+        this.emit(IBuildInEvent.FAILED, e)
+        throw e
+      }
+    } else {
+      return await this.lifecycle.start(input, skipProcess)
     }
   }
 }

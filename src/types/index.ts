@@ -35,6 +35,10 @@ export interface IPicGo extends NodeJS.EventEmitter {
    */
   rawInput: any[]
   /**
+   * processed input path
+   */
+  processedInput: any[]
+  /**
    * register\unregister\get picgo's plugin
    */
   pluginLoader: IPluginLoader
@@ -99,6 +103,10 @@ export interface IPicGo extends NodeJS.EventEmitter {
    * upload gogogo
    */
   upload: (input?: any[]) => Promise<IImgInfo[] | Error>
+  /**
+   * transform gogogo
+   */
+  uploadReturnCtx: (input?: any[]) => Promise<IPicGo>
 }
 
 /**
