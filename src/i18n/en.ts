@@ -121,9 +121,6 @@ export const EN: ILocales = {
   PICBED_QINIU_MESSAGE_OPTIONS: 'Ex. ?imageslim',
   PICBED_QINIU_MESSAGE_URL: 'Ex. https://xxx.yyy.glb.clouddn.com',
 
-  // telegraph
-  PICBED_TELEGRAPH: 'Telegraph',
-
   // imgur
   PICBED_IMGUR: 'Imgur',
   PICBED_IMGUR_CLIENTID: 'Set ClientId',

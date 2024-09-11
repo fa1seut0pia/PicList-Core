@@ -38,7 +38,6 @@ export const buildInUploaderNames = {
   sftpplist: 'sftpplist',
   smms: 'smms',
   tcyun: 'tcyun',
-  telegraphplist: 'telegraphplist',
   upyun: 'upyun',
   webdavplist: 'webdavplist'
 }

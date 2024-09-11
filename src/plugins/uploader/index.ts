@@ -12,7 +12,6 @@ import qiniuUploader from './qiniu'
 import sftpUploader from './sftp'
 import smmsUploader from './smms'
 import tcYunUploader from './tcyun'
-import telegraphUploader from './telegraph'
 import upYunUploader from './upyun'
 import webdavplistUploader from './webdav'
 
@@ -32,7 +31,6 @@ const buildInUploaders = () => {
       sftpUploader(ctx)
       smmsUploader(ctx)
       tcYunUploader(ctx)
-      telegraphUploader(ctx)
       upYunUploader(ctx)
       webdavplistUploader(ctx)
     }

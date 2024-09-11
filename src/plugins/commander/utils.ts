@@ -16,7 +16,6 @@ export const uploaderTranslators = (ctx: IPicGo) => {
     sftpplist: ctx.i18n.translate<ILocalesKey>('PICBED_SFTPPLIST'),
     smms: ctx.i18n.translate<ILocalesKey>('PICBED_SMMS'),
     tcyun: ctx.i18n.translate<ILocalesKey>('PICBED_TENCENTCLOUD'),
-    telegraphplist: ctx.i18n.translate<ILocalesKey>('PICBED_TELEGRAPH'),
     upyun: ctx.i18n.translate<ILocalesKey>('PICBED_UPYUN'),
     webdavplist: ctx.i18n.translate<ILocalesKey>('PICBED_WEBDAVPLIST')
   } as IStringKeyMap<any>

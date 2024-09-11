@@ -305,7 +305,10 @@ export type IStringKeyMap<T> = Record<string, T extends T ? T : any>
 
 export type ICLIConfigs = Record<string, IStringKeyMap<any>>
 
-/** Telegraph 图床配置项 */
+/**
+ * Telegraph 图床配置项
+ * @deprecated since v1.9.6
+ */
 export interface ITelegraphConfig {
   proxy?: string
 }
