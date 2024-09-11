@@ -1,3 +1,12 @@
+## :tada: 1.9.5 (2024-09-11)
+
+
+### :sparkles: Features
+
+* **custom:** optimize second uploader ([58ae7ea](https://github.com/Kuingsmile/PicList-Core/commit/58ae7ea))
+
+
+
 ## :tada: 1.9.4 (2024-09-03)
 
 
