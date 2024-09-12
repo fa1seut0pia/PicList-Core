@@ -1,3 +1,12 @@
+## :tada: 1.9.6 (2024-09-12)
+
+
+### :sparkles: Features
+
+* **custom:** remove telegra.ph ([cb2e076](https://github.com/Kuingsmile/PicList-Core/commit/cb2e076))
+
+
+
 ## :tada: 1.9.5 (2024-09-11)
 
 
